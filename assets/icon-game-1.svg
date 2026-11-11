@@ -1,0 +1,48 @@
+
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 160 120">
+
+  <!-- Original Background - Unchanged -->
+  <rect width="160" height="120" rx="24"
+        fill="#DCEFFC"/>
+
+  <g transform="translate(20 0) scale(0.234375)">
+
+    <!-- Circle Decoration -->
+    <circle cx="256" cy="260" r="215" fill="#C8E2FA"/>
+
+    <!-- Left Card -->
+    <g transform="rotate(-5 155 280)">
+      <rect x="65" y="145" width="170" height="275"
+            rx="42" fill="#FFFFFF" stroke="#15529B"
+            stroke-width="14"/>
+      <rect x="81" y="161" width="138" height="243"
+            rx="30" fill="none" stroke="#DCEFFC"
+            stroke-width="8"/>
+      <path d="M105 275 L135 305 L195 230"
+            fill="none" stroke="#55A84F" stroke-width="24"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+
+    <!-- Right Card -->
+    <g transform="rotate(5 357 280)">
+      <rect x="277" y="145" width="170" height="275"
+            rx="42" fill="#FFFFFF" stroke="#15529B"
+            stroke-width="14"/>
+      <rect x="293" y="161" width="138" height="243"
+            rx="30" fill="none" stroke="#DCEFFC"
+            stroke-width="8"/>
+      <path d="M317 275 L347 305 L407 230"
+            fill="none" stroke="#55A84F" stroke-width="24"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+
+    <!-- Yellow Sparkles -->
+    <g stroke="#FFC928" stroke-width="14" stroke-linecap="round">
+      <path d="M256 75 V110"/>
+      <path d="M180 100 L205 126"/>
+      <path d="M332 100 L307 126"/>
+    </g>
+
+  </g>
+</svg>

@@ -1,0 +1,392 @@
+/* Entrasol Game - style.css */
+
+@font-face {
+  font-family: 'Noto Sans';
+  src: url('../fonts/NotoSans-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Noto Sans';
+  src: url('../fonts/NotoSans-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --entrasol-white: #FFFFFF;
+  --entrasol-green: #8BC34A;
+  --entrasol-blue-light: #A7D8F0;
+  --entrasol-blue-dark: #141A8C;
+  --entrasol-gold: #E8B339;
+  --body-bg: #EAF5F2;
+  --app-max-width: 430px;
+}
+
+html, body { height: 100%; }
+
+body {
+  font-family: 'Noto Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: var(--entrasol-blue-dark);
+  background-color: var(--body-bg);
+  font-size: 16px;
+}
+
+/* Container tampilan mobile: lebar maksimum 430px, tetap terlihat seperti mobile di desktop */
+.home-hero {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  max-width: var(--app-max-width);
+  margin: 0 auto;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(ellipse at 50% 35%, #FFFFFF 0%, #FFFFF8 38%, transparent 75%),
+    radial-gradient(ellipse at 0% 75%, #E9F9D9 0%, transparent 55%),
+    linear-gradient(180deg, #F0F8F5 0%, #F5F8EC 45%, #DDF3F4 100%);
+  box-shadow: 0 0 40px rgba(20, 26, 140, 0.08);
+}
+
+/* Background wave di dasar container */
+.home-hero::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  pointer-events: none;
+  aspect-ratio: 390 / 120;
+  background: url('../assets/background-wave.svg') no-repeat bottom center / 100% 100%;
+}
+
+.hero-content { position: relative; z-index: 1; }
+
+.brand-logo { max-width: 240px; width: 60%; height: auto; }
+.footer-logo { width: 140px; max-width: 75%; height: auto; }
+
+.game-title { font-size: 2rem; font-weight: 700; color: var(--entrasol-blue-dark); letter-spacing: 0.5px; }
+.game-subtitle { font-size: 1rem; color: var(--entrasol-blue-dark); opacity: 0.85; }
+
+.btn-entrasol {
+  background-color: var(--entrasol-blue-dark);
+  border: 2px solid var(--entrasol-blue-dark);
+  color: var(--entrasol-white);
+  font-weight: 700;
+  font-size: 1.15rem;
+  padding: 0.75rem 2.75rem;
+  border-radius: 50rem;
+  min-height: 48px;
+  min-width: 48px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  box-shadow: 0 6px 16px rgba(20, 26, 140, 0.25);
+}
+
+.btn-entrasol:hover, .btn-entrasol:focus {
+  background-color: #0f1570;
+  border-color: #0f1570;
+  color: var(--entrasol-white);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(20, 26, 140, 0.35);
+}
+
+.btn-entrasol:active { transform: translateY(0); }
+
+/* Daftar game - tiap item kartu putih: ikon (30% lebar) | separator | nomor | nama (rata kiri) */
+.game-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0 auto;
+  padding: 0;
+}
+.game-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  height: 90px;
+  padding: 0.4rem 0.75rem 0.4rem 0.4rem;
+  background-color: var(--entrasol-white);
+  border-radius: 1rem;
+  border: 2px solid transparent;
+  box-shadow: 0 4px 14px rgba(20, 26, 140, 0.08);
+}
+.game-item--flip { border-color: var(--entrasol-blue-dark); }
+.game-item--recall { border-color: var(--entrasol-green); }
+.game-item--memorize { border-color: var(--entrasol-blue-light); }
+.game-item__icon {
+  flex: 0 0 30%;
+  width: 30%;
+  align-self: stretch;
+  min-height: 0;
+  object-fit: contain;
+}
+.game-item__sep {
+  flex: 0 0 auto;
+  width: 3px;
+  height: 2.2rem;
+  border-radius: 50rem;
+}
+.game-item__sep--flip { background-color: var(--entrasol-blue-dark); }
+.game-item__sep--recall { background-color: var(--entrasol-green); }
+.game-item__sep--memorize { background-color: var(--entrasol-blue-light); }
+.game-item__num {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.2rem;
+  height: 1.6rem;
+  padding: 0 0.5rem;
+  border-radius: 50rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--entrasol-white);
+}
+.game-item__num--flip { background-color: var(--entrasol-blue-dark); }
+.game-item__num--recall { background-color: var(--entrasol-green); }
+.game-item__num--memorize { background-color: var(--entrasol-blue-light); color: var(--entrasol-blue-dark); }
+.game-item__name {
+  text-align: left;
+  font-weight: 700;
+  color: var(--entrasol-blue-dark);
+  font-size: 1.05rem;
+  line-height: 1.25;
+}
+
+
+/* ==========================================================================
+   Memory Flip (game-1) - semua kelas berprefix .flip-
+   ========================================================================== */
+
+.flip-page {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  max-width: var(--app-max-width);
+  margin: 0 auto;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 1rem 6rem;
+  background:
+    radial-gradient(ellipse at 50% 35%, #FFFFFF 0%, #FFFFF8 38%, transparent 75%),
+    radial-gradient(ellipse at 0% 75%, #E9F9D9 0%, transparent 55%),
+    linear-gradient(180deg, #F0F8F5 0%, #F5F8EC 45%, #DDF3F4 100%);
+  box-shadow: 0 0 40px rgba(20, 26, 140, 0.08);
+}
+
+.flip-page::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  pointer-events: none;
+  aspect-ratio: 390 / 120;
+  background: url('../assets/background-wave.svg') no-repeat bottom center / 100% 100%;
+}
+
+.flip-intro,
+.flip-game {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+.flip-intro[hidden],
+.flip-game[hidden],
+.flip-summary[hidden] { display: none; }
+
+.flip-eyebrow {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--entrasol-blue-dark);
+}
+
+.flip-title {
+  margin: 0 0 0.5rem;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--entrasol-blue-dark);
+}
+
+.flip-subtitle {
+  margin: 0 0 1.25rem;
+  font-size: 1rem;
+  color: var(--entrasol-blue-dark);
+  opacity: 0.85;
+}
+
+.flip-instruction {
+  width: 100%;
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  text-align: left;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--entrasol-blue-dark);
+  background-color: var(--entrasol-white);
+  border: 2px solid var(--entrasol-blue-dark);
+  border-radius: 1rem;
+  box-shadow: 0 4px 14px rgba(20, 26, 140, 0.08);
+}
+.flip-instruction p { margin: 0 0 0.75rem; }
+.flip-instruction p:last-child { margin-bottom: 0; }
+
+.flip-time-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  margin-bottom: 1.25rem;
+  padding: 0.25rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--entrasol-white);
+  background-color: var(--entrasol-blue-dark);
+  border-radius: 50rem;
+}
+
+/* HUD: timer + skor */
+.flip-hud {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: min(100%, calc(4 * 100px + 3 * 8px));
+  margin-bottom: 0.5rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--entrasol-blue-dark);
+}
+
+.flip-timer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3rem;
+  min-height: 44px;
+  padding: 0 0.9rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--entrasol-blue-dark);
+  background-color: var(--entrasol-white);
+  border: 2px solid var(--entrasol-blue-dark);
+  border-radius: 50rem;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.flip-timer--warning {
+  color: #D32F2F;
+  border-color: #D32F2F;
+}
+
+.flip-score { font-size: 1.15rem; }
+
+.flip-progress {
+  width: min(100%, calc(4 * 100px + 3 * 8px));
+  height: 10px;
+  margin-bottom: 1rem;
+  background-color: rgba(20, 26, 140, 0.12);
+  border-radius: 50rem;
+}
+.flip-progress .progress-bar {
+  width: 100%;
+  background-color: var(--entrasol-blue-dark);
+  transition: width 1s linear, background-color 0.2s ease;
+}
+
+/* Papan 4x4 */
+.flip-board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  width: min(100%, calc(4 * 100px + 3 * 8px));
+  margin: 0 auto;
+}
+
+.flip-card {
+  position: relative;
+  display: block;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(20, 26, 140, 0.18);
+  perspective: 600px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.flip-card:focus-visible {
+  outline: 3px solid var(--entrasol-blue-dark);
+  outline-offset: 2px;
+}
+
+.flip-card__inner {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  transform-style: preserve-3d;
+  transition: transform 0.3s;
+}
+
+.flip-card.is-open .flip-card__inner { transform: rotateY(180deg); }
+
+.flip-card__face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.flip-card__front { transform: rotateY(180deg); }
+
+.flip-card--matched {
+  box-shadow: 0 0 0 3px var(--entrasol-green), 0 3px 10px rgba(139, 195, 74, 0.55);
+}
+
+/* Ringkasan akhir */
+.flip-summary {
+  width: min(100%, calc(4 * 100px + 3 * 8px));
+  margin-top: 1rem;
+  padding: 1rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--entrasol-blue-dark);
+  background-color: var(--entrasol-white);
+  border: 2px solid var(--entrasol-green);
+  border-radius: 1rem;
+  box-shadow: 0 4px 14px rgba(20, 26, 140, 0.08);
+}
+.flip-summary h3 { margin: 0 0 0.25rem; font-size: 1.25rem; font-weight: 700; }
+.flip-summary p { margin: 0; }
+
+@media (min-width: 576px) {
+  .flip-page { padding: 2rem 1.5rem 7rem; }
+  .flip-title { font-size: 2.25rem; }
+}

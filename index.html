@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Entrasol</title>
+  <link rel="stylesheet" href="vendor/bootstrap/bootstrap.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main class="home-hero">
+
+
+    <div class="hero-content px-3 flex-grow-1 d-flex flex-column justify-content-center align-items-center text-center py-5">
+
+      <img src="assets/entrasol-text-blue.png" alt="Logo Entrasol" class="brand-logo mb-4">
+
+      <h1 class="game-title mb-2">Memory Challenge</h1>
+      <p class="game-subtitle mb-4">Hadapi 3 tantangan seru yang akan menguji daya ingat, fokus, dan ketelitianmu!</p>
+
+      <ul class="game-list list-unstyled w-100 mb-4">
+        <li class="game-item game-item--flip">
+          <img class="game-item__icon" src="assets/icon-game-1.svg" alt="Ikon Memory Flip">
+          <span class="game-item__sep game-item__sep--flip" aria-hidden="true"></span>
+          <span class="game-item__num game-item__num--flip">01</span>
+          <span class="game-item__name">Memory Flip</span>
+        </li>
+        <li class="game-item game-item--recall">
+          <img class="game-item__icon" src="assets/icon-game-2.svg" alt="Ikon Memory Recall">
+          <span class="game-item__sep game-item__sep--recall" aria-hidden="true"></span>
+          <span class="game-item__num game-item__num--recall">02</span>
+          <span class="game-item__name">Memory Recall</span>
+        </li>
+        <li class="game-item game-item--memorize">
+          <img class="game-item__icon" src="assets/icon-game-3.svg" alt="Ikon Memorize, Shuffle & Recall">
+          <span class="game-item__sep game-item__sep--memorize" aria-hidden="true"></span>
+          <span class="game-item__num game-item__num--memorize">03</span>
+          <span class="game-item__name">Memorize, Shuffle &amp; Recall</span>
+        </li>
+      </ul>
+
+      <button type="button" id="startBtn" class="btn btn-entrasol mb-4">Mulai Permainan</button>
+
+      <div class="d-flex flex-column align-items-center mt-2">
+        <small class="text-muted mb-2">Dipersembahkan oleh</small>
+        <img src="assets/logo-kalbe.png" alt="Logo Kalbe Nutritionals" class="footer-logo">
+      </div>
+
+    </div>
+  </main>
+
+  <script src="vendor/bootstrap/bootstrap.bundle.min.js"></script>
+  <script>
+    // Reset skor untuk sesi baru, lalu mulai dari game-1.
+    // Menggunakan key & skema yang sama dengan js/storage.js (nanti).
+    (function () {
+      var SCORE_KEY = 'entrasol_game_score';
+      var btn = document.getElementById('startBtn');
+      btn.addEventListener('click', function () {
+        var fresh = { memoryFlip: 0, memoryRecall: 0, memorize: 0, total: 0 };
+        try { localStorage.setItem(SCORE_KEY, JSON.stringify(fresh)); } catch (e) {}
+        window.location.href = 'game-1/index.html';
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 160 120">
+
+  <!-- Background -->
+  <rect width="160" height="120" rx="24"
+        fill="#EAF6E3"/>
+
+  <g transform="rotate(-9 80 60)">
+
+    <!-- Soft Shadow -->
+    <rect x="48" y="32" width="82" height="70"
+          rx="9" fill="#719B5D" opacity=".20"/>
+
+    <!-- Back Card 1 - Tilted Left -->
+    <g transform="rotate(-13 75 60)">
+      <rect x="35" y="19" width="82" height="70"
+            rx="9" fill="#B9D9A8"
+            stroke="#91BC7D" stroke-width="1.5"/>
+    </g>
+
+    <!-- Back Card 2 - Tilted Right -->
+    <g transform="rotate(12 85 60)">
+      <rect x="43" y="27" width="82" height="70"
+            rx="9" fill="#D5E9C9"
+            stroke="#A3C991" stroke-width="1.5"/>
+    </g>
+
+    <!-- Back Card 3 -->
+    <g transform="rotate(-5 80 60)">
+      <rect x="39" y="24" width="82" height="70"
+            rx="9" fill="#C5DDB7"
+            stroke="#A3C991" stroke-width="1.5"/>
+    </g>
+
+    <!-- Front Picture Card -->
+    <rect x="37" y="22" width="82" height="70"
+          rx="9" fill="#FFFFFF"
+          stroke="#12348D" stroke-width="4"/>
+
+    <!-- Picture -->
+    <circle cx="60" cy="44" r="8"
+            fill="#B6D957"/>
+
+    <path d="M43 78 L67 55 L82 68 L99 48 L115 78 Z"
+          fill="#8BC9E9"/>
+
+  </g>
+
+  <!-- Decorative Sparkles -->
+  <path d="M126 27 L137 16 M137 43 L150 35"
+        stroke="#62AE21" stroke-width="7"
+        stroke-linecap="round"/>
+
+</svg>
