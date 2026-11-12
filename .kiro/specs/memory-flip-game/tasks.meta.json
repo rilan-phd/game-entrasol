@@ -161,6 +161,174 @@
         "chatSessionId": "sess_fd75db32-e47f-4a05-897d-857374349c13",
         "timestamp": 1794359670274
       }
+    ],
+    "6.1 Tambah fungsi state game-1 di `js/storage.js`": [
+      {
+        "executionId": "689f5e20-87ce-4a83-8630-90d407b33faf",
+        "chatSessionId": "sess_fd75db32-e47f-4a05-897d-857374349c13",
+        "timestamp": 1794441720470
+      },
+      {
+        "executionId": "689f5e20-87ce-4a83-8630-90d407b33faf",
+        "chatSessionId": "sess_fd75db32-e47f-4a05-897d-857374349c13",
+        "timestamp": 1794441726966
+      },
+      {
+        "executionId": "689f5e20-87ce-4a83-8630-90d407b33faf",
+        "chatSessionId": "sess_fd75db32-e47f-4a05-897d-857374349c13",
+        "timestamp": 1794441824076
+      }
+    ],
+    "7.1 Tambah fungsi murni dan konstanta baru": [
+      {
+        "executionId": "689f5e20-87ce-4a83-8630-90d407b33faf",
+        "chatSessionId": "sess_fd75db32-e47f-4a05-897d-857374349c13",
+        "timestamp": 1794441720803
+      },
+      {
+        "executionId": "689f5e20-87ce-4a83-8630-90d407b33faf",
+        "chatSessionId": "sess_fd75db32-e47f-4a05-897d-857374349c13",
+        "timestamp": 1794441727808
+      },
+      {
+        "executionId": "689f5e20-87ce-4a83-8630-90d407b33faf",
+        "chatSessionId": "sess_fd75db32-e47f-4a05-897d-857374349c13",
+        "timestamp": 1794441824466
+      }
+    ],
+    "8.1 Ubah `game-1/index.html`": [
+      {
+        "executionId": "689f5e20-87ce-4a83-8630-90d407b33faf",
+        "chatSessionId": "sess_fd75db32-e47f-4a05-897d-857374349c13",
+        "timestamp": 1794441720935
+      },
+      {
+        "executionId": "689f5e20-87ce-4a83-8630-90d407b33faf",
+        "chatSessionId": "sess_fd75db32-e47f-4a05-897d-857374349c13",
+        "timestamp": 1794441728560
+      },
+      {
+        "executionId": "689f5e20-87ce-4a83-8630-90d407b33faf",
+        "chatSessionId": "sess_fd75db32-e47f-4a05-897d-857374349c13",
+        "timestamp": 1794441824968
+      }
+    ],
+    "8.2 Ubah `css/style.css`": [
+      {
+        "executionId": "689f5e20-87ce-4a83-8630-90d407b33faf",
+        "chatSessionId": "sess_fd75db32-e47f-4a05-897d-857374349c13",
+        "timestamp": 1794441721298
+      },
+      {
+        "executionId": "689f5e20-87ce-4a83-8630-90d407b33faf",
+        "chatSessionId": "sess_fd75db32-e47f-4a05-897d-857374349c13",
+        "timestamp": 1794441729363
+      },
+      {
+        "executionId": "689f5e20-87ce-4a83-8630-90d407b33faf",
+        "chatSessionId": "sess_fd75db32-e47f-4a05-897d-857374349c13",
+        "timestamp": 1794441825774
+      }
+    ],
+    "9.1 Tambah audio dan timer berbasis Deadline": [
+      {
+        "executionId": "689f5e20-87ce-4a83-8630-90d407b33faf",
+        "chatSessionId": "sess_fd75db32-e47f-4a05-897d-857374349c13",
+        "timestamp": 1794441721398
+      },
+      {
+        "executionId": "689f5e20-87ce-4a83-8630-90d407b33faf",
+        "chatSessionId": "sess_fd75db32-e47f-4a05-897d-857374349c13",
+        "timestamp": 1794441830707
+      },
+      {
+        "executionId": "689f5e20-87ce-4a83-8630-90d407b33faf",
+        "chatSessionId": "sess_fd75db32-e47f-4a05-897d-857374349c13",
+        "timestamp": 1794441894841
+      }
+    ],
+    "9.2 Implementasikan `init()` dengan restore, `finishGame`, dan Result_Screen": [
+      {
+        "executionId": "689f5e20-87ce-4a83-8630-90d407b33faf",
+        "chatSessionId": "sess_fd75db32-e47f-4a05-897d-857374349c13",
+        "timestamp": 1794441721738
+      },
+      {
+        "executionId": "689f5e20-87ce-4a83-8630-90d407b33faf",
+        "chatSessionId": "sess_fd75db32-e47f-4a05-897d-857374349c13",
+        "timestamp": 1794441912938
+      },
+      {
+        "executionId": "689f5e20-87ce-4a83-8630-90d407b33faf",
+        "chatSessionId": "sess_fd75db32-e47f-4a05-897d-857374349c13",
+        "timestamp": 1794442004766
+      }
+    ],
+    "10.1 Ubah `index.html` (Home)": [
+      {
+        "executionId": "689f5e20-87ce-4a83-8630-90d407b33faf",
+        "chatSessionId": "sess_fd75db32-e47f-4a05-897d-857374349c13",
+        "timestamp": 1794441721834
+      },
+      {
+        "executionId": "689f5e20-87ce-4a83-8630-90d407b33faf",
+        "chatSessionId": "sess_fd75db32-e47f-4a05-897d-857374349c13",
+        "timestamp": 1794441729968
+      },
+      {
+        "executionId": "689f5e20-87ce-4a83-8630-90d407b33faf",
+        "chatSessionId": "sess_fd75db32-e47f-4a05-897d-857374349c13",
+        "timestamp": 1794441826142
+      }
+    ],
+    "11. Checkpoint - Pastikan semuanya berjalan": [
+      {
+        "executionId": "689f5e20-87ce-4a83-8630-90d407b33faf",
+        "chatSessionId": "sess_fd75db32-e47f-4a05-897d-857374349c13",
+        "timestamp": 1794441722223
+      }
+    ],
+    "13. Final checkpoint - Pastikan semua tes lulus": [
+      {
+        "executionId": "689f5e20-87ce-4a83-8630-90d407b33faf",
+        "chatSessionId": "sess_fd75db32-e47f-4a05-897d-857374349c13",
+        "timestamp": 1794441722318
+      }
+    ],
+    "6. Perluas `js/storage.js` untuk Game_Session_State game-1": [
+      {
+        "executionId": "689f5e20-87ce-4a83-8630-90d407b33faf",
+        "chatSessionId": "sess_fd75db32-e47f-4a05-897d-857374349c13",
+        "timestamp": 1794441824144
+      }
+    ],
+    "7. Tambah fungsi murni revisi di `game-1/game.js`": [
+      {
+        "executionId": "689f5e20-87ce-4a83-8630-90d407b33faf",
+        "chatSessionId": "sess_fd75db32-e47f-4a05-897d-857374349c13",
+        "timestamp": 1794441824557
+      }
+    ],
+    "8. Perbarui markup dan gaya untuk Game_Screen dan Result_Screen": [
+      {
+        "executionId": "689f5e20-87ce-4a83-8630-90d407b33faf",
+        "chatSessionId": "sess_fd75db32-e47f-4a05-897d-857374349c13",
+        "timestamp": 1794441825830
+      }
+    ],
+    "10. Perbarui Home agar memakai helper storage": [
+      {
+        "executionId": "689f5e20-87ce-4a83-8630-90d407b33faf",
+        "chatSessionId": "sess_fd75db32-e47f-4a05-897d-857374349c13",
+        "timestamp": 1794441826563
+      }
+    ],
+    "9. Refaktor lapisan DOM, timer, audio, dan persistensi di `game-1/game.js`": [
+      {
+        "executionId": "689f5e20-87ce-4a83-8630-90d407b33faf",
+        "chatSessionId": "sess_fd75db32-e47f-4a05-897d-857374349c13",
+        "timestamp": 1794442004843
+      }
     ]
   }
 }

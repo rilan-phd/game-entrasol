@@ -6,7 +6,12 @@
  *   2. Fungsi murni (tanpa DOM, tanpa localStorage; aman dimuat di Node)
  *   3. State game
  *   4. Ekspos (MemoryFlipLogic + module.exports)
- *   5. Lapisan DOM/timer (dilengkapi pada task 4.1)
+ *   5. Lapisan DOM/timer: init (restore sesi: intro/playing/result),
+ *      startGame, tick, finishGame, showResult
+ *
+ * Tiga tampilan dalam satu halaman: Intro_Screen, Game_Screen, Result_Screen.
+ * Selesai main menampilkan Result_Screen; pindah ke game berikutnya hanya
+ * saat tombol "Lanjutkan" diklik. Tanpa history.pushState.
  */
 
 /* ------------------------------------------------------------------ */
@@ -16,7 +21,8 @@ const TOTAL_PAIRS = 8;
 const GAME_SECONDS = 30;
 const POINTS_PER_PAIR = 5;
 const MISMATCH_DELAY_MS = 800;
-const SUMMARY_DELAY_MS = 2000;
+const TICK_INTERVAL_MS = 250;
+const COUNTDOWN_AT = 3;
 const WARNING_THRESHOLD = 10;
 const NEXT_PAGE = '../game-2/index.html';
 
@@ -80,6 +86,62 @@ function canFlip(gameState, idx) {
   return openCount < 2;
 }
 
+/** Sisa detik dari deadline absolut: clamp(ceil((deadline - now) / 1000), 0, 30). */
+function remainingSeconds(deadline, now) {
+  const secs = Math.ceil((deadline - now) / 1000);
+  if (!Number.isFinite(secs)) return 0;
+  return Math.max(0, Math.min(GAME_SECONDS, secs));
+}
+
+/** True bila hitung mundur melintasi 3 dari atas (prev > 3, 1 <= next <= 3). */
+function shouldPlayCountdown(prev, next) {
+  return prev > COUNTDOWN_AT && next <= COUNTDOWN_AT && next >= 1;
+}
+
+/** Bentuk Game_Session_State: dek -> 16 angka item, 'open' -> 'closed'. */
+function serializeState(gameState, phase) {
+  const deck = (gameState.deck || []).map((c) => (typeof c === 'object' && c !== null ? c.item : c));
+  const cardStatus = (gameState.cardStatus || []).map((s) => (s === 'open' ? 'closed' : s));
+  return {
+    phase,
+    deck,
+    cardStatus,
+    pairsFound: gameState.pairsFound,
+    deadline: gameState.deadline,
+    score: calcScore(gameState.pairsFound)
+  };
+}
+
+/** Tentukan mode boot dari state tersimpan. Murni: tanpa storage/DOM. */
+function restoreState(saved, now) {
+  if (!saved) return { mode: 'intro' };
+  if (saved.phase === 'finished') {
+    return {
+      mode: 'result',
+      score: calcScore(saved.pairsFound),
+      pairsFound: saved.pairsFound,
+      needsFinalize: false
+    };
+  }
+  if (now >= saved.deadline) {
+    return {
+      mode: 'result',
+      score: calcScore(saved.pairsFound),
+      pairsFound: saved.pairsFound,
+      needsFinalize: true
+    };
+  }
+  return {
+    mode: 'playing',
+    deck: saved.deck,
+    cardStatus: saved.cardStatus,
+    pairsFound: saved.pairsFound,
+    deadline: saved.deadline,
+    secondsLeft: remainingSeconds(saved.deadline, now),
+    score: calcScore(saved.pairsFound)
+  };
+}
+
 /* ------------------------------------------------------------------ */
 /* 3. State game                                                       */
 /* ------------------------------------------------------------------ */
@@ -89,7 +151,9 @@ const state = {
   cardStatus: [],        // per indeks: 'closed' | 'open' | 'matched'
   openIdx: [],           // indeks kartu terbuka yang belum dievaluasi (0..2)
   pairsFound: 0,
+  deadline: 0,           // timestamp ms absolut
   secondsLeft: GAME_SECONDS,
+  countdownPlayed: false,
   timerId: null,
   mismatchTimeoutId: null,
   finished: false        // penjaga satu kali simpan + navigasi
@@ -103,7 +167,8 @@ const MemoryFlipLogic = {
   GAME_SECONDS,
   POINTS_PER_PAIR,
   MISMATCH_DELAY_MS,
-  SUMMARY_DELAY_MS,
+  TICK_INTERVAL_MS,
+  COUNTDOWN_AT,
   WARNING_THRESHOLD,
   NEXT_PAGE,
   buildDeck,
@@ -112,6 +177,10 @@ const MemoryFlipLogic = {
   calcScore,
   timerLevel,
   canFlip,
+  remainingSeconds,
+  shouldPlayCountdown,
+  serializeState,
+  restoreState,
   state
 };
 
@@ -123,6 +192,56 @@ if (typeof module !== 'undefined' && module.exports) {
 /* 5. Lapisan DOM/timer                                                */
 /* ------------------------------------------------------------------ */
 const dom = {};
+
+/* Audio: bila konstruktor Audio tidak ada (mis. Node), sounds kosong. */
+const sounds = (function createSounds() {
+  const result = {};
+  if (typeof Audio === 'undefined') return result;
+  ['flip', 'match', 'wrong', 'countdown'].forEach((name) => {
+    try {
+      const audio = new Audio('assets/audio/' + name + '.mp3');
+      audio.preload = 'auto';
+      result[name] = audio;
+    } catch (e) {
+      // Gagal membuat satu audio tidak boleh mengganggu permainan.
+    }
+  });
+  return result;
+})();
+
+/** Putar dari awal. Tidak pernah melempar. */
+function playSound(name) {
+  try {
+    const audio = sounds[name];
+    if (!audio) return;
+    audio.currentTime = 0;
+    const p = audio.play();
+    if (p && typeof p.catch === 'function') p.catch(() => {});
+  } catch (e) {
+    // Abaikan: autoplay diblokir atau berkas gagal dimuat.
+  }
+}
+
+/** Hentikan dan kembalikan ke awal. Tidak pernah melempar. */
+function stopSound(name) {
+  try {
+    const audio = sounds[name];
+    if (!audio) return;
+    audio.pause();
+    audio.currentTime = 0;
+  } catch (e) {
+    // Abaikan.
+  }
+}
+
+/** Simpan Game_Session_State fase 'playing'. Tidak pernah melempar. */
+function persistPlaying() {
+  try {
+    saveGame1State(serializeState(state, 'playing'));
+  } catch (e) {
+    // Kegagalan penyimpanan tidak boleh mengganggu permainan.
+  }
+}
 
 function renderTimer() {
   if (!dom.timerText) return;
@@ -188,17 +307,89 @@ function renderBoard() {
   }
 }
 
+/** Tampilkan Result_Screen (halaman yang sama, tanpa pushState). */
+function showResult(score) {
+  if (dom.resultScore) dom.resultScore.textContent = String(score);
+  if (dom.introScreen) dom.introScreen.hidden = true;
+  if (dom.gameScreen) dom.gameScreen.hidden = true;
+  if (dom.resultScreen) dom.resultScreen.hidden = false;
+}
+
 function init() {
   dom.introScreen = document.getElementById('introScreen');
   dom.gameScreen = document.getElementById('gameScreen');
+  dom.resultScreen = document.getElementById('resultScreen');
   dom.startBtn = document.getElementById('startBtn');
+  dom.continueBtn = document.getElementById('continueBtn');
   dom.timerText = document.getElementById('timerText');
   dom.scoreText = document.getElementById('scoreText');
   dom.timerBar = document.getElementById('timerBar');
   dom.board = document.getElementById('board');
-  dom.summary = document.getElementById('summary');
+  dom.resultScore = document.getElementById('resultScore');
   if (!dom.startBtn || !dom.board) return;
 
+  if (dom.continueBtn) {
+    dom.continueBtn.addEventListener('click', () => navigateTo(NEXT_PAGE));
+  }
+
+  let restored;
+  try {
+    restored = restoreState(loadGame1State(), Date.now());
+  } catch (e) {
+    restored = { mode: 'intro' };
+  }
+
+  if (restored.mode === 'playing') {
+    state.deck = restored.deck.map((item, i) => ({ id: i, item }));
+    state.cardStatus = restored.cardStatus.slice();
+    state.openIdx = [];
+    state.pairsFound = restored.pairsFound;
+    state.deadline = restored.deadline;
+    state.secondsLeft = restored.secondsLeft;
+    state.countdownPlayed = restored.secondsLeft <= COUNTDOWN_AT;
+    state.finished = false;
+    state.phase = 'playing';
+    renderBoard();
+    renderScore();
+    renderTimer();
+    dom.introScreen.hidden = true;
+    dom.resultScreen.hidden = true;
+    dom.gameScreen.hidden = false;
+    startTimer();
+    return;
+  }
+
+  if (restored.mode === 'result') {
+    if (restored.needsFinalize) {
+      // Deadline lewat saat halaman tertutup: finalisasi sekali.
+      try {
+        saveGameScore('memoryFlip', restored.score);
+      } catch (e) {
+        // Diabaikan.
+      }
+      try {
+        const saved = loadGame1State();
+        if (saved) {
+          saveGame1State({
+            phase: 'finished',
+            deck: saved.deck,
+            cardStatus: saved.cardStatus,
+            pairsFound: saved.pairsFound,
+            deadline: saved.deadline,
+            score: restored.score
+          });
+        }
+      } catch (e) {
+        // Diabaikan.
+      }
+    }
+    state.finished = true;
+    state.phase = 'finished';
+    showResult(restored.score);
+    return;
+  }
+
+  // Mode intro.
   state.cardStatus = new Array(TOTAL_PAIRS * 2).fill('closed');
   renderBoard();   // papan tertutup; klik diabaikan karena phase 'intro'
   renderTimer();
@@ -216,6 +407,8 @@ function startGame() {
   state.pairsFound = 0;
   state.secondsLeft = GAME_SECONDS;
   state.finished = false;
+  state.deadline = Date.now() + GAME_SECONDS * 1000;
+  state.countdownPlayed = false;
 
   renderBoard();
   renderScore();
@@ -225,7 +418,14 @@ function startGame() {
   dom.gameScreen.hidden = false;
 
   state.phase = 'playing';
-  state.timerId = setInterval(tick, 1000);
+  persistPlaying();
+  startTimer();
+}
+
+function startTimer() {
+  if (state.timerId !== null) clearInterval(state.timerId);
+  state.timerId = setInterval(tick, TICK_INTERVAL_MS);
+  tick(); // sinkronkan tampilan di awal
 }
 
 function onCardClick(idx) {
@@ -234,6 +434,7 @@ function onCardClick(idx) {
   state.cardStatus[idx] = 'open';
   state.openIdx.push(idx);
   renderCard(idx);
+  playSound('flip');
   if (state.openIdx.length < 2) return;
 
   const first = state.openIdx[0];
@@ -246,8 +447,11 @@ function onCardClick(idx) {
     renderCard(first);
     renderCard(second);
     renderScore();
+    playSound('match');
+    persistPlaying();
     if (state.pairsFound === TOTAL_PAIRS) finishGame('complete');
   } else {
+    playSound('wrong');
     state.phase = 'locked';
     state.mismatchTimeoutId = setTimeout(() => {
       state.mismatchTimeoutId = null;
@@ -264,15 +468,23 @@ function onCardClick(idx) {
 
 function tick() {
   if (state.finished) return;
-  state.secondsLeft = Math.max(0, state.secondsLeft - 1);
+  const next = remainingSeconds(state.deadline, Date.now());
+  if (next === state.secondsLeft) return;
+  const prev = state.secondsLeft;
+  state.secondsLeft = next;
   renderTimer();
-  if (state.secondsLeft === 0) finishGame('timeout');
+  if (!state.countdownPlayed && shouldPlayCountdown(prev, next)) {
+    playSound('countdown');
+    state.countdownPlayed = true;
+  }
+  if (next === 0) finishGame('timeout');
 }
 
 function finishGame(reason) {
   if (state.finished) return;
   state.finished = true;
   state.phase = 'finished';
+  stopSound('countdown');
 
   if (state.timerId !== null) {
     clearInterval(state.timerId);
@@ -296,20 +508,15 @@ function finishGame(reason) {
   try {
     saveGameScore('memoryFlip', score);
   } catch (e) {
-    // Kegagalan penyimpanan tidak boleh menghalangi ringkasan dan navigasi.
+    // Kegagalan penyimpanan tidak boleh menghalangi Result_Screen.
+  }
+  try {
+    saveGame1State(serializeState(state, 'finished'));
+  } catch (e) {
+    // Hasil diabaikan.
   }
 
-  if (dom.summary) {
-    dom.summary.querySelectorAll('.flip-summary__detail').forEach((el) => el.remove());
-    const detail = document.createElement('p');
-    detail.className = 'flip-summary__detail';
-    detail.textContent = (reason === 'complete' ? 'Semua pasangan ditemukan! ' : 'Waktu habis. ')
-      + 'Pasangan: ' + state.pairsFound + ' dari ' + TOTAL_PAIRS + '. Skor: ' + score + ' point.';
-    dom.summary.appendChild(detail);
-    dom.summary.hidden = false;
-  }
-
-  setTimeout(() => navigateTo(NEXT_PAGE), SUMMARY_DELAY_MS);
+  showResult(score);
 }
 
 // Jalankan hanya di browser; aman dimuat di Node tanpa DOM.

@@ -50,15 +50,20 @@
   </main>
 
   <script src="vendor/bootstrap/bootstrap.bundle.min.js"></script>
+  <script src="js/storage.js"></script>
   <script>
-    // Reset skor untuk sesi baru, lalu mulai dari game-1.
-    // Menggunakan key & skema yang sama dengan js/storage.js (nanti).
+    // Sesi baru (tidak ada state game-1): reset skor. Bila state ada
+    // (playing/finished), lanjut tanpa reset agar game tidak bisa diulang.
     (function () {
-      var SCORE_KEY = 'entrasol_game_score';
       var btn = document.getElementById('startBtn');
       btn.addEventListener('click', function () {
-        var fresh = { memoryFlip: 0, memoryRecall: 0, memorize: 0, total: 0 };
-        try { localStorage.setItem(SCORE_KEY, JSON.stringify(fresh)); } catch (e) {}
+        var state = null;
+        try {
+          if (typeof loadGame1State === 'function') state = loadGame1State();
+        } catch (e) { state = null; }
+        if (state === null || state === undefined) {
+          try { resetScore(); } catch (e) {}
+        }
         window.location.href = 'game-1/index.html';
       });
     })();

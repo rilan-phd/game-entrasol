@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -7,23 +7,25 @@
   <link rel="stylesheet" href="../vendor/bootstrap/bootstrap.min.css">
   <link rel="stylesheet" href="../css/style.css">
 </head>
-<body>
+<body class="flip-body">
   <main class="flip-page">
 
     <section id="introScreen" class="flip-intro">
       <p class="flip-eyebrow">GAME 01</p>
+      <img class="flip-icon" src="../assets/icon-game-1.svg" alt="Ikon game Memory Flip">
       <h1 class="flip-title">Memory Flip</h1>
       <p class="flip-subtitle">Tantangan ini akan menguji daya ingatmu.</p>
       <div class="flip-instruction">
+        <h2 class="flip-instruction__title">Cara Bermain</h2>
         <p>Pada layar akan terdapat 16 kartu tertutup. Temukan 8 pasangan gambar yang identik sebelum waktu habis.</p>
         <p>Setiap detik berharga. Buka kartu, ingat posisinya, dan temukan pasangannya!</p>
+        <div class="alert flip-time-alert" role="note">Waktu bermain: 30 detik</div>
       </div>
-      <span class="flip-time-badge">30 detik</span>
       <button type="button" id="startBtn" class="btn btn-entrasol">Start</button>
     </section>
 
     <section id="gameScreen" class="flip-game" hidden>
-      <h2 class="visually-hidden">Papan Permainan</h2>
+      <h2 class="flip-game-title">Memory Flip</h2>
       <div class="flip-hud">
         <span id="timerText" class="flip-timer" aria-live="off">30</span>
         <span class="flip-score">Skor: <span id="scoreText">0</span></span>
@@ -32,9 +34,16 @@
         <div id="timerBar" class="progress-bar"></div>
       </div>
       <div id="board" class="flip-board"></div>
-      <div id="summary" class="flip-summary" hidden role="status">
-        <h3 class="flip-summary__title">Hasil Memory Flip</h3>
-      </div>
+    </section>
+
+    <section id="resultScreen" class="flip-result" hidden>
+      <h2 class="flip-result__title">Memory Flip</h2>
+      <p class="flip-result__score">
+        <span id="resultScore" class="flip-result__number">0</span>
+        <span class="flip-result__unit">point</span>
+        <span class="flip-result__max">dari 40</span>
+      </p>
+      <button type="button" id="continueBtn" class="btn btn-entrasol">Lanjutkan</button>
     </section>
 
   </main>
