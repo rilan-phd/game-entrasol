@@ -1,4 +1,4 @@
-﻿/* Entrasol Game - style.css */
+/* Entrasol Game - style.css */
 
 @font-face {
   font-family: 'Noto Sans';
@@ -447,4 +447,151 @@ body.flip-body { background-color: rgba(20, 26, 140, 0.15); }
 @media (min-width: 576px) {
   .flip-page { padding: 2rem 1.5rem 7rem; }
   .flip-title { font-size: 2.25rem; }
+}
+
+/* ==========================================================================
+   Spasi halaman utama (menggantikan utility Bootstrap agar bisa diatur per tinggi layar)
+   ========================================================================== */
+.hero-content {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 3rem 1rem;
+}
+.brand-logo { margin-bottom: 1.5rem; object-fit: contain; }
+.game-title { margin: 0 0 0.5rem; }
+.game-subtitle { margin: 0 0 1.5rem; }
+.game-list { width: 100%; margin: 0 auto 1.5rem; }
+.hero-start { margin-bottom: 1.5rem; }
+.hero-footer { display: flex; flex-direction: column; align-items: center; margin-top: 0.5rem; }
+.hero-footer__label { margin-bottom: 0.5rem; font-size: 0.875rem; color: var(--bs-secondary-color, #6c757d); }
+
+/* ==========================================================================
+   Fit-to-viewport: tinggi layar >= 550px tidak ada scroll vertikal (memakai dvh).
+   Di bawah 550px, halaman tetap boleh scroll vertikal seperti biasa.
+   --dvh = 1dvh, fallback 1vh untuk browser yang belum mendukung dvh.
+   ========================================================================== */
+:root { --dvh: 1vh; }
+@supports (height: 100dvh) {
+  :root { --dvh: 1dvh; }
+}
+
+@media (min-height: 550px) {
+  html, body { height: 100%; overflow: hidden; }
+
+  /* Container setinggi layar. overflow-y: auto hanya jaring pengaman untuk layar sangat sempit. */
+  .home-hero,
+  .flip-page {
+    height: calc(100 * var(--dvh));
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .btn-entrasol {
+    padding-top: clamp(0.45rem, calc(1.3 * var(--dvh)), 0.75rem);
+    padding-bottom: clamp(0.45rem, calc(1.3 * var(--dvh)), 0.75rem);
+  }
+
+  /* ---- Halaman utama (index) ---- */
+  .hero-content {
+    justify-content: center;
+    justify-content: safe center;
+    padding: calc(2 * var(--dvh)) 1rem;
+  }
+  .brand-logo {
+    width: auto;
+    max-width: 100%;
+    height: clamp(52px, calc(10.5 * var(--dvh)), 110px);
+    margin-bottom: calc(1.2 * var(--dvh));
+  }
+  .game-title {
+    font-size: clamp(1.375rem, calc(4.2 * var(--dvh)), 2rem);
+    margin-bottom: calc(0.8 * var(--dvh));
+  }
+  .game-subtitle {
+    font-size: clamp(0.8125rem, calc(2.1 * var(--dvh)), 1rem);
+    line-height: 1.35;
+    margin-bottom: calc(1.8 * var(--dvh));
+  }
+  .game-list {
+    gap: clamp(6px, calc(1.4 * var(--dvh)), 12px);
+    margin-bottom: calc(1.8 * var(--dvh));
+  }
+  .game-item { height: clamp(56px, calc(11.5 * var(--dvh)), 90px); }
+  .game-item__name { font-size: clamp(0.9rem, calc(2.4 * var(--dvh)), 1.05rem); }
+  .hero-start { margin-bottom: calc(1.8 * var(--dvh)); }
+  .hero-footer { margin-top: 0; }
+  .hero-footer__label { margin-bottom: calc(0.6 * var(--dvh)); font-size: 0.75rem; }
+  .footer-logo {
+    width: auto;
+    max-width: 75%;
+    height: clamp(30px, calc(6.5 * var(--dvh)), 68px);
+  }
+
+  /* ---- Game 1 (Memory Flip): tiga layar berbagi tinggi yang sama ---- */
+  .flip-page { padding: calc(2 * var(--dvh)) 1rem; }
+  .flip-intro,
+  .flip-game,
+  .flip-result {
+    flex: 1 1 auto;
+    min-height: 0;
+    justify-content: center;
+    justify-content: safe center;
+  }
+
+  /* Intro */
+  .flip-eyebrow { font-size: clamp(0.8125rem, calc(2 * var(--dvh)), 1rem); }
+  .flip-icon {
+    width: auto;
+    max-width: 60%;
+    height: clamp(48px, calc(11 * var(--dvh)), 120px);
+    margin: 0 0 calc(1.2 * var(--dvh));
+    object-fit: contain;
+  }
+  .flip-title {
+    font-size: clamp(1.375rem, calc(4.2 * var(--dvh)), 2rem);
+    margin-bottom: calc(0.8 * var(--dvh));
+  }
+  .flip-subtitle {
+    font-size: clamp(0.8125rem, calc(2.1 * var(--dvh)), 1rem);
+    margin-bottom: calc(1.5 * var(--dvh));
+  }
+  .flip-instruction {
+    margin-bottom: calc(1.8 * var(--dvh));
+    padding: clamp(0.6rem, calc(1.8 * var(--dvh)), 1rem);
+    font-size: clamp(0.8125rem, calc(2 * var(--dvh)), 1rem);
+    line-height: 1.4;
+  }
+  .flip-instruction p { margin-bottom: 0.5rem; }
+  .flip-instruction__title {
+    font-size: clamp(1rem, calc(2.8 * var(--dvh)), 1.25rem);
+    margin-bottom: 0.5rem;
+  }
+  .flip-time-alert {
+    margin-top: calc(1.2 * var(--dvh));
+    padding: 0.5rem 0.75rem;
+    font-size: clamp(0.8125rem, calc(2 * var(--dvh)), 1rem);
+  }
+
+  /* Permainan: lebar papan dibatasi tinggi layar supaya papan 4x4 + HUD selalu muat */
+  .flip-game {
+    --flip-board-w: min(100%, 424px, calc(100 * var(--dvh) - 160px));
+    padding: 0 0.75rem;
+  }
+  .flip-game-title {
+    font-size: clamp(1.2rem, calc(3.4 * var(--dvh)), 1.5rem);
+    margin-bottom: calc(1 * var(--dvh));
+  }
+  .flip-hud { width: var(--flip-board-w); margin-bottom: calc(0.8 * var(--dvh)); }
+  .flip-timer { min-height: clamp(36px, calc(6 * var(--dvh)), 44px); }
+  .flip-progress { width: var(--flip-board-w); margin-bottom: calc(1.4 * var(--dvh)); }
+  .flip-board { width: var(--flip-board-w); }
+
+  /* Hasil */
+  .flip-result { gap: calc(2 * var(--dvh)); padding: 0 1rem; }
+  .flip-result__number { font-size: clamp(3rem, calc(10 * var(--dvh)), 4.5rem); }
 }

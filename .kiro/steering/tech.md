@@ -50,9 +50,9 @@ Aturan teknis di bawah ini **wajib dipatuhi** saat mengimplementasikan aplikasi.
 - **Skema objek skor** yang disarankan (disimpan sebagai JSON string):
   ```js
   {
-    memoryFlip: 0,    // skor game1 (0 - 40)
-    memoryRecall: 0,  // skor game2 (0 atau 30)
-    memorize: 0,      // skor game3 (0 - 30, kelipatan 10)
+    memoryFlip: 0,    // skor game-1 (0 - 40)
+    memoryRecall: 0,  // skor game-2 (0 atau 30)
+    memorize: 0,      // skor game-3 (0 - 30, kelipatan 10)
     total: 0          // akumulasi (0 - 100)
   }
   ```
@@ -66,7 +66,8 @@ Aturan teknis di bawah ini **wajib dipatuhi** saat mengimplementasikan aplikasi.
 ## Navigasi Antar Halaman
 
 - Aplikasi bersifat **multi-page HTML** — setiap halaman adalah file `.html` terpisah.
-- Perpindahan halaman menggunakan navigasi browser biasa (mis. `window.location.href = '../game2/index.html'`).
+- Perpindahan halaman menggunakan navigasi browser biasa (mis. `window.location.href = '../game-2/index.html'`).
+- Perpindahan dari satu game ke halaman berikutnya hanya dipicu tombol "Lanjutkan" di layar hasil. Timer habis atau game selesai TIDAK boleh memicu redirect otomatis.
 - State antar halaman dipertahankan lewat LocalStorage, bukan lewat variabel in-memory (karena berpindah halaman me-reset JS runtime).
 
 ## Catatan Kompatibilitas
