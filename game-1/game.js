@@ -22,7 +22,7 @@ const GAME_SECONDS = 30;
 const POINTS_PER_PAIR = 5;
 const MISMATCH_DELAY_MS = 800;
 const TICK_INTERVAL_MS = 250;
-const COUNTDOWN_AT = 3;
+const PRE_COUNTDOWN_SECONDS = 3;
 const WARNING_THRESHOLD = 10;
 const NEXT_PAGE = '../game-2/index.html';
 
@@ -93,9 +93,17 @@ function remainingSeconds(deadline, now) {
   return Math.max(0, Math.min(GAME_SECONDS, secs));
 }
 
-/** True bila hitung mundur melintasi 3 dari atas (prev > 3, 1 <= next <= 3). */
-function shouldPlayCountdown(prev, next) {
-  return prev > COUNTDOWN_AT && next <= COUNTDOWN_AT && next >= 1;
+/**
+ * Angka hitung mundur pra-game dari waktu berlalu (ms):
+ * <1000 -> 3, <2000 -> 2, <3000 -> 1, >=3000 -> 0 (selesai).
+ * Negatif atau non-finite -> 3.
+ */
+function countdownNumber(elapsedMs) {
+  if (!Number.isFinite(elapsedMs) || elapsedMs < 0) return PRE_COUNTDOWN_SECONDS;
+  if (elapsedMs < 1000) return 3;
+  if (elapsedMs < 2000) return 2;
+  if (elapsedMs < 3000) return 1;
+  return 0;
 }
 
 /** Bentuk Game_Session_State: dek -> 16 angka item, 'open' -> 'closed'. */
@@ -146,15 +154,15 @@ function restoreState(saved, now) {
 /* 3. State game                                                       */
 /* ------------------------------------------------------------------ */
 const state = {
-  phase: 'intro',        // 'intro' | 'playing' | 'locked' | 'finished'
+  phase: 'intro',        // 'intro' | 'countdown' | 'playing' | 'locked' | 'finished'
   deck: [],              // hasil shuffle(buildDeck())
   cardStatus: [],        // per indeks: 'closed' | 'open' | 'matched'
   openIdx: [],           // indeks kartu terbuka yang belum dievaluasi (0..2)
   pairsFound: 0,
   deadline: 0,           // timestamp ms absolut
   secondsLeft: GAME_SECONDS,
-  countdownPlayed: false,
   timerId: null,
+  countdownId: null,
   mismatchTimeoutId: null,
   finished: false        // penjaga satu kali simpan + navigasi
 };
@@ -168,7 +176,7 @@ const MemoryFlipLogic = {
   POINTS_PER_PAIR,
   MISMATCH_DELAY_MS,
   TICK_INTERVAL_MS,
-  COUNTDOWN_AT,
+  PRE_COUNTDOWN_SECONDS,
   WARNING_THRESHOLD,
   NEXT_PAGE,
   buildDeck,
@@ -178,7 +186,7 @@ const MemoryFlipLogic = {
   timerLevel,
   canFlip,
   remainingSeconds,
-  shouldPlayCountdown,
+  countdownNumber,
   serializeState,
   restoreState,
   state
@@ -326,6 +334,8 @@ function init() {
   dom.timerBar = document.getElementById('timerBar');
   dom.board = document.getElementById('board');
   dom.resultScore = document.getElementById('resultScore');
+  dom.countdownScreen = document.getElementById('countdownScreen');
+  dom.countdownNumber = document.getElementById('countdownNumber');
   if (!dom.startBtn || !dom.board) return;
 
   if (dom.continueBtn) {
@@ -346,7 +356,6 @@ function init() {
     state.pairsFound = restored.pairsFound;
     state.deadline = restored.deadline;
     state.secondsLeft = restored.secondsLeft;
-    state.countdownPlayed = restored.secondsLeft <= COUNTDOWN_AT;
     state.finished = false;
     state.phase = 'playing';
     renderBoard();
@@ -394,12 +403,55 @@ function init() {
   renderBoard();   // papan tertutup; klik diabaikan karena phase 'intro'
   renderTimer();
   renderScore();
-  dom.startBtn.addEventListener('click', startGame);
+  dom.startBtn.addEventListener('click', beginCountdown);
+  window.addEventListener('pagehide', cancelCountdown);
 }
 
-function startGame() {
+/** Tahap 1: hitung mundur 3 detik di overlay. Tidak menyimpan state, tidak memulai Timer. */
+function beginCountdown() {
   if (state.phase !== 'intro') return;
   dom.startBtn.disabled = true;
+  state.phase = 'countdown';
+
+  // Tampilkan Game_Screen (papan tertutup, timer belum jalan) di belakang overlay.
+  dom.introScreen.hidden = true;
+  dom.gameScreen.hidden = false;
+
+  let shown = PRE_COUNTDOWN_SECONDS;
+  if (dom.countdownNumber) dom.countdownNumber.textContent = String(shown);
+  if (dom.countdownScreen) dom.countdownScreen.hidden = false;
+  playSound('countdown');
+
+  const t0 = Date.now();
+  if (state.countdownId !== null) clearInterval(state.countdownId);
+  state.countdownId = setInterval(() => {
+    const n = countdownNumber(Date.now() - t0);
+    if (n === 0) {
+      clearInterval(state.countdownId);
+      state.countdownId = null;
+      if (dom.countdownScreen) dom.countdownScreen.hidden = true;
+      startGame();
+      return;
+    }
+    if (n !== shown) {
+      shown = n;
+      if (dom.countdownNumber) dom.countdownNumber.textContent = String(n);
+    }
+  }, TICK_INTERVAL_MS);
+}
+
+/** Batalkan hitung mundur (pagehide): tanpa state tersimpan, sesi berikutnya mulai dari intro. */
+function cancelCountdown() {
+  if (state.countdownId !== null) {
+    clearInterval(state.countdownId);
+    state.countdownId = null;
+  }
+  stopSound('countdown');
+}
+
+/** Tahap 2: mulai permainan setelah hitung mundur selesai. */
+function startGame() {
+  if (state.phase !== 'countdown') return;
 
   state.deck = shuffle(buildDeck());
   state.cardStatus = new Array(TOTAL_PAIRS * 2).fill('closed');
@@ -408,7 +460,6 @@ function startGame() {
   state.secondsLeft = GAME_SECONDS;
   state.finished = false;
   state.deadline = Date.now() + GAME_SECONDS * 1000;
-  state.countdownPlayed = false;
 
   renderBoard();
   renderScore();
@@ -470,13 +521,8 @@ function tick() {
   if (state.finished) return;
   const next = remainingSeconds(state.deadline, Date.now());
   if (next === state.secondsLeft) return;
-  const prev = state.secondsLeft;
   state.secondsLeft = next;
   renderTimer();
-  if (!state.countdownPlayed && shouldPlayCountdown(prev, next)) {
-    playSound('countdown');
-    state.countdownPlayed = true;
-  }
   if (next === 0) finishGame('timeout');
 }
 
@@ -484,7 +530,6 @@ function finishGame(reason) {
   if (state.finished) return;
   state.finished = true;
   state.phase = 'finished';
-  stopSound('countdown');
 
   if (state.timerId !== null) {
     clearInterval(state.timerId);

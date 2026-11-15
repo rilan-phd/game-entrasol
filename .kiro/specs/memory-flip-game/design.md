@@ -2,18 +2,22 @@
 
 ## Overview
 
-Memory Flip adalah game pertama dari rangkaian tiga mini-game Entrasol. Halaman `game-1/index.html` berisi **tiga tampilan dalam satu file**, dan hanya satu yang terlihat pada satu waktu:
+Memory Flip adalah game pertama dari rangkaian tiga mini-game Entrasol. Halaman `game-1/index.html` berisi **tiga tampilan utama dalam satu file** (hanya satu yang terlihat pada satu waktu) ditambah satu overlay sementara, Countdown_Screen, yang tampil di depan Game_Screen:
 
 - **Intro_Screen** (`#introScreen`): teks "GAME 01", ikon game, judul, sub judul, box petunjuk berisi alert waktu 30 detik, tombol Start.
+- **Countdown_Screen** (`#countdownScreen`): overlay penuh di dalam `main.flip-page` yang menutupi Game_Screen (papan tertutup, Timer 30 belum berjalan) selama 3 detik setelah Start ditekan, menampilkan "Bersiap..." dan angka besar 3, 2, 1. Tidak memakai heading dan tidak pernah disimpan sebagai sesi.
 - **Game_Screen** (`#gameScreen`): judul terlihat "Memory Flip", timer, skor berjalan, progress bar, papan kartu 4×4.
 - **Result_Screen** (`#resultScreen`): judul "Memory Flip", skor besar dengan keterangan "point" dan "dari 40", tombol "Lanjutkan".
 
 Pemain mencari 8 pasang gambar identik dalam 30 detik. Tiap pasangan bernilai 5 point (maks 40). Saat game berakhir (8 pasang ditemukan atau waktu habis), skor ditulis ke LocalStorage lewat `js/storage.js` tepat satu kali, lalu Result_Screen ditampilkan di halaman yang sama. Tidak ada ringkasan 2 detik dan tidak ada navigasi otomatis: pindah ke `game-2/index.html` hanya terjadi saat pemain menekan "Lanjutkan".
 
-Revisi ini menambahkan dua kemampuan:
+Alur tampilan: **Intro_Screen → Countdown_Screen → Game_Screen → Result_Screen**.
 
-1. **Efek suara (Audio_Cue)** untuk flip, cocok, tidak cocok, dan hitung mundur 3 detik terakhir.
+Revisi ini menambahkan tiga kemampuan:
+
+1. **Efek suara (Audio_Cue)** untuk flip, cocok, dan tidak cocok di dalam permainan, serta `countdown.mp3` yang kini hanya diputar sekali pada Countdown_Screen (tidak ada lagi countdown 3 detik terakhir di dalam permainan).
 2. **Persistensi sesi**: Game_Session_State disimpan di key `entrasol_game1_state`. Refresh atau tombol back tidak mengulang permainan. Permainan berjalan dilanjutkan dengan sisa waktu nyata (berbasis Deadline absolut), dan permainan selesai langsung menampilkan Result_Screen. Karena perpindahan tampilan tidak memakai `history.pushState`, tombol back browser dari game-1 selalu kembali ke Home.
+3. **Countdown_Screen** 3 detik (3, 2, 1) sebelum permainan. Timer 30 detik dan Deadline baru dihitung setelah countdown selesai. Selama countdown tidak ada Game_Session_State yang disimpan, sehingga refresh atau back saat countdown kembali ke Intro_Screen sebagai sesi baru.
 
 Tampilan memakai container mobile maks 430px dengan latar gradasi putih ke biru muda dan wave di bawah, sedangkan latar `body` biru tua transparan hanya berlaku di halaman game-1 (kelas `flip-body`). Teks utama berwarna Biru_Tua `#141A8C`. Home hanya berubah perilaku tombol "Mulai Permainan" (memuat `js/storage.js`, tanpa akses localStorage langsung); tampilannya tidak berubah.
 
@@ -21,17 +25,21 @@ Tampilan memakai container mobile maks 430px dengan latar gradasi putih ke biru 
 
 | Keputusan | Alasan |
 |-----------|--------|
-| Logika dibagi menjadi **fungsi murni** (acak papan, evaluasi pasangan, skor, format timer, `remainingSeconds`, `shouldPlayCountdown`, `restoreState`, `serializeState`) dan **lapisan DOM/timer/audio** yang tipis | Fungsi murni mudah diuji, termasuk dengan property-based testing, tanpa DOM |
-| State game berupa satu objek `state` dengan *phase* eksplisit (`intro`, `playing`, `locked`, `finished`) | Aturan "abaikan sentuhan" (Req 3.1, 5.4, 5.7, 6.6) menjadi satu pengecekan |
-| **Deadline absolut** (`Date.now() + 30000` saat Start) disimpan di state, sisa waktu dihitung ulang dari `Date.now()` | Refresh tidak mengatur ulang timer dan waktu selama halaman tertutup tetap terhitung (Req 10.6). Hitung mundur tidak melenceng seperti pengurangan per tick |
+| Logika dibagi menjadi **fungsi murni** (acak papan, evaluasi pasangan, skor, format timer, `remainingSeconds`, `countdownNumber`, `restoreState`, `serializeState`) dan **lapisan DOM/timer/audio** yang tipis | Fungsi murni mudah diuji, termasuk dengan property-based testing, tanpa DOM |
+| State game berupa satu objek `state` dengan *phase* eksplisit (`intro`, `countdown`, `playing`, `locked`, `finished`) | Aturan "abaikan sentuhan" (Req 3.1, 5.4, 5.7, 6.6) menjadi satu pengecekan; phase `countdown` otomatis menolak sentuhan Card dan Start ganda (Req 12.5, 12.7) |
+| Start dipecah menjadi dua tahap: `beginCountdown()` lalu `startGame()` | Pemain mendapat jeda 3 detik untuk bersiap tanpa mengurangi waktu 30 detik |
+| **Deadline dihitung di `startGame()` setelah countdown selesai** (`Date.now() + 30000`), bukan saat Start ditekan | Pemain mendapat 30 detik penuh; countdown 3 detik tidak memotong waktu bermain (Req 3.4, 12.4) |
+| **Tidak ada Game_Session_State yang disimpan selama phase `countdown`** | Refresh atau back saat countdown menghasilkan sesi baru (Intro_Screen) tanpa kasus state setengah jalan (Req 12.8–12.10) |
+| `countdownNumber(elapsedMs)` fungsi murni, tampilan dihitung dari `Date.now() - t0` | Angka tetap tepat walau interval tertahan, dan mudah diuji tanpa DOM (Req 12.2, 12.14) |
+| **Deadline absolut** (`Date.now() + 30000` saat permainan dimulai) disimpan di state, sisa waktu dihitung ulang dari `Date.now()` | Refresh tidak mengatur ulang timer dan waktu selama halaman tertutup tetap terhitung (Req 10.6). Hitung mundur tidak melenceng seperti pengurangan per tick |
 | Interval ~250 ms yang menghitung ulang `secondsLeft` dan merender hanya saat nilainya berubah | Tampilan tetap tepat pada detik pergantian walau interval tertahan, tanpa render berlebihan |
 | State sesi disimpan di **key terpisah** `entrasol_game1_state`, bukan di dalam `entrasol_game_score` | Skema skor (`memoryFlip`, `memoryRecall`, `memorize`, `total`) tetap sesuai aturan workspace dan tidak tercampur data sementara |
 | Result_Screen berada di **halaman yang sama**, tampilan diganti lewat atribut `hidden`, **tanpa `pushState`** | Tombol back kembali ke Home (Req 11.1, 10.10), bukan ke tampilan sebelumnya di halaman yang sama |
 | Sesi dipulihkan saat boot lewat `restoreState(loadGame1State(), Date.now())` yang murni | Cabang intro/playing/result dapat diuji tanpa DOM (Req 10.4, 10.8, 10.9, 10.15) |
 | `finishGame` dijaga flag `finished` dan hanya dipanggil sekali per sesi; saat reload dengan fase `finished` skor tidak disimpan lagi | Menjamin skor tersimpan tepat sekali per sesi (Req 7.7, 10.16) |
 | Audio memakai `new Audio('assets/audio/<nama>.mp3')` dengan `playSound` yang tidak pernah melempar | Autoplay diblokir atau berkas gagal dimuat tidak boleh mengganggu permainan (Req 9.8) |
-| Countdown dipicu saat sisa waktu melintasi 3 detik | Aset `countdown.mp3` berdurasi sekitar 3 detik, sehingga selesai tepat saat waktu habis (Req 9.4) |
-| Sesi yang dipulihkan dengan sisa waktu ≤ 3 detik tidak memutar countdown (flag `countdownPlayed = true` saat restore) | Mencegah suara muncul tiba-tiba setelah refresh (Req 9.6) |
+| `countdown.mp3` diputar sekali saat Countdown_Screen mulai dan tidak diputar di Game_Screen | Aset berdurasi sekitar 3 detik, sama dengan PRE_COUNTDOWN, sehingga selesai bersamaan dengan angka 1; tidak ada pemutaran ganda (Req 9.4, 9.6) |
+| Countdown_Screen tidak ditampilkan saat sesi dipulihkan | Restore langsung ke `playing`/`result`; countdown hanya dari tombol Start (Req 12.11) |
 | Kartu yang terbuka tetapi belum cocok saat restore dikembalikan tertutup | Hanya status `closed`/`matched` yang disimpan; menghindari kartu terbuka tanpa timeout penutup (Req 10.7) |
 | Flip kartu memakai CSS 3D transform + transisi 300 ms | Sesuai Req 4.9 (200–400 ms), tanpa library |
 | Ukuran kartu dari `grid` + `aspect-ratio: 1 / 1`, maksimum 100px | Persegi dan proporsional di semua lebar (Req 4.4–4.6, 8.2) |
@@ -69,7 +77,9 @@ stateDiagram-v2
     boot --> playing: state playing dan now < deadline (restore)
     boot --> result: state finished (tanpa simpan skor)
     boot --> result: state playing dan now >= deadline (finalize: simpan skor sekali)
-    intro --> playing: klik Start (acak papan, deadline = now + 30 dtk, simpan state)
+    intro --> countdown: klik Start (tombol nonaktif, overlay 3 dtk, putar countdown.mp3, tanpa simpan state)
+    countdown --> playing: 3 dtk selesai (acak papan, deadline = now + 30 dtk, simpan state)
+    countdown --> intro: refresh / back saat countdown (tidak ada state tersimpan)
     playing --> locked: dua kartu tidak cocok (800 ms)
     locked --> playing: kartu ditutup kembali
     playing --> finished: 8 pasang ditemukan
@@ -87,10 +97,10 @@ Pada diagram, `finished` adalah phase internal sesaat; hasilnya selalu Result_Sc
 flowchart TD
     UI[game-1/index.html<br/>Intro + Game + Result Screen] --> G[game-1/game.js]
     HOME[index.html Home] --> ST
-    G --> PURE[Fungsi murni:<br/>buildDeck, shuffle, evaluateFlip, calcScore,<br/>timerLevel, canFlip, remainingSeconds,<br/>shouldPlayCountdown, restoreState, serializeState]
+    G --> PURE[Fungsi murni:<br/>buildDeck, shuffle, evaluateFlip, calcScore,<br/>timerLevel, canFlip, remainingSeconds,<br/>countdownNumber, restoreState, serializeState]
     G --> DOM[Render DOM + transisi CSS]
-    G --> TIMER[setInterval 250 ms + setTimeout 800 ms]
-    G --> AUD[Audio: flip, match, wrong, countdown]
+    G --> TIMER[setInterval 250 ms game + interval countdown awal + setTimeout 800 ms]
+    G --> AUD[Audio: flip, match, wrong, countdown awal]
     G --> ST[js/storage.js<br/>saveGameScore, saveGame1State,<br/>loadGame1State, clearGame1State, resetScore]
     G --> APP[js/app.js<br/>navigateTo]
     ST --> LS[(localStorage<br/>entrasol_game_score<br/>entrasol_game1_state)]
@@ -183,7 +193,7 @@ const POINTS_PER_PAIR = 5;
 const MISMATCH_DELAY_MS = 800;
 const TICK_INTERVAL_MS = 250;
 const WARNING_THRESHOLD = 10;
-const COUNTDOWN_AT = 3;
+const PRE_COUNTDOWN_SECONDS = 3;
 const NEXT_PAGE = '../game-2/index.html';
 ```
 
@@ -200,7 +210,7 @@ const NEXT_PAGE = '../game-2/index.html';
 | `timerLevel(secondsLeft)` | `=> 'normal' \| 'warning'` | `warning` bila `0 < s <= 10` |
 | `canFlip(state, idx)` | `=> boolean` | `true` hanya jika phase `playing`, kartu `closed`, dan kurang dari 2 kartu terbuka |
 | `remainingSeconds(deadline, now)` | `=> integer 0..30` | `clamp(ceil((deadline - now) / 1000), 0, 30)` |
-| `shouldPlayCountdown(prev, next)` | `=> boolean` | `true` bila `prev > 3 && next <= 3 && next >= 1` (melintasi 3 dari atas) |
+| `countdownNumber(elapsedMs)` | `=> 3 \| 2 \| 1 \| 0` | `elapsedMs < 1000` → 3, `< 2000` → 2, `< 3000` → 1, `>= 3000` → 0 (selesai); nilai negatif atau non-finite → 3 |
 | `serializeState(state, phase)` | `=> Game_Session_State` | Membentuk `{ phase, deck, cardStatus, pairsFound, deadline, score }`; deck dipetakan ke 16 angka; status `open` dipetakan ke `closed`; `score = calcScore(pairsFound)` |
 | `restoreState(saved, now)` | `=> RestoreResult` | Menentukan mode boot (lihat di bawah) |
 
@@ -223,7 +233,7 @@ const NEXT_PAGE = '../game-2/index.html';
 
 ```js
 const state = {
-  phase: 'intro',        // 'intro' | 'playing' | 'locked' | 'finished'
+  phase: 'intro',        // 'intro' | 'countdown' | 'playing' | 'locked' | 'finished'
   deck: [],              // hasil shuffle(buildDeck())
   cardStatus: [],        // per indeks: 'closed' | 'open' | 'matched'
   openIdx: [],           // indeks kartu terbuka yang belum dievaluasi (0..2)
@@ -231,8 +241,8 @@ const state = {
   deadline: 0,           // timestamp ms absolut
   secondsLeft: GAME_SECONDS,
   timerId: null,
+  countdownId: null,     // id interval countdown awal (null bila tidak aktif)
   mismatchTimeoutId: null,
-  countdownPlayed: false,// penjaga countdown.mp3 satu kali
   finished: false        // penjaga satu kali simpan skor
 };
 ```
@@ -270,24 +280,28 @@ Pembuatan `new Audio` juga dibungkus agar bila konstruktor `Audio` tidak tersedi
 | Klik lolos `canFlip` (kartu dibuka) | `flip` |
 | Dua kartu cocok | `match` |
 | Dua kartu tidak cocok | `wrong` |
-| `secondsLeft` melintasi 3 dan `countdownPlayed === false` | `countdown` (set `countdownPlayed = true`) |
-| `finishGame` | `stopSound('countdown')` |
+| `beginCountdown()` menampilkan Countdown_Screen | `countdown` (sekali, saat Countdown_Screen mulai) |
+| Halaman ditinggalkan (`pagehide`) saat phase `countdown` | `stopSound('countdown')` |
+| Di dalam Game_Screen (tick, `finishGame`, restore) | tidak ada pemutaran `countdown.mp3` (Req 9.6) |
 | Klik ditolak `canFlip` (kartu cocok, terbuka, board terkunci, belum mulai, sudah selesai) | tidak ada suara (Req 9.7) |
 
 **Fungsi berefek samping (lapisan DOM):**
 
 - `init()` — dipanggil saat boot. Mengambil elemen DOM, membangun `state` dari `restoreState(loadGame1State(), Date.now())`:
   - `intro`: perilaku lama. Papan placeholder tertutup dirender (belum interaktif), Intro_Screen tampil, Game_Screen dan Result_Screen tersembunyi, tombol Start di-bind.
-  - `playing`: bangun papan dari `deck` tersimpan, set `cardStatus` (matched/closed), hitung ulang `pairsFound` dan skor, set `state.deadline`, `countdownPlayed = (secondsLeft <= 3)`, `phase = 'playing'`, tampilkan Game_Screen, jalankan timer (`startTimer()`).
+  - `playing`: bangun papan dari `deck` tersimpan, set `cardStatus` (matched/closed), hitung ulang `pairsFound` dan skor, set `state.deadline`, `phase = 'playing'`, tampilkan Game_Screen (Countdown_Screen tetap tersembunyi), jalankan timer (`startTimer()`).
   - `result`: bila `needsFinalize`, panggil `saveGameScore('memoryFlip', score)` tepat sekali dan `saveGame1State(serializeState(..., 'finished'))`, lalu `showResult(score)`. Bila sudah `finished`, langsung `showResult(score)` tanpa `saveGameScore` (Req 10.9, 10.16).
   - Tombol `#continueBtn` di-bind pada semua mode: `navigateTo(NEXT_PAGE)`.
-- `startGame()` — dijaga `phase === 'intro'`; menonaktifkan Start; mengacak papan; reset skor 0; `state.deadline = Date.now() + 30000`; `secondsLeft = 30`; `countdownPlayed = false`; `saveGame1State(serializeState(state, 'playing'))`; tampilkan Game_Screen; `phase = 'playing'`; `startTimer()`.
+  - Pada mode `intro`, tombol Start di-bind ke `beginCountdown`, dan listener `pagehide` didaftarkan untuk `cancelCountdown()`.
+- `beginCountdown()` — dijaga `phase === 'intro'` (Start ganda diabaikan). Menonaktifkan Start; `phase = 'countdown'`; sembunyikan Intro_Screen dan tampilkan Game_Screen (papan tertutup, Timer belum berjalan); menampilkan `#countdownScreen` (hapus `hidden`) dengan angka awal dari `countdownNumber(0)`; `playSound('countdown')` sekali; `t0 = Date.now()`; `state.countdownId = setInterval(...)` (interval `TICK_INTERVAL_MS`) yang menghitung `n = countdownNumber(Date.now() - t0)` dan memperbarui `#countdownNumber` hanya saat `n` berubah. Saat `n === 0`: `clearInterval`, `countdownId = null`, sembunyikan `#countdownScreen`, lalu panggil `startGame()`. Tidak memanggil `saveGame1State` dan tidak menyentuh Timer.
+- `cancelCountdown()` — dipanggil saat `pagehide`: bila `countdownId !== null`, `clearInterval`, `countdownId = null`, `stopSound('countdown')`. Tidak melempar error.
+- `startGame()` — kini hanya memulai permainan, dijaga `phase === 'countdown'`: mengacak papan; reset skor 0; `state.deadline = Date.now() + 30000` (dihitung setelah countdown); `secondsLeft = 30`; `saveGame1State(serializeState(state, 'playing'))`; pastikan Game_Screen tampil; `phase = 'playing'`; `startTimer()`.
 - `startTimer()` — `setInterval(tick, 250)`; memanggil `tick()` sekali di awal agar tampilan sinkron.
-- `tick()` — `next = remainingSeconds(state.deadline, Date.now())`. Bila `next === state.secondsLeft`, tidak ada render. Bila berbeda: `prev = state.secondsLeft`, `state.secondsLeft = next`, `renderTimer()`; bila `!countdownPlayed && shouldPlayCountdown(prev, next)` maka `playSound('countdown')` dan `countdownPlayed = true`; bila `next === 0` panggil `finishGame('timeout')`.
+- `tick()` — `next = remainingSeconds(state.deadline, Date.now())`. Bila `next === state.secondsLeft`, tidak ada render. Bila berbeda: `state.secondsLeft = next`, `renderTimer()`; bila `next === 0` panggil `finishGame('timeout')`. Tidak ada pemutaran suara di `tick`.
 - `onCardClick(idx)` — bila `canFlip` salah, abaikan tanpa suara. Jika benar: buka kartu, `playSound('flip')`; bila ini kartu kedua, panggil `evaluateFlip`.
   - `match`: tandai kedua kartu `matched`, `pairsFound++`, `playSound('match')`, perbarui skor, `saveGame1State(serializeState(state, 'playing'))`; bila `pairsFound === 8` panggil `finishGame('complete')`.
   - `mismatch`: `playSound('wrong')`, `phase = 'locked'`, `setTimeout(800)` untuk menutup kedua kartu dan kembali `playing` (bila belum `finished`).
-- `finishGame(reason)` — dijaga flag: bila `state.finished` sudah `true`, langsung return. Selain itu: `finished = true`, `phase = 'finished'`, `clearInterval(timerId)`, `clearTimeout(mismatchTimeoutId)`, `stopSound('countdown')`, tutup kartu `open` yang tidak cocok, `score = calcScore(pairsFound)`, `saveGameScore('memoryFlip', score)` tepat sekali (dibungkus `try/catch`), `saveGame1State(serializeState(state, 'finished'))` (hasil `ok:false` diabaikan), lalu `showResult(score)`. Tidak ada `setTimeout` navigasi (Req 11.7).
+- `finishGame(reason)` — dijaga flag: bila `state.finished` sudah `true`, langsung return. Selain itu: `finished = true`, `phase = 'finished'`, `clearInterval(timerId)`, `clearTimeout(mismatchTimeoutId)`, tutup kartu `open` yang tidak cocok, `score = calcScore(pairsFound)`, `saveGameScore('memoryFlip', score)` tepat sekali (dibungkus `try/catch`), `saveGame1State(serializeState(state, 'finished'))` (hasil `ok:false` diabaikan), lalu `showResult(score)`. Tidak ada `setTimeout` navigasi (Req 11.7).
 - `showResult(score)` — mengisi `#resultScore`, menyembunyikan `#introScreen` dan `#gameScreen`, menampilkan `#resultScreen`. Tidak memanggil `history.pushState`.
 - `renderTimer()`, `renderScore()`, `renderCard(idx)`, `renderBoard()` — pembaruan DOM.
 
@@ -308,6 +322,11 @@ Pembuatan `new Audio` juga dibungkus agar bila konstruktor `Audio` tidak tersedi
       <div class="alert flip-time-alert" role="note">Waktu bermain: 30 detik</div>
     </div>
     <button type="button" id="startBtn" class="btn btn-entrasol">Start</button>
+  </section>
+
+  <section id="countdownScreen" class="flip-countdown" hidden>
+    <p class="flip-countdown__label">Bersiap...</p>
+    <div id="countdownNumber" class="flip-countdown__number" role="status" aria-live="assertive">3</div>
   </section>
 
   <section id="gameScreen" class="flip-game" hidden>
@@ -334,6 +353,8 @@ Pembuatan `new Audio` juga dibungkus agar bila konstruktor `Audio` tidak tersedi
 </main>
 ```
 
+`section#countdownScreen` berada di dalam `main.flip-page` (bukan di luar container) agar overlay hanya menutupi container 430px. Section ini tidak memuat heading; angka berada dalam `div` ber-`role="status"` dan `aria-live="assertive"` sehingga pembaca layar membacakan 3, 2, 1 (Req 8.10).
+
 Perubahan dari versi sebelumnya: `h2` visually-hidden "Papan Permainan" diganti `h2.flip-game-title` yang terlihat; `#summary` dihapus; `section#resultScreen.flip-result[hidden]` ditambahkan. Heading: tepat satu `h1` (Intro_Screen); `h2` untuk "Cara Bermain", judul Game_Screen, dan judul Result_Screen. Karena hanya satu tampilan yang terlihat, urutan heading tidak melompati level (Req 8.10). Result_Screen hanya berisi tiga elemen: judul, skor, tombol (Req 11.2).
 
 Struktur satu kartu (tombol agar bisa difokus dan mencapai target sentuh):
@@ -356,6 +377,10 @@ Memakai variabel yang sudah ada (`--entrasol-blue-dark: #141A8C`, `--entrasol-gr
 - `.flip-eyebrow`, `.flip-title` (`2rem`), `.flip-subtitle`, `.flip-icon`, `.flip-instruction`, `.flip-instruction__title`, `.flip-time-alert` — tidak berubah dari desain sebelumnya (Biru_Tua, border 2px, radius 1rem, alert `rgba(20,26,140,0.12)` dengan radius 0.5rem).
 - `.flip-game-title` — baru. `font-size: 1.5rem; font-weight: 700; color: var(--entrasol-blue-dark); text-align: center; margin: 0 0 0.75rem`. Ditempatkan paling atas `#gameScreen` (Req 4.1, 4.2).
 - `.flip-game` — padding dan jarak disesuaikan untuk judul tambahan: `padding: 1rem 0.75rem 1.5rem`, jarak antar elemen vertikal `0.75rem`, `min-width: 0`. Pada lebar 320px lebar konten 296px menampung 4 kartu + 3 gap 8px (kartu ≈ 68px) tanpa overflow horizontal (Req 4.3, 4.6). Tinggi total pada layar pendek boleh discroll vertikal.
+- `.flip-countdown` — baru. Overlay: `position: absolute; inset: 0; z-index: 3` (di atas `.flip-game` yang ber-`z-index: 1` dan wave `::after`); `display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; background: rgba(255, 255, 255, 0.85); color: var(--entrasol-blue-dark)`. `.flip-page` sudah `position: relative; overflow: hidden`, sehingga overlay terbatas pada container (Req 2.11).
+- `.flip-countdown[hidden] { display: none; }` — wajib karena `display: flex` mengalahkan atribut `hidden` bawaan.
+- `.flip-countdown__label` — "Bersiap...": `margin: 0; font-size: 1.125rem; font-weight: 700; color: var(--entrasol-blue-dark)` (Req 2.13).
+- `.flip-countdown__number` — `font-size: 8rem; font-weight: 700; line-height: 1; color: var(--entrasol-blue-dark)`; animasi pulse ringan opsional lewat CSS saja (`@keyframes flip-countdown-pulse`, skala 1 → 1.12 → 1 selama 1 detik, `animation: flip-countdown-pulse 1s ease-out infinite`) dan dimatikan pada `@media (prefers-reduced-motion: reduce)` (Req 2.12). Di dalam `@media (min-height: 550px)`, ukuran dapat mengecil: `font-size: clamp(5rem, calc(20 * var(--dvh)), 8rem)` agar countdown tetap muat tanpa scroll.
 - `.flip-progress` — track `rgba(20,26,140,0.12)`; isi Biru_Tua.
 - `.flip-timer--warning` — warna peringatan (mis. `#D32F2F`); angka tetap tampil sehingga tidak hanya mengandalkan warna.
 - `.flip-board`, `.flip-card`, `.flip-card__inner`, `.flip-card__face`, `.flip-card--matched` — tidak berubah (grid 4 kolom, gap 8px, `aspect-ratio: 1 / 1`, maks 100px, flip 0.3s, penanda `--entrasol-green`).
@@ -417,7 +442,9 @@ Perbedaan dengan state runtime: `state.deck` berisi objek `{id, item}`, sedangka
 | (boot) | `playing`, now < deadline | `playing` | — |
 | (boot) | `playing`, now ≥ deadline | `result` | `saveGameScore` sekali + `saveGame1State(finished)` |
 | (boot) | `finished` | `result` | tidak ada |
-| `intro` | klik Start | `playing` | `saveGame1State(playing)` |
+| `intro` | klik Start | `countdown` | tidak ada (tanpa state tersimpan) |
+| `countdown` | 3 detik selesai | `playing` | `saveGame1State(playing)` dengan deadline = now + 30 dtk |
+| `countdown` | halaman ditinggalkan / refresh | (keluar) | tidak ada; kunjungan berikutnya mulai dari `intro` |
 | `playing` | pasangan cocok | `playing` | `saveGame1State(playing)` |
 | `playing` | kartu ke-2 tidak cocok | `locked` | — |
 | `locked` | 800 ms berlalu | `playing` | — |
@@ -429,7 +456,7 @@ Perbedaan dengan state runtime: `state.deck` berisi objek `{id, item}`, sedangka
 
 *A property is a characteristic or behavior that should hold true across all valid executions of a system-essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.*
 
-Properti berlaku untuk fungsi murni di `game-1/game.js` (`buildDeck`, `shuffle`, `evaluateFlip`, `calcScore`, `timerLevel`, `canFlip`, `remainingSeconds`, `shouldPlayCountdown`, `restoreState`, `serializeState`, `finishGame`) dan helper `js/storage.js`. Aspek tampilan (CSS, layout, teks statis, pemicu audio berbasis mock) tidak diuji dengan PBT.
+Properti berlaku untuk fungsi murni di `game-1/game.js` (`buildDeck`, `shuffle`, `evaluateFlip`, `calcScore`, `timerLevel`, `canFlip`, `remainingSeconds`, `countdownNumber`, `restoreState`, `serializeState`, `finishGame`) dan helper `js/storage.js`. Aspek tampilan (CSS, layout, teks statis, pemicu audio berbasis mock) tidak diuji dengan PBT.
 
 ### Property 1: Pengacakan mempertahankan komposisi dek
 
@@ -509,11 +536,11 @@ Properti berlaku untuk fungsi murni di `game-1/game.js` (`buildDeck`, `shuffle`,
 
 **Validates: Requirements 10.15**
 
-### Property 14: Countdown dipicu tepat sekali saat melintasi 3 detik
+### Property 14: Urutan angka countdown awal
 
-*For any* barisan sisa waktu nonincreasing `s0 ≥ s1 ≥ … ≥ sk` pada rentang 0..30 yang bermula pada nilai lebih dari 3 dan berakhir pada nilai 1..3, jumlah indeks `i` dengan `shouldPlayCountdown(s(i-1), s(i))` bernilai `true` SHALL tepat satu. *For any* barisan nonincreasing yang seluruh nilainya lebih dari 3 atau seluruh nilainya kurang dari atau sama dengan 3 (sesi dipulihkan dengan sisa waktu ≤ 3), jumlah tersebut SHALL nol.
+*For any* barisan tick `k = 0..3` dengan `elapsedMs = k × 1000 + r` di mana `r` adalah offset acak pada `[0, 999]`, `countdownNumber(elapsedMs)` SHALL menghasilkan 3, 2, 1, lalu 0 (selesai) untuk `k = 0, 1, 2, 3`. *For any* dua nilai finite nonnegatif `a ≤ b`, `countdownNumber(b)` SHALL kurang dari atau sama dengan `countdownNumber(a)` (monoton menurun), nilainya SHALL selalu berada pada {3, 2, 1, 0}, dan nilai 0 (selesai) SHALL dihasilkan jika dan hanya jika `elapsedMs` finite dan `≥ 3000` (selesai tepat pada 3000 ms). *For any* nilai negatif atau non-finite (`NaN`, `±Infinity`), hasilnya SHALL 3.
 
-**Validates: Requirements 9.4, 9.6**
+**Validates: Requirements 12.2, 12.4, 12.14**
 
 ## Error Handling
 
@@ -532,7 +559,10 @@ Properti berlaku untuk fungsi murni di `game-1/game.js` (`buildDeck`, `shuffle`,
 | Pemain menekan back dari game-1 | Tanpa `pushState`, browser kembali ke Home; state tetap tersimpan. Tombol Mulai di Home melanjutkan tanpa reset (Req 10.10–10.12, 11.9) |
 | Home tanpa state (pengguna baru, state dihapus, atau rusak) | `loadGame1State()` bernilai `null` → `resetScore()` lalu navigasi; game-1 menampilkan Intro_Screen (Req 10.13) |
 | Autoplay audio diblokir atau berkas audio gagal dimuat | `play()` dibungkus `try/catch` dan Promise ditolak ditangkap; permainan lanjut tanpa error atau pesan (Req 9.8) |
-| `countdown.mp3` masih berbunyi saat game berakhir | `finishGame` memanggil `stopSound('countdown')` (Req 9.5) |
+| Pemutaran `countdown.mp3` diblokir atau berkas gagal dimuat saat Countdown_Screen | `playSound` menelan kegagalan; hitung mundur awal berjalan berbasis `Date.now()` sehingga tetap selesai dalam 3 detik dan permainan dimulai tanpa error (Req 9.8, 12.13) |
+| Halaman ditinggalkan (`pagehide`, back, tutup tab) saat Countdown_Screen | `cancelCountdown()` membersihkan `countdownId` dan `stopSound('countdown')`; tidak ada timer bocor dan `startGame()` tidak terpanggil. Tidak ada state tersimpan, jadi kunjungan berikutnya mulai dari Intro_Screen (Req 9.5, 12.8–12.10, 12.12) |
+| Start ditekan berulang saat Countdown_Screen | Tombol nonaktif dan `beginCountdown` dijaga `phase === 'intro'`; countdown tidak dimulai ulang (Req 3.6, 12.5) |
+| Sentuhan pada Card saat Countdown_Screen | Overlay menutupi halaman dan `canFlip` menolak karena phase bukan `playing` (Req 12.7) |
 | Jam sistem berubah mundur sehingga sisa waktu > 30 | `remainingSeconds` dijepit maksimum 30 (Property 11) |
 | Tab disembunyikan lalu `setInterval` tertahan | Sisa waktu dihitung dari Deadline, sehingga tick berikutnya langsung menampilkan nilai benar; bila Deadline terlewat, `finishGame('timeout')` dipanggil |
 | Gambar kartu gagal dimuat | Atribut `alt` tampil; ukuran kartu tetap karena ditentukan CSS grid (Req 4.10) |
@@ -544,7 +574,7 @@ Properti berlaku untuk fungsi murni di `game-1/game.js` (`buildDeck`, `shuffle`,
 
 Pengujian memakai kombinasi unit test (contoh, edge case) dan property-based test (properti universal). Aturan workspace melarang build tool pada aplikasi, sehingga berkas uji ditaruh terpisah dari halaman produksi (mis. `tests/`) dan dijalankan di Node hanya sebagai alat pengembang. Aplikasi tetap dapat dibuka langsung di browser tanpa langkah build.
 
-Agar fungsi murni dapat diuji di Node tanpa mengubah perilaku browser, `game.js` dan `storage.js` mengekspos fungsi lewat objek global dan `if (typeof module !== 'undefined') module.exports = ...`. Fungsi baru (`remainingSeconds`, `shouldPlayCountdown`, `restoreState`, `serializeState`, `isValidGame1State`) ikut diekspos.
+Agar fungsi murni dapat diuji di Node tanpa mengubah perilaku browser, `game.js` dan `storage.js` mengekspos fungsi lewat objek global dan `if (typeof module !== 'undefined') module.exports = ...`. Fungsi baru (`remainingSeconds`, `countdownNumber`, `restoreState`, `serializeState`, `isValidGame1State`) ikut diekspos.
 
 ### Property-Based Testing
 
@@ -569,7 +599,7 @@ Agar fungsi murni dapat diuji di Node tanpa mengubah perilaku browser, `game.js`
 | 11 | `deadline` dan `now` `fc.integer` (selisih dari −60000 sampai +60000 ms dan sisipan di luar rentang 30 detik), plus `now2 ≥ now` untuk memeriksa monotonisitas |
 | 12 | `saved` dari generator Property 10 atau `null`; `now` di sekitar `deadline` (sebelum, sama, sesudah) |
 | 13 | State valid dimutasi oleh `fc.constantFrom` jenis mutasi (ubah phase, potong deck, angka deck di luar rentang, duplikasi angka, status kartu tidak dikenal, `pairsFound` tidak konsisten, `deadline` `NaN`/`Infinity`/string, `score` bukan kelipatan 5 saat `finished`) + string non-JSON + storage yang melempar |
-| 14 | Barisan nonincreasing dari `fc.array(fc.integer({min:0,max:30}))` yang diurutkan menurun, difilter ke dua kelas (melintasi 3, atau semua > 3 / semua ≤ 3) |
+| 14 | `fc.integer({min:0,max:3})` untuk `k` dengan offset `fc.integer({min:0,max:999})`; `fc.tuple(fc.double({min:0,max:10000,noNaN:true}), fc.double(...))` diurutkan untuk `a ≤ b`; dan `fc.constantFrom(NaN, Infinity, -Infinity)` serta `fc.double({max:-0.001})` untuk nilai negatif/non-finite |
 
 ### Unit Test (Contoh dan Edge Case)
 
@@ -578,24 +608,31 @@ Dengan fake timers, `Date.now` palsu, mock `Audio`, dan DOM sederhana (mis. jsdo
 - Intro_Screen: urutan elemen "GAME 01" → ikon → `h1` → sub judul → Instruction_Box (`h2` "Cara Bermain", dua paragraf, alert waktu sebagai anak terakhir) → Start; `body` memiliki kelas `flip-body`; satu `h1` (Req 1, 2.6, 8.10).
 - Game_Screen: `h2.flip-game-title` bertuliskan "Memory Flip" adalah anak pertama `#gameScreen` dan tidak memiliki kelas `visually-hidden`; urutan judul → HUD → progress → papan (Req 4.1, 4.2).
 - Tiga tampilan: pada tiap mode tepat satu dari `#introScreen`, `#gameScreen`, `#resultScreen` tidak ber-`hidden`; tidak ada panggilan `history.pushState`; tidak ada elemen `#summary` (Req 11.1, 11.2).
-- Start: Intro disembunyikan, Game_Screen tampil, 16 kartu tertutup, skor 0, tombol Start nonaktif; `saveGame1State` dipanggil dengan phase `playing` dan `deadline = now + 30000` (Req 3.2, 3.5, 3.6, 10.2).
+- Countdown_Screen: setelah Start, `#countdownScreen` tampil (tanpa `hidden`) dengan angka 3 lalu 2 lalu 1 setiap 1 detik, tombol Start nonaktif, `saveGame1State` belum dipanggil, Timer belum berjalan (tetap 30), klik Card tidak membuka kartu; setelah 3000 ms overlay tersembunyi dan Game_Screen tampil (Req 12.1, 12.2, 12.5–12.8, 3.1).
+- Start ganda: klik Start berulang saat countdown diabaikan; `playSound('countdown')` dan `startGame` tepat satu kali (Req 3.6, 12.5).
+- Audio countdown: `countdown.mp3` diputar tepat sekali saat Countdown_Screen mulai; tidak ada pemutaran `countdown` selama permainan (termasuk pada sisa 3 detik terakhir); `play()` yang melempar atau ditolak tidak menghentikan countdown (Req 9.4, 9.6, 12.3, 12.13).
+- Deadline setelah countdown: dengan `Date.now` palsu, `saveGame1State` dipanggil dengan phase `playing` dan `deadline = (waktu Start + 3000) + 30000`, bukan `waktu Start + 30000`; Timer menampilkan 30 tepat setelah countdown (Req 3.4, 10.2, 12.4).
+- Refresh/back saat countdown: tanpa Game_Session_State tersimpan, memuat ulang halaman menampilkan Intro_Screen; `pagehide` saat countdown membersihkan interval (tidak ada timer tertinggal, `startGame` tidak terpanggil) dan memanggil `pause` pada `countdown` (Req 9.5, 12.8–12.10, 12.12).
+- Restore tanpa countdown: state `playing` atau `finished` dipulihkan dengan `#countdownScreen` tetap `hidden` dan tanpa pemutaran `countdown` (Req 12.11).
+- Start (setelah countdown): Intro disembunyikan, Game_Screen tampil, 16 kartu tertutup, skor 0, tombol Start nonaktif; `saveGame1State` dipanggil dengan phase `playing` dan `deadline = now + 30000` pada saat permainan dimulai (Req 3.2, 3.5, 3.6, 10.2).
 - Timer: memajukan `Date.now` dan fake timers menampilkan 30 → 0; render hanya saat nilai berubah; kelas peringatan muncul pada 10 sampai 1 (Req 3.4, 6.1–6.3).
 - Match: `saveGame1State` dipanggil setelah tiap pasangan (Req 10.3).
 - Mismatch: dua kartu beda tetap terbuka 800 ms lalu tertutup; klik ketiga diabaikan selama jeda (Req 5.3, 5.4).
 - Timer habis saat mismatch: kartu ditutup, skor tidak berubah, klik berikutnya diabaikan (Req 5.8).
 - Selesai: Result_Screen tampil, `#resultScore` berisi skor, `navigateTo` tidak dipanggil walau waktu dimajukan; klik `#continueBtn` memanggil `navigateTo('../game-2/index.html')` tepat sekali (Req 11.1, 11.6, 11.7).
-- Audio (mock `Audio`): klik lolos memutar `flip`; match memutar `match`; mismatch memutar `wrong`; klik pada kartu matched/terbuka/board terkunci/sebelum Start/sesudah selesai tidak memutar apa pun; `countdown` diputar tepat sekali saat sisa 3; `finishGame` memanggil `pause` pada `countdown`; `play()` yang melempar atau Promise yang ditolak tidak menghentikan permainan (Req 9.1–9.8).
-- Restore: state `playing` dengan sisa 20 detik memulihkan papan dan skor serta tidak memutar ulang timer 30 detik; sisa ≤ 3 tidak memutar `countdown`; state `playing` dengan deadline lewat menyimpan skor sekali dan menulis state `finished`; state `finished` tidak memanggil `saveGameScore`; refresh berulang tidak menambah panggilan `saveGameScore` (Req 10.4–10.9, 10.16).
+- Audio (mock `Audio`): klik lolos memutar `flip`; match memutar `match`; mismatch memutar `wrong`; klik pada kartu matched/terbuka/board terkunci/sebelum Start/saat countdown/sesudah selesai tidak memutar apa pun; `play()` yang melempar atau Promise yang ditolak tidak menghentikan permainan (Req 9.1–9.3, 9.7, 9.8). Audio countdown diuji pada butir Countdown_Screen di atas.
+- Restore: state `playing` dengan sisa 20 detik memulihkan papan dan skor serta tidak memutar ulang timer 30 detik; sisa ≤ 3 tidak memutar `countdown` dan Countdown_Screen tidak tampil; state `playing` dengan deadline lewat menyimpan skor sekali dan menulis state `finished`; state `finished` tidak memanggil `saveGameScore`; refresh berulang tidak menambah panggilan `saveGameScore` (Req 10.4–10.9, 10.16).
 - Home: dengan `loadGame1State()` bernilai state, klik Mulai tidak memanggil `resetScore`; bila `null`, `resetScore` dipanggil; skrip Home tidak mengandung `localStorage` (Req 10.11–10.14).
 - `resetScore` menghapus kedua key (Req 10.1).
 - Kegagalan storage: `setItem` melempar error, Result_Screen tetap tampil (Req 7.6).
 
 ### Smoke dan Pemeriksaan Visual
 
-- Scan statis `game-1/index.html`, `game-1/game.js`, `css/style.css`, `index.html`: tidak ada `http://`, `https://`, atau `//` untuk aset; `localStorage` hanya muncul di `js/storage.js`; `SUMMARY_DELAY_MS` dan `#summary` tidak ada; urutan skrip dan path relatif benar (Req 8.4–8.8, 10.14).
+- Scan statis `game-1/index.html`, `game-1/game.js`, `css/style.css`, `index.html`: tidak ada `http://`, `https://`, atau `//` untuk aset; `localStorage` hanya muncul di `js/storage.js`; `SUMMARY_DELAY_MS`, `#summary`, `COUNTDOWN_AT`, `shouldPlayCountdown`, dan `countdownPlayed` tidak ada; `#countdownScreen` ada di dalam `main.flip-page`, ber-`hidden`, tanpa heading, dengan `#countdownNumber` ber-`role="status"` dan `aria-live="assertive"`; `PRE_COUNTDOWN_SECONDS = 3`; urutan skrip dan path relatif benar (Req 8.4–8.8, 10.14).
 - `index.html` Home mengarah ke `game-1/index.html` (Req 8.11).
 - Pemeriksaan visual manual pada lebar 320, 768, dan 1280 px: tanpa scroll horizontal pada Intro, Game_Screen (judul + HUD + papan), dan Result_Screen; kartu persegi 44 sampai 100 px; angka skor hasil (~4.5rem) tidak terpotong; `[hidden]` pada `.flip-result` benar-benar menyembunyikan (Req 2, 4, 8.1–8.3, 11.10).
-- Pemeriksaan manual perilaku browser: refresh saat bermain melanjutkan sisa waktu; tombol back dari game-1 dan dari Result_Screen kembali ke Home; "Mulai Permainan" setelahnya melanjutkan atau menampilkan Result_Screen; suara terdengar setelah interaksi pertama pemain (Req 9, 10.10–10.12, 11.9).
+- Pemeriksaan visual Countdown_Screen pada tinggi sekitar 550–560 px dan lebar 320 px: overlay menutupi seluruh container, angka biru tua besar tidak terpotong, tanpa scroll vertikal (Req 2.11–2.13).
+- Pemeriksaan manual perilaku browser: refresh saat countdown kembali ke Intro_Screen; refresh saat bermain melanjutkan sisa waktu; tombol back dari game-1 dan dari Result_Screen kembali ke Home; "Mulai Permainan" setelahnya melanjutkan atau menampilkan Result_Screen; suara terdengar setelah interaksi pertama pemain (Req 9, 10.10–10.12, 11.9).
 - Kontras teks Biru_Tua di atas gradasi dan latar alert tetap terbaca (Req 2.1).
 
 ### Alasan Cakupan PBT

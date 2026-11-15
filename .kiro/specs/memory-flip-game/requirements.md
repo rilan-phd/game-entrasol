@@ -2,9 +2,9 @@
 
 ## Introduction
 
-Fitur ini adalah halaman game pertama, Memory Flip, yang berada di folder `game-1/`. Halaman ini terdiri dari tiga tampilan dalam satu file `game-1/index.html`: Intro_Screen (teks "GAME 01", ikon game, judul, sub judul, box petunjuk berisi alert waktu, tombol Start), Game_Screen (judul "Memory Flip", timer 30 detik, skor, progress bar, dan papan kartu 4×4), dan Result_Screen (judul, skor yang diperoleh, dan tombol "Lanjutkan"). Pemain mencari 8 pasang gambar identik. Setiap pasangan bernilai 5 point (maksimal 40 point). Setelah permainan berakhir, skor disimpan ke LocalStorage dan Result_Screen ditampilkan sebagai checkpoint bahwa game-1 selesai. Perpindahan ke game berikutnya hanya terjadi saat pemain menekan tombol "Lanjutkan".
+Fitur ini adalah halaman game pertama, Memory Flip, yang berada di folder `game-1/`. Halaman ini terdiri dari tiga tampilan utama dalam satu file `game-1/index.html`: Intro_Screen (teks "GAME 01", ikon game, judul, sub judul, box petunjuk berisi alert waktu, tombol Start), Game_Screen (judul "Memory Flip", timer 30 detik, skor, progress bar, dan papan kartu 4×4), dan Result_Screen (judul, skor yang diperoleh, dan tombol "Lanjutkan"). Di antara Intro_Screen dan Game_Screen terdapat Countdown_Screen, yaitu overlay penuh yang menampilkan hitung mundur 3, 2, 1 selama 3 detik. Alur tampilan: Intro_Screen → Countdown_Screen → Game_Screen → Result_Screen. Pemain mencari 8 pasang gambar identik. Setiap pasangan bernilai 5 point (maksimal 40 point). Setelah permainan berakhir, skor disimpan ke LocalStorage dan Result_Screen ditampilkan sebagai checkpoint bahwa game-1 selesai. Perpindahan ke game berikutnya hanya terjadi saat pemain menekan tombol "Lanjutkan".
 
-Permainan memutar efek suara (Audio_Cue) untuk membuka kartu, kartu cocok, kartu tidak cocok, dan hitung mundur 3 detik terakhir. State sesi game-1 disimpan di LocalStorage sehingga refresh halaman dan tombol back browser tidak mengulang permainan: permainan yang sedang berjalan dilanjutkan dengan sisa waktu nyata, dan permainan yang sudah selesai langsung menampilkan Result_Screen.
+Permainan memutar efek suara (Audio_Cue) untuk membuka kartu, kartu cocok, kartu tidak cocok, dan hitung mundur awal pada Countdown_Screen. State sesi game-1 disimpan di LocalStorage sehingga refresh halaman dan tombol back browser tidak mengulang permainan: permainan yang sedang berjalan dilanjutkan dengan sisa waktu nyata, dan permainan yang sudah selesai langsung menampilkan Result_Screen.
 
 Tampilan memakai container mobile maksimal 430px dengan latar gradasi vertikal putih ke biru muda dan wave di bagian bawah, latar body biru tua transparan khusus halaman game-1, font Noto Sans offline, serta warna biru tua `#141A8C` sebagai warna teks utama, warna tombol utama, dan border box petunjuk. Tampilan Home tidak berubah; Home hanya menyesuaikan perilaku tombol "Mulai Permainan" dan mengarah ke `game-1/index.html`.
 
@@ -24,12 +24,15 @@ Catatan konsistensi: folder aktual game bernama `game-1` (bukan `game1` seperti 
 - **Card**: satu kotak kartu pada Board. Sisi tertutup memakai `game-1/assets/back-card.jpg`; sisi terbuka memakai salah satu `game-1/assets/item-1.jpg` sampai `item-8.jpg`.
 - **Pair**: dua Card dengan gambar item identik. Board berisi 8 Pair.
 - **Matched_Card**: Card yang sudah ditemukan pasangannya dan tetap terbuka.
-- **Timer**: hitung mundur 30 detik yang mulai berjalan setelah tombol Start ditekan.
+- **Countdown_Screen**: overlay penuh di dalam container halaman game-1 (`section#countdownScreen`) yang menutupi Game_Screen (papan tertutup dan Timer 30 yang belum berjalan terlihat samar di belakangnya) dan ditampilkan selama PRE_COUNTDOWN setelah tombol Start ditekan; menampilkan teks "Bersiap..." dan angka besar 3, 2, 1.
+- **PRE_COUNTDOWN**: durasi hitung mundur awal pada Countdown_Screen, yaitu 3 detik (konstanta `PRE_COUNTDOWN_SECONDS = 3`), masing-masing angka 3, 2, dan 1 tampil 1 detik.
+- **countdownNumber**: fungsi murni `countdownNumber(elapsedMs)` yang memetakan waktu berlalu sejak Countdown_Screen mulai ke angka tampil: kurang dari 1000 ms menghasilkan 3, kurang dari 2000 ms menghasilkan 2, kurang dari 3000 ms menghasilkan 1, dan 3000 ms atau lebih menghasilkan 0 (selesai); nilai negatif atau non-finite menghasilkan 3.
+- **Timer**: hitung mundur 30 detik yang mulai berjalan saat permainan dimulai, yaitu setelah Countdown_Screen selesai (bukan saat tombol Start ditekan).
 - **Score_Store**: helper LocalStorage di `js/storage.js` dengan key `entrasol_game_score`.
 - **Memory_Flip_Score**: nilai field `memoryFlip` pada Score_Store, yaitu 5 × jumlah Pair yang ditemukan (0 sampai 40).
 - **Game_Session_State**: state sesi game-1 yang disimpan melalui `js/storage.js` pada key LocalStorage `entrasol_game1_state` (terpisah dari key skor). Berisi: fase (`playing` atau `finished`), urutan dek hasil acak, status tiap Card (`closed` atau `matched`), jumlah Pair yang ditemukan, waktu berakhir absolut (deadline, timestamp dalam milidetik), dan skor akhir bila fase `finished`.
-- **Deadline**: field waktu berakhir absolut pada Game_Session_State, bernilai waktu saat tombol Start ditekan ditambah 30 detik.
-- **Audio_Cue**: efek suara yang diputar dengan API Audio bawaan browser dari berkas di `game-1/assets/audio/`: `flip.mp3` (sekitar 0,3 detik), `match.mp3` (sekitar 1 detik), `wrong.mp3` (sekitar 1 detik), dan `countdown.mp3` (sekitar 3 detik).
+- **Deadline**: field waktu berakhir absolut pada Game_Session_State, bernilai waktu saat permainan dimulai (setelah Countdown_Screen selesai, bukan saat tombol Start ditekan) ditambah 30 detik.
+- **Audio_Cue**: efek suara yang diputar dengan API Audio bawaan browser dari berkas di `game-1/assets/audio/`: `flip.mp3` (sekitar 0,3 detik), `match.mp3` (sekitar 1 detik), `wrong.mp3` (sekitar 1 detik), dan `countdown.mp3` (sekitar 3 detik, hanya diputar pada Countdown_Screen).
 - **Next_Game_Page**: halaman game berikutnya, yaitu `game-2/index.html`.
 - **Biru_Tua**: warna `#141A8C` (variabel CSS `--entrasol-blue-dark`).
 
@@ -41,7 +44,7 @@ Catatan konsistensi: folder aktual game bernama `game-1` (bukan `game1` seperti 
 
 #### Acceptance Criteria
 
-1. WHEN Memory_Flip_Page dibuka dan tidak ada Game_Session_State yang valid, THE Memory_Flip_Page SHALL menampilkan Intro_Screen, menyembunyikan Game_Screen dan Result_Screen, dan tidak menjalankan Timer sampai tombol Start ditekan.
+1. WHEN Memory_Flip_Page dibuka dan tidak ada Game_Session_State yang valid, THE Memory_Flip_Page SHALL menampilkan Intro_Screen, menyembunyikan Game_Screen dan Result_Screen, dan tidak menjalankan Timer sampai tombol Start ditekan dan Countdown_Screen selesai.
 2. THE Intro_Screen SHALL menampilkan teks "GAME 01" sebagai elemen paling atas pada Intro_Screen.
 3. THE Intro_Screen SHALL menampilkan Game_Icon langsung di bawah teks "GAME 01", bersumber dari `assets/icon-game-1.svg` dengan atribut `alt` yang deskriptif.
 4. THE Intro_Screen SHALL menampilkan judul "Memory Flip" sebagai elemen `h1` langsung di bawah Game_Icon, dengan ukuran huruf judul lebih besar daripada ukuran huruf teks "GAME 01".
@@ -68,19 +71,22 @@ Catatan konsistensi: folder aktual game bernama `game-1` (bukan `game1` seperti 
 8. THE Memory_Flip_Page SHALL mendefinisikan gaya khusus Memory_Flip_Page di `css/style.css`, yaitu berkas yang sama dengan yang digunakan Home, tanpa mengubah tampilan Home yang sudah ada.
 9. IF `assets/background-wave.svg` gagal dimuat, THEN THE Memory_Flip_Page SHALL tetap menampilkan latar gradasi container dan seluruh konten tanpa elemen gelombang, tanpa teks atau konten yang terpotong.
 10. WHILE lebar viewport kurang dari 430px, THE Memory_Flip_Page SHALL menampilkan container selebar 100% viewport tanpa munculnya scroll horizontal.
+11. THE Countdown_Screen SHALL ditampilkan sebagai overlay yang menutupi seluruh area container halaman game-1 di depan Game_Screen dengan latar putih semi-opaque (sekitar `rgba(255,255,255,0.85)`) yang selaras dengan tema, sehingga Game_Screen di belakangnya (papan tertutup) terlihat samar namun tidak dapat disentuh.
+12. THE Countdown_Screen SHALL menampilkan angka hitung mundur dengan warna Biru_Tua, huruf tebal (bold), dan ukuran sangat besar sekitar 8rem, terpusat secara horizontal dan vertikal pada overlay.
+13. THE Countdown_Screen SHALL menampilkan teks kecil "Bersiap..." berwarna Biru_Tua tepat di atas angka hitung mundur.
 
 ### Requirement 3: Memulai Permainan
 
-**User Story:** Sebagai pemain, saya ingin game dan timer baru mulai setelah saya menekan Start, sehingga saya punya waktu membaca petunjuk.
+**User Story:** Sebagai pemain, saya ingin hitung mundur singkat setelah menekan Start sebelum game dan timer berjalan, sehingga saya siap ketika waktu 30 detik mulai.
 
 #### Acceptance Criteria
 
-1. WHILE Intro_Screen ditampilkan, THE Timer SHALL tetap berhenti pada nilai 30 detik dan THE Memory_Flip_Page SHALL menolak interaksi pemain terhadap Card (tidak ada Card yang terbuka saat Card diklik atau disentuh).
-2. WHEN pemain menekan tombol Start, THE Memory_Flip_Page SHALL menyembunyikan Intro_Screen dan menampilkan Game_Screen dalam waktu maksimal 500 milidetik.
-3. WHEN pemain menekan tombol Start, THE Memory_Flip_Page SHALL mengacak posisi 16 Card sehingga setiap gambar item-1 sampai item-8 muncul tepat dua kali pada Board.
-4. WHEN pemain menekan tombol Start, THE Timer SHALL mulai menghitung mundur dari 30 detik dengan interval 1 detik, menampilkan nilai integer dari 30 hingga 0, dan berhenti pada 0.
-5. WHEN pemain menekan tombol Start, THE Memory_Flip_Page SHALL menampilkan seluruh 16 Card dalam keadaan tertutup (sisi belakang terlihat) dan skor bernilai 0.
-6. WHEN pemain menekan tombol Start, THE Memory_Flip_Page SHALL menonaktifkan tombol Start sehingga penekanan berulang tidak mengacak ulang Board maupun mengatur ulang Timer.
+1. WHILE Intro_Screen atau Countdown_Screen ditampilkan (Game_Screen hanya terlihat di belakang overlay), THE Timer SHALL tetap berhenti pada nilai 30 detik dan THE Memory_Flip_Page SHALL menolak interaksi pemain terhadap Card (tidak ada Card yang terbuka saat Card diklik atau disentuh).
+2. WHEN pemain menekan tombol Start, THE Memory_Flip_Page SHALL menyembunyikan Intro_Screen, menampilkan Game_Screen (papan tertutup, Timer belum berjalan) dengan Countdown_Screen di depannya selama PRE_COUNTDOWN (3 detik) sesuai Requirement 12, dan setelah Countdown_Screen selesai menyembunyikan Countdown_Screen serta memulai permainan dalam waktu maksimal 500 milidetik.
+3. WHEN Countdown_Screen selesai dan permainan dimulai, THE Memory_Flip_Page SHALL mengacak posisi 16 Card sehingga setiap gambar item-1 sampai item-8 muncul tepat dua kali pada Board.
+4. WHEN Countdown_Screen selesai dan permainan dimulai, THE Timer SHALL mulai menghitung mundur dari 30 detik dengan interval 1 detik, menampilkan nilai integer dari 30 hingga 0, dan berhenti pada 0.
+5. WHEN Countdown_Screen selesai dan permainan dimulai, THE Memory_Flip_Page SHALL menampilkan seluruh 16 Card dalam keadaan tertutup (sisi belakang terlihat) dan skor bernilai 0.
+6. WHEN pemain menekan tombol Start, THE Memory_Flip_Page SHALL menonaktifkan tombol Start sejak penekanan tersebut sehingga penekanan berulang diabaikan dan tidak mengacak ulang Board, memulai ulang Countdown_Screen, maupun mengatur ulang Timer.
 
 ### Requirement 4: Game_Screen dan Papan Kartu 4×4
 
@@ -122,7 +128,7 @@ Catatan konsistensi: folder aktual game bernama `game-1` (bukan `game1` seperti 
 
 #### Acceptance Criteria
 
-1. WHEN pemain menekan tombol Start, THE Timer SHALL mulai menghitung mundur dari 30 detik dan menampilkan sisa waktu dalam bilangan bulat detik.
+1. WHEN permainan dimulai setelah Countdown_Screen selesai, THE Timer SHALL mulai menghitung mundur dari 30 detik dan menampilkan sisa waktu dalam bilangan bulat detik.
 2. WHILE Game_Screen aktif dan Timer berjalan, THE Timer SHALL mengurangi nilai sisa waktu sebanyak 1 setiap 1 detik (toleransi ±100 milidetik per tick) dan memperbarui angka yang ditampilkan.
 3. WHILE sisa waktu Timer kurang dari atau sama dengan 10 detik dan lebih dari 0 detik, THE Timer SHALL menampilkan angka sisa waktu dengan warna peringatan yang berbeda dari warna normal.
 4. WHEN Timer mencapai 0 detik, THE Memory_Flip_Page SHALL mengakhiri permainan dan menampilkan angka 0 pada Timer; skor disimpan dan Result_Screen ditampilkan sesuai Requirement 7 dan Requirement 11.
@@ -160,7 +166,7 @@ Catatan konsistensi: folder aktual game bernama `game-1` (bukan `game1` seperti 
 7. THE Memory_Flip_Page SHALL menggunakan JavaScript vanilla tanpa framework atau library JavaScript pihak ketiga selain Bootstrap 5.
 8. THE logika gameplay SHALL berada di `game-1/game.js` dan akses LocalStorage SHALL hanya dilakukan melalui fungsi di `js/storage.js`, termasuk akses dari Home.
 9. THE kartu dan tombol di Memory_Flip_Page SHALL memiliki ukuran target sentuh minimal 44×44px pada lebar viewport 320px sampai 1920px.
-10. THE Memory_Flip_Page SHALL menggunakan elemen `h1` hanya pada Intro_Screen, berisi teks "Memory Flip"; elemen `h2` untuk "Cara Bermain" pada Instruction_Box, "Memory Flip" pada Game_Screen, dan judul "Memory Flip" pada Result_Screen; serta urutan tingkat heading tanpa melompati level.
+10. THE Memory_Flip_Page SHALL menggunakan elemen `h1` hanya pada Intro_Screen, berisi teks "Memory Flip"; elemen `h2` untuk "Cara Bermain" pada Instruction_Box, "Memory Flip" pada Game_Screen, dan judul "Memory Flip" pada Result_Screen; serta urutan tingkat heading tanpa melompati level. THE Countdown_Screen SHALL tidak memakai elemen heading, dan angka hitung mundur SHALL berada dalam elemen non-heading dengan `role="status"` dan `aria-live="assertive"` sehingga pembaca layar membacakan angkanya.
 11. WHERE Home mengarahkan ke game pertama, THE Home SHALL mengarah ke `game-1/index.html`.
 
 ### Requirement 9: Efek Suara (Audio_Cue)
@@ -172,10 +178,10 @@ Catatan konsistensi: folder aktual game bernama `game-1` (bukan `game1` seperti 
 1. WHEN pemain membuka Card dan sentuhan tersebut diterima sesuai Requirement 5.1, THE Memory_Flip_Page SHALL memutar Audio_Cue `flip.mp3`.
 2. WHEN dua Card terbuka memiliki gambar item yang sama, THE Memory_Flip_Page SHALL memutar Audio_Cue `match.mp3`.
 3. WHEN dua Card terbuka memiliki gambar item yang berbeda, THE Memory_Flip_Page SHALL memutar Audio_Cue `wrong.mp3`.
-4. WHEN sisa waktu Timer mencapai 3 detik pada sesi permainan yang sedang berjalan, THE Memory_Flip_Page SHALL memutar Audio_Cue `countdown.mp3` tepat satu kali.
-5. IF permainan berakhir sebelum `countdown.mp3` selesai diputar, THEN THE Memory_Flip_Page SHALL menghentikan pemutaran `countdown.mp3`.
-6. IF sisa waktu Timer sudah kurang dari atau sama dengan 3 detik saat sesi dipulihkan setelah halaman dimuat ulang, THEN THE Memory_Flip_Page SHALL tidak memutar `countdown.mp3` pada sesi yang dipulihkan tersebut.
-7. WHEN pemain menyentuh Matched_Card, Card yang sedang terbuka, atau Card lain saat Board terkunci, atau permainan belum dimulai atau sudah berakhir, THE Memory_Flip_Page SHALL tidak memutar Audio_Cue apa pun.
+4. WHEN Countdown_Screen mulai ditampilkan, THE Memory_Flip_Page SHALL memutar Audio_Cue `countdown.mp3` tepat satu kali.
+5. IF pemain meninggalkan halaman atau Memory_Flip_Page tidak lagi menampilkan Countdown_Screen sebelum `countdown.mp3` selesai diputar, THEN THE Memory_Flip_Page SHALL menghentikan pemutaran `countdown.mp3`.
+6. WHILE Game_Screen ditampilkan, THE Memory_Flip_Page SHALL tidak memutar `countdown.mp3`, termasuk pada 3 detik terakhir Timer dan pada sesi yang dipulihkan.
+7. WHEN pemain menyentuh Matched_Card, Card yang sedang terbuka, atau Card lain saat Board terkunci, atau permainan belum dimulai (Intro_Screen atau Countdown_Screen) atau sudah berakhir, THE Memory_Flip_Page SHALL tidak memutar Audio_Cue apa pun.
 8. IF pemutaran Audio_Cue diblokir oleh browser atau berkas audio gagal dimuat, THEN THE Memory_Flip_Page SHALL mengabaikan kegagalan tersebut dan melanjutkan permainan tanpa menampilkan error.
 9. THE Memory_Flip_Page SHALL memuat seluruh Audio_Cue dari path relatif lokal `assets/audio/` menggunakan API Audio bawaan browser, tanpa CDN dan tanpa library pihak ketiga.
 
@@ -186,7 +192,7 @@ Catatan konsistensi: folder aktual game bernama `game-1` (bukan `game1` seperti 
 #### Acceptance Criteria
 
 1. THE Score_Store helper di `js/storage.js` SHALL menyediakan fungsi untuk menyimpan, membaca, dan menghapus Game_Session_State pada key `entrasol_game1_state`, dan fungsi `resetScore` SHALL juga menghapus Game_Session_State.
-2. WHEN pemain menekan tombol Start, THE Memory_Flip_Page SHALL menyimpan Game_Session_State dengan fase `playing`, urutan dek hasil acak, seluruh Card berstatus `closed`, jumlah Pair 0, dan Deadline sama dengan waktu saat ini ditambah 30 detik.
+2. WHEN permainan dimulai setelah Countdown_Screen selesai, THE Memory_Flip_Page SHALL menyimpan Game_Session_State dengan fase `playing`, urutan dek hasil acak, seluruh Card berstatus `closed`, jumlah Pair 0, dan Deadline sama dengan waktu saat permainan dimulai ditambah 30 detik.
 3. WHEN status Card atau jumlah Pair berubah selama fase `playing`, THE Memory_Flip_Page SHALL memperbarui Game_Session_State yang tersimpan.
 4. WHEN Memory_Flip_Page dimuat ulang dan Game_Session_State valid berfase `playing` dengan waktu saat ini belum melewati Deadline, THE Memory_Flip_Page SHALL langsung menampilkan Game_Screen tanpa menampilkan Intro_Screen.
 5. WHEN Game_Session_State berfase `playing` dipulihkan, THE Memory_Flip_Page SHALL memulihkan urutan Card yang sama, mempertahankan Matched_Card dalam keadaan terbuka dan bertanda, serta menampilkan skor berjalan sebesar 5 dikalikan jumlah Pair yang tersimpan.
@@ -219,3 +225,24 @@ Catatan konsistensi: folder aktual game bernama `game-1` (bukan `game1` seperti 
 8. WHEN Memory_Flip_Page dimuat ulang saat Result_Screen ditampilkan, THE Memory_Flip_Page SHALL tetap menampilkan Result_Screen dengan Memory_Flip_Score yang sama sesuai Requirement 10.9.
 9. WHEN pemain menekan tombol back browser dari Result_Screen, THE browser SHALL kembali ke Home, dan WHEN pemain kemudian menekan "Mulai Permainan", THE Home SHALL mengarahkan ke `game-1/index.html` yang langsung menampilkan Result_Screen sesuai Requirement 10.12.
 10. WHILE Result_Screen ditampilkan pada lebar viewport 320px sampai 1920px, THE Result_Screen SHALL menampilkan seluruh elemen tanpa teks terpotong dan tanpa scroll horizontal.
+
+### Requirement 12: Countdown Sebelum Permainan
+
+**User Story:** Sebagai pemain, saya ingin hitung mundur 3, 2, 1 setelah menekan Start, sehingga saya siap sebelum waktu 30 detik mulai berjalan.
+
+#### Acceptance Criteria
+
+1. WHEN pemain menekan tombol Start pada Intro_Screen, THE Memory_Flip_Page SHALL menampilkan Countdown_Screen sebagai overlay penuh di dalam container halaman game-1 yang menutupi Game_Screen, dan Intro_Screen sudah disembunyikan.
+2. WHILE Countdown_Screen ditampilkan, THE Memory_Flip_Page SHALL menampilkan angka 3, 2, lalu 1, masing-masing selama 1 detik, sehingga Countdown_Screen berlangsung selama PRE_COUNTDOWN (3 detik).
+3. WHEN Countdown_Screen mulai ditampilkan, THE Memory_Flip_Page SHALL memutar Audio_Cue `countdown.mp3` tepat satu kali.
+4. WHEN angka 1 telah tampil selama 1 detik, THE Memory_Flip_Page SHALL menyembunyikan Countdown_Screen dan langsung memulai permainan dengan mengacak Board, menampilkan Game_Screen, menjalankan Timer dari 30 detik, menetapkan Deadline sama dengan waktu saat permainan dimulai ditambah 30 detik, dan menyimpan Game_Session_State fase `playing`.
+5. WHILE Countdown_Screen ditampilkan, THE Memory_Flip_Page SHALL menonaktifkan tombol Start dan mengabaikan penekanan berulang pada tombol Start.
+6. WHILE Countdown_Screen ditampilkan, THE Timer SHALL belum berjalan dan tetap bernilai 30 detik.
+7. WHILE Countdown_Screen ditampilkan, THE Memory_Flip_Page SHALL menolak interaksi pemain terhadap Card.
+8. WHILE Countdown_Screen ditampilkan, THE Memory_Flip_Page SHALL tidak menyimpan Game_Session_State.
+9. WHEN Memory_Flip_Page dimuat ulang saat Countdown_Screen ditampilkan, THE Memory_Flip_Page SHALL menampilkan Intro_Screen sebagai sesi baru karena tidak ada Game_Session_State tersimpan.
+10. WHEN pemain menekan tombol back browser saat Countdown_Screen ditampilkan dan kemudian menekan "Mulai Permainan" di Home, THE Memory_Flip_Page SHALL menampilkan Intro_Screen sebagai sesi baru.
+11. WHEN Game_Session_State berfase `playing` atau `finished` dipulihkan setelah halaman dimuat ulang atau dari Home, THE Memory_Flip_Page SHALL tidak menampilkan Countdown_Screen.
+12. IF pemain meninggalkan halaman saat Countdown_Screen ditampilkan, THEN THE Memory_Flip_Page SHALL menghentikan hitung mundur awal sehingga tidak ada timer yang tersisa, dan menghentikan pemutaran `countdown.mp3`.
+13. IF pemutaran `countdown.mp3` diblokir oleh browser atau berkas audio gagal dimuat, THEN THE Memory_Flip_Page SHALL melanjutkan hitung mundur awal sampai permainan dimulai tanpa menampilkan error.
+14. FOR ALL nilai `elapsedMs` bilangan real, THE fungsi `countdownNumber` SHALL menghasilkan 3 bila `elapsedMs` negatif atau non-finite atau kurang dari 1000, 2 bila kurang dari 2000, 1 bila kurang dari 3000, dan 0 (selesai) bila 3000 atau lebih, sehingga nilai yang dihasilkan tidak pernah bertambah ketika `elapsedMs` bertambah pada rentang finite nonnegatif.

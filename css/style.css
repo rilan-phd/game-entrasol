@@ -1,4 +1,4 @@
-/* Entrasol Game - style.css */
+﻿/* Entrasol Game - style.css */
 
 @font-face {
   font-family: 'Noto Sans';
@@ -209,6 +209,40 @@ body.flip-body { background-color: rgba(20, 26, 140, 0.15); }
 .flip-game[hidden],
 .flip-result[hidden] { display: none; }
 
+/* Layar hitung mundur 3-2-1: overlay di depan Game_Screen (papan tertutup terlihat samar) */
+.flip-countdown {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.85);
+  text-align: center;
+}
+.flip-countdown[hidden] { display: none; }
+.flip-countdown__label {
+  margin: 0 0 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--entrasol-blue-dark);
+}
+.flip-countdown__number {
+  font-size: 8rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--entrasol-blue-dark);
+  animation: flip-countdown-pulse 1s ease-in-out infinite;
+}
+@keyframes flip-countdown-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flip-countdown__number { animation: none; }
+}
+
 /* Layar permainan: judul, HUD, progress bar, papan */
 .flip-game {
   min-width: 0;
@@ -391,6 +425,7 @@ body.flip-body { background-color: rgba(20, 26, 140, 0.15); }
   border-radius: inherit;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+  border:1px solid var(--entrasol-blue-light);
 }
 
 .flip-card__front { transform: rotateY(180deg); }
@@ -447,6 +482,327 @@ body.flip-body { background-color: rgba(20, 26, 140, 0.15); }
 @media (min-width: 576px) {
   .flip-page { padding: 2rem 1.5rem 7rem; }
   .flip-title { font-size: 2.25rem; }
+}
+
+/* ==========================================================================
+   Memory Recall (game-2) - semua kelas berprefix .recall- (tema hijau muda)
+   ========================================================================== */
+
+body.recall-body { background-color: rgba(139, 195, 74, 0.2); }
+
+.recall-page {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  max-width: var(--app-max-width);
+  margin: 0 auto;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 1rem 6rem;
+  background: linear-gradient(180deg, #FFFFFF 0%, rgba(139, 195, 74, 0.45) 100%);
+  box-shadow: 0 0 40px rgba(20, 26, 140, 0.08);
+}
+
+.recall-page::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  pointer-events: none;
+  aspect-ratio: 390 / 120;
+  background: url('../assets/background-wave.svg') no-repeat bottom center / 100% 100%;
+}
+
+.recall-intro,
+.recall-game,
+.recall-result {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  min-width: 0;
+  color: var(--entrasol-blue-dark);
+}
+
+.recall-intro[hidden],
+.recall-game[hidden],
+.recall-result[hidden],
+.recall-countdown[hidden] { display: none; }
+
+/* Intro */
+.recall-eyebrow {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--entrasol-blue-dark);
+}
+
+.recall-icon {
+  display: block;
+  width: 160px;
+  max-width: 60%;
+  height: auto;
+  margin: 0.25rem 0 1rem;
+  border-radius: 1rem;
+}
+
+.recall-title {
+  margin: 0 0 0.5rem;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--entrasol-blue-dark);
+}
+
+.recall-subtitle {
+  margin: 0 0 1.25rem;
+  font-size: 1rem;
+  color: var(--entrasol-blue-dark);
+  opacity: 0.85;
+}
+
+.recall-instruction {
+  width: 100%;
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  text-align: left;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--entrasol-blue-dark);
+  background-color: var(--entrasol-white);
+  border: 2px solid var(--entrasol-green);
+  border-radius: 1rem;
+  box-shadow: 0 4px 14px rgba(20, 26, 140, 0.08);
+}
+.recall-instruction p { margin: 0 0 0.75rem; }
+.recall-instruction p:last-child { margin-bottom: 0; }
+
+.recall-time-alert {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
+  margin: 1rem 0 0;
+  padding: 0.75rem 1rem;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--entrasol-blue-dark);
+  background-color: rgba(139, 195, 74, 0.2);
+  border: 1px solid rgba(139, 195, 74, 0.6);
+  border-radius: 0.5rem;
+}
+
+/* Countdown 3-2-1: overlay di depan Game_Screen */
+.recall-countdown {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.85);
+  text-align: center;
+}
+.recall-countdown__label {
+  margin: 0 0 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--entrasol-blue-dark);
+}
+.recall-countdown__number {
+  font-size: 8rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--entrasol-blue-dark);
+  animation: recall-countdown-pulse 1s ease-in-out infinite;
+}
+@keyframes recall-countdown-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .recall-countdown__number { animation: none; }
+}
+
+/* Game */
+.recall-game {
+  --recall-img: min(calc(50% - 8px), 280px);
+  --recall-opt: min(55%, 190px);
+  gap: 0.5rem;
+  padding: 1rem 0.75rem 1.5rem;
+}
+
+.recall-game-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--entrasol-blue-dark);
+}
+
+.recall-badge {
+  display: inline-block;
+  padding: 0.25rem 1rem;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 50rem;
+}
+.recall-badge--memorize {
+  color: var(--entrasol-blue-dark);
+  background-color: var(--entrasol-blue-light);
+}
+.recall-badge--answer {
+  color: var(--entrasol-white);
+  background-color: var(--entrasol-blue-dark);
+}
+
+.recall-timer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3rem;
+  min-height: 44px;
+  padding: 0 0.9rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--entrasol-blue-dark);
+  background-color: var(--entrasol-white);
+  border: 2px solid var(--entrasol-blue-dark);
+  border-radius: 50rem;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.recall-timer--warning {
+  color: #D32F2F;
+  border-color: #D32F2F;
+}
+
+.recall-progress {
+  width: min(100%, 280px);
+  height: 10px;
+  background-color: rgba(139, 195, 74, 0.25);
+  border-radius: 50rem;
+}
+.recall-progress .progress-bar {
+  background-color: var(--entrasol-blue-dark);
+  transition: width 1s linear, background-color 0.2s ease;
+}
+
+.recall-prompt {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--entrasol-blue-dark);
+}
+
+/* Gambar */
+.recall-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.recall-frame,
+.recall-option {
+  display: block;
+  box-sizing: border-box;
+  width: var(--recall-img);
+  min-width: 44px;
+  min-height: 44px;
+  aspect-ratio: 1 / 1;
+  margin: 4px;
+  padding: 0;
+  overflow: hidden;
+  background-color: var(--entrasol-white);
+  border: 3px solid var(--entrasol-green);
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(20, 26, 140, 0.18);
+}
+.recall-frame--empty { background-color: rgba(255, 255, 255, 0.6); }
+
+.recall-option {
+  width: var(--recall-opt, var(--recall-img));
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.recall-option:focus-visible {
+  outline: 3px solid var(--entrasol-blue-dark);
+  outline-offset: 2px;
+}
+
+.recall-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.recall-pyramid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+.recall-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+/* Layar hasil */
+.recall-result {
+  justify-content: center;
+  gap: 1rem;
+  min-height: 60vh;
+  min-height: 60svh;
+  padding: 2rem 1rem;
+}
+
+.recall-result__title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.recall-result__icon {
+  display: block;
+  width: 96px;
+  max-width: 40%;
+  height: auto;
+}
+
+.recall-result__score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+}
+
+.recall-result__number {
+  font-size: 4.5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--entrasol-blue-dark);
+}
+
+.recall-result__unit,
+.recall-result__max {
+  font-size: 1.125rem;
+  color: var(--entrasol-blue-dark);
+}
+
+@media (min-width: 576px) {
+  .recall-page { padding: 2rem 1.5rem 7rem; }
+  .recall-title { font-size: 2.25rem; }
 }
 
 /* ==========================================================================
@@ -543,6 +899,9 @@ body.flip-body { background-color: rgba(20, 26, 140, 0.15); }
     justify-content: safe center;
   }
 
+  /* Countdown */
+  .flip-countdown__number { font-size: clamp(5rem, calc(20 * var(--dvh)), 8rem); }
+
   /* Intro */
   .flip-eyebrow { font-size: clamp(0.8125rem, calc(2 * var(--dvh)), 1rem); }
   .flip-icon {
@@ -594,4 +953,89 @@ body.flip-body { background-color: rgba(20, 26, 140, 0.15); }
   /* Hasil */
   .flip-result { gap: calc(2 * var(--dvh)); padding: 0 1rem; }
   .flip-result__number { font-size: clamp(3rem, calc(10 * var(--dvh)), 4.5rem); }
+
+  /* ---- Game 2 (Memory Recall): tiga layar berbagi tinggi yang sama ---- */
+  .recall-page {
+    height: calc(100 * var(--dvh));
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: calc(2 * var(--dvh)) 1rem;
+  }
+  .recall-intro,
+  .recall-game,
+  .recall-result {
+    flex: 1 1 auto;
+    min-height: 0;
+    justify-content: center;
+    justify-content: safe center;
+  }
+
+  /* Countdown */
+  .recall-countdown__label { font-size: clamp(0.9375rem, calc(2.4 * var(--dvh)), 1.125rem); }
+  .recall-countdown__number { font-size: clamp(5rem, calc(20 * var(--dvh)), 8rem); }
+
+  /* Intro */
+  .recall-eyebrow {
+    margin-bottom: calc(0.4 * var(--dvh));
+    font-size: clamp(0.8125rem, calc(2 * var(--dvh)), 1rem);
+  }
+  .recall-icon {
+    width: auto;
+    max-width: 60%;
+    height: clamp(48px, calc(11 * var(--dvh)), 120px);
+    margin: 0 0 calc(1.2 * var(--dvh));
+    object-fit: contain;
+  }
+  .recall-title {
+    font-size: clamp(1.375rem, calc(4.2 * var(--dvh)), 2rem);
+    margin-bottom: calc(0.8 * var(--dvh));
+  }
+  .recall-subtitle {
+    font-size: clamp(0.8125rem, calc(2.1 * var(--dvh)), 1rem);
+    margin-bottom: calc(1.5 * var(--dvh));
+  }
+  .recall-instruction {
+    margin-bottom: calc(1.8 * var(--dvh));
+    padding: clamp(0.6rem, calc(1.8 * var(--dvh)), 1rem);
+    font-size: clamp(0.8125rem, calc(2 * var(--dvh)), 1rem);
+    line-height: 1.4;
+  }
+  .recall-instruction p { margin-bottom: 0.5rem; }
+  .recall-time-alert {
+    margin-top: calc(1.2 * var(--dvh));
+    padding: clamp(0.35rem, calc(1.2 * var(--dvh)), 0.75rem) 0.75rem;
+    font-size: clamp(0.8125rem, calc(2 * var(--dvh)), 1rem);
+  }
+
+  /* Permainan: ukuran gambar dibatasi tinggi layar agar bingkai/piramida 1+2 selalu muat */
+  .recall-game {
+    --recall-img: min(calc(50% - 8px), 280px, calc((100 * var(--dvh) - 215px) / 2));
+    --recall-opt: min(55%, 190px, calc((100 * var(--dvh) - 235px) / 3));
+    gap: calc(0.8 * var(--dvh));
+    padding: 0 0.75rem;
+  }
+  .recall-game-title { font-size: clamp(1.2rem, calc(3.4 * var(--dvh)), 1.5rem); }
+  .recall-badge {
+    padding: clamp(0.15rem, calc(0.6 * var(--dvh)), 0.25rem) clamp(0.75rem, calc(2 * var(--dvh)), 1rem);
+    font-size: clamp(0.8125rem, calc(2.2 * var(--dvh)), 1rem);
+  }
+  .recall-timer {
+    min-height: clamp(36px, calc(6 * var(--dvh)), 44px);
+    font-size: clamp(1.125rem, calc(3.2 * var(--dvh)), 1.5rem);
+  }
+  .recall-progress { height: clamp(6px, calc(1.2 * var(--dvh)), 10px); }
+  .recall-prompt { font-size: clamp(0.8125rem, calc(2.1 * var(--dvh)), 1rem); }
+
+  /* Hasil */
+  .recall-result { gap: calc(2 * var(--dvh)); padding: 0 1rem; }
+  .recall-result__title { font-size: clamp(1.2rem, calc(3.4 * var(--dvh)), 1.5rem); }
+  .recall-result__icon {
+    width: auto;
+    max-width: 40%;
+    height: clamp(56px, calc(12 * var(--dvh)), 96px);
+  }
+  .recall-result__number { font-size: clamp(3rem, calc(10 * var(--dvh)), 4.5rem); }
+  .recall-result__unit,
+  .recall-result__max { font-size: clamp(0.9375rem, calc(2.4 * var(--dvh)), 1.125rem); }
 }

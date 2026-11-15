@@ -21,7 +21,12 @@
         <p>Setiap detik berharga. Buka kartu, ingat posisinya, dan temukan pasangannya!</p>
         <div class="alert flip-time-alert" role="note">Waktu bermain: 30 detik</div>
       </div>
-      <button type="button" id="startBtn" class="btn btn-entrasol">Start</button>
+      <button type="button" id="startBtn" class="btn btn-entrasol">Mulai</button>
+    </section>
+
+    <section id="countdownScreen" class="flip-countdown" hidden>
+      <p class="flip-countdown__label">Bersiap...</p>
+      <div id="countdownNumber" class="flip-countdown__number" role="status" aria-live="assertive">3</div>
     </section>
 
     <section id="gameScreen" class="flip-game" hidden>

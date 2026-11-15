@@ -1,0 +1,198 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1.1 Tambah fungsi state game-2 di `js/storage.js`": [
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533336514
+      },
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533345147
+      },
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533406359
+      }
+    ],
+    "2.1 Buat `game-2/game.js` bagian konstanta, `CARD_IMAGES`, fungsi murni, dan state": [
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533336657
+      },
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533345239
+      },
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533407150
+      }
+    ],
+    "3.1 Buat `game-2/index.html`": [
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533336722
+      },
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533345778
+      },
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533407642
+      }
+    ],
+    "3.2 Tambah gaya tema hijau di `css/style.css`": [
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533336804
+      },
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533346323
+      },
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533408448
+      }
+    ],
+    "3.3 Tambah aturan fit-to-viewport game-2 di `css/style.css`": [
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533336889
+      },
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533412699
+      },
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533490557
+      }
+    ],
+    "4.1 Lengkapi `game-2/game.js` dengan audio, render, restore, dan hasil": [
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533336972
+      },
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533413267
+      },
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533491146
+      }
+    ],
+    "4.2 Implementasikan alur Mulai → Countdown → Fase_Mengingat → Fase_Memilih di `game-2/game.js`": [
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533337044
+      },
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533523735
+      },
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533559793
+      }
+    ],
+    "4.3 Implementasikan pemilihan dan `finishGame` di `game-2/game.js`": [
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533337175
+      },
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533560281
+      },
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533595272
+      }
+    ],
+    "5. Checkpoint - Pastikan semuanya berjalan": [
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533337260
+      },
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533600571
+      },
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533670473
+      }
+    ],
+    "7. Final checkpoint - Pastikan semua tes lulus": [
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533337323
+      },
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533671219
+      }
+    ],
+    "1. Perluas helper global LocalStorage untuk state game-2": [
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533406482
+      }
+    ],
+    "2. Implementasikan fungsi murni gameplay": [
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533407272
+      }
+    ],
+    "3. Buat markup dan gaya halaman": [
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533490823
+      }
+    ],
+    "4. Hubungkan lapisan DOM, timer, audio, dan penyimpanan": [
+      {
+        "executionId": "584bad7a-b2d1-40a9-9e6b-3cb884f7b04b",
+        "chatSessionId": "sess_9d18dea8-c85d-4cad-8f6a-234a9a618da1",
+        "timestamp": 1794533595417
+      }
+    ]
+  }
+}

@@ -132,6 +132,7 @@ Implementasi game pertama Memory Flip di `game-1/` memakai HTML, CSS (Bootstrap 
 
   - [ ]* 7.3 Tulis property test countdown di `tests/countdown.property.test.js`
     - **Property 14: Countdown dipicu tepat sekali saat melintasi 3 detik**
+    - Catatan revisi: digantikan oleh task 13.2 (Property 14 baru: urutan angka countdown awal dengan `countdownNumber`); butir countdown 3 detik terakhir dan `shouldPlayCountdown` dihapus, jadi kerjakan task 13.2, bukan versi ini
     - **Validates: Requirements 9.4, 9.6**
 
 - [x] 8. Perbarui markup dan gaya untuk Game_Screen dan Result_Screen
@@ -172,6 +173,7 @@ Implementasi game pertama Memory Flip di `game-1/` memakai HTML, CSS (Bootstrap 
   - [ ]* 9.4 Tulis unit test DOM, audio, restore, dan Result_Screen di `tests/game.unit.test.js`
     - Gunakan jsdom, fake timers, dan mock `Audio`
     - Audio: `flip`, `match`, `wrong` terpicu sesuai kejadian; `countdown` sekali saat melintasi 3 detik; klik ditolak tanpa suara; `play()` yang ditolak tidak mengganggu permainan
+    - Catatan revisi: butir audio `countdown` sekali saat melintasi 3 detik digantikan oleh task 13.5 (countdown dipindah ke Countdown_Screen; tidak ada `countdown.mp3` di Game_Screen)
     - Restore: refresh saat `playing` melanjutkan sisa waktu nyata tanpa countdown bila sisa ≤ 3; `deadline` terlewat langsung ke Result_Screen dengan skor tersimpan sekali; `finished` menampilkan Result_Screen tanpa simpan ulang; state rusak kembali ke Intro_Screen
     - Result_Screen: hanya judul, skor dengan "point" dan "dari 40", tombol "Lanjutkan"; tidak ada navigasi otomatis; klik Lanjutkan memanggil `navigateTo('../game-2/index.html')`
     - _Requirements: 3.1, 5.8, 9.1, 9.2, 9.3, 9.4, 9.6, 9.7, 9.8, 10.4, 10.8, 10.9, 10.15, 11.2, 11.3, 11.6, 11.7, 11.8_
@@ -188,6 +190,7 @@ Implementasi game pertama Memory Flip di `game-1/` memakai HTML, CSS (Bootstrap 
 
 - [ ] 12. Verifikasi statis akhir
   - [ ]* 12.1 Tulis smoke test statis di `tests/static.smoke.test.js`
+    - Catatan revisi: pemeriksaan khusus Countdown_Screen ditambahkan oleh task 13.6
     - Pindai `index.html`, `game-1/index.html`, `game-1/game.js`, `css/style.css`: tidak ada `http://`, `https://`, atau `//` untuk aset (termasuk URL audio)
     - Path audio hanya relatif lokal (`assets/audio/*.mp3`)
     - `localStorage` hanya muncul di `js/storage.js` (`index.html` Home dan `game-1/game.js` tidak mengaksesnya langsung)
@@ -195,14 +198,55 @@ Implementasi game pertama Memory Flip di `game-1/` memakai HTML, CSS (Bootstrap 
     - Urutan skrip dan path relatif benar; `index.html` Home mengarah ke `game-1/index.html`
     - _Requirements: 8.4, 8.5, 8.7, 8.8, 8.11, 9.8, 10.14_
 
-- [~] 13. Final checkpoint - Pastikan semua tes lulus
+- [x] 13. Tambah Countdown_Screen sebelum permainan (revisi)
+  - [x] 13.1 Tambah fungsi murni `countdownNumber` dan hapus logika countdown 3 detik terakhir di `game-1/game.js`
+    - Tambah konstanta `PRE_COUNTDOWN_SECONDS = 3`
+    - Implementasikan `countdownNumber(elapsedMs)`: `< 1000` → 3, `< 2000` → 2, `< 3000` → 1, `>= 3000` → 0 (selesai); nilai negatif atau non-finite → 3
+    - Ekspos `countdownNumber` dan `PRE_COUNTDOWN_SECONDS` lewat `MemoryFlipLogic` dan `module.exports`
+    - Hapus `COUNTDOWN_AT`, `shouldPlayCountdown`, dan properti `countdownPlayed` dari `game.js` (konstanta, fungsi, state, ekspos, serta penggunaannya di `init()` dan `tick()`)
+    - _Requirements: 9.4, 9.6, 12.2, 12.14_
+
+  - [ ]* 13.2 Tulis property test countdown awal di `tests/countdown.property.test.js`
+    - **Property 14: Urutan angka countdown awal**
+    - Untuk tiap tick `k = 0..3` dengan offset acak 0..999, hasilnya 3, 2, 1, lalu 0; monoton menurun untuk nilai finite nonnegatif; 0 jika dan hanya jika `elapsedMs` finite `>= 3000`; negatif/non-finite → 3; `numRuns: 100`
+    - Menggantikan task 7.3 lama
+    - **Validates: Requirements 12.2, 12.4, 12.14**
+
+  - [x] 13.3 Tambah markup dan CSS Countdown_Screen di `game-1/index.html` dan `css/style.css`
+    - Tambah `section#countdownScreen.flip-countdown[hidden]` di dalam `main.flip-page` setelah `#introScreen`, berisi `p.flip-countdown__label` "Bersiap..." dan `div#countdownNumber.flip-countdown__number[role="status"][aria-live="assertive"]` bernilai awal 3; tanpa heading
+    - CSS `.flip-countdown`: `position: absolute; inset: 0; z-index` di atas Game_Screen dan wave, flex terpusat kolom, latar `rgba(255, 255, 255, 0.85)`; tambah `.flip-countdown[hidden] { display: none; }`
+    - CSS `.flip-countdown__label` (Biru_Tua, bold, 1.125rem) dan `.flip-countdown__number` (8rem, bold, Biru_Tua, `line-height: 1`); animasi pulse ringan opsional lewat CSS saja dan nonaktif pada `prefers-reduced-motion`
+    - Di `@media (min-height: 550px)` kecilkan angka dengan `clamp(5rem, calc(20 * var(--dvh)), 8rem)` agar muat tanpa scroll
+    - _Requirements: 2.11, 2.12, 2.13, 8.10, 12.1_
+
+  - [x] 13.4 Refaktor alur Start di `game-1/game.js` menjadi dua tahap
+    - Tambah phase `countdown` dan `state.countdownId`; ambil elemen `#countdownScreen` dan `#countdownNumber` di `init()`; bind Start ke `beginCountdown`
+    - `beginCountdown()`: dijaga `phase === 'intro'`, nonaktifkan Start, `phase = 'countdown'`, sembunyikan Intro_Screen dan tampilkan Game_Screen (papan tertutup, Timer belum jalan), tampilkan overlay di depannya, `playSound('countdown')` sekali, interval berbasis `countdownNumber(Date.now() - t0)` yang memperbarui angka hanya saat berubah; saat hasil 0 bersihkan interval, sembunyikan overlay, panggil `startGame()`; tanpa `saveGame1State` dan tanpa menjalankan Timer
+    - `startGame()`: dijaga `phase === 'countdown'`, hanya memulai permainan (acak papan, `deadline = Date.now() + 30000`, simpan state `playing`, tampilkan Game_Screen, `startTimer()`)
+    - `tick()` dan `finishGame()` tidak memutar atau menghentikan `countdown.mp3`
+    - `cancelCountdown()` pada `pagehide`: `clearInterval`, `countdownId = null`, `stopSound('countdown')`; kegagalan audio tidak menghentikan hitung mundur
+    - Restore sesi (`playing`/`finished`) tidak menampilkan Countdown_Screen
+    - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 9.4, 9.5, 9.6, 9.7, 9.8, 10.2, 12.1, 12.2, 12.3, 12.4, 12.5, 12.6, 12.7, 12.8, 12.9, 12.10, 12.11, 12.12, 12.13_
+
+  - [ ]* 13.5 Tulis unit test Countdown_Screen di `tests/game.unit.test.js`
+    - Gunakan jsdom, fake timers, `Date.now` palsu, dan mock `Audio`
+    - Countdown 3 detik (angka 3, 2, 1) lalu game mulai; Start ganda diabaikan; `countdown.mp3` diputar sekali dan tidak pernah di Game_Screen; Deadline = saat permainan dimulai + 30000 (bukan saat Start); Timer dan state belum tersimpan selama countdown; Card tidak dapat dibuka saat countdown; refresh saat countdown kembali ke Intro_Screen; `pagehide` membersihkan interval dan menghentikan audio; audio ditolak tetap lanjut; restore tidak menampilkan countdown
+    - Menggantikan butir audio countdown 3 detik terakhir di task 9.4
+    - _Requirements: 3.1, 3.2, 3.4, 3.6, 9.4, 9.5, 9.6, 9.8, 10.2, 12.1, 12.2, 12.3, 12.4, 12.5, 12.6, 12.7, 12.8, 12.9, 12.11, 12.12, 12.13_
+
+  - [ ]* 13.6 Perbarui smoke test statis di `tests/static.smoke.test.js`
+    - Pastikan `#countdownScreen` berada di dalam `main.flip-page`, ber-`hidden`, tanpa heading, `#countdownNumber` ber-`role="status"` dan `aria-live="assertive"`; `PRE_COUNTDOWN_SECONDS = 3`; `COUNTDOWN_AT`, `shouldPlayCountdown`, `countdownPlayed` tidak ada di `game.js`; `.flip-countdown[hidden]` ada di CSS; tetap tanpa URL eksternal
+    - _Requirements: 8.5, 8.10, 9.6, 12.1_
+
+- [~] 14. Final checkpoint - Pastikan semua tes lulus
   - Pastikan semua tes yang ada lulus, tanyakan kepada pengguna bila ada pertanyaan.
 
 ## Notes
 
 - Sub-task bertanda `*` bersifat opsional dan dapat dilewati untuk MVP yang lebih cepat
 - Setiap task merujuk requirements spesifik untuk keterlacakan
-- Property test memvalidasi 14 properti kebenaran dari design; unit test memvalidasi contoh dan edge case
+- Property test memvalidasi 14 properti kebenaran dari design (Property 14 kini tentang urutan angka countdown awal); unit test memvalidasi contoh dan edge case
+- Task 13 adalah revisi Countdown_Screen; task 7.3 digantikan oleh 13.2, dan butir countdown 3 detik terakhir pada 9.4 digantikan oleh 13.5
 - Berkas uji dan fast-check/jsdom (versi dipin) hanya untuk pengembang; halaman produksi tetap tanpa build step dan dapat dibuka langsung di browser
 
 ## Task Dependency Graph
@@ -210,11 +254,11 @@ Implementasi game pertama Memory Flip di `game-1/` memakai HTML, CSS (Bootstrap 
 ```json
 {
   "waves": [
-    { "id": 0, "tasks": ["6.1", "7.1", "8.1", "8.2", "10.1"] },
-    { "id": 1, "tasks": ["1.3", "2.2", "2.3", "6.2", "6.3", "7.2", "7.3", "9.1"] },
-    { "id": 2, "tasks": ["9.2"] },
-    { "id": 3, "tasks": ["4.2", "4.3", "9.3", "9.4"] },
-    { "id": 4, "tasks": ["12.1"] }
+    { "id": 0, "tasks": ["1.3", "2.2", "2.3", "6.2", "7.2", "7.3", "13.1", "13.3"] },
+    { "id": 1, "tasks": ["6.3", "9.3", "13.2", "13.4"] },
+    { "id": 2, "tasks": ["4.2", "9.4", "12.1"] },
+    { "id": 3, "tasks": ["4.3", "13.6"] },
+    { "id": 4, "tasks": ["13.5"] }
   ]
 }
 ```
