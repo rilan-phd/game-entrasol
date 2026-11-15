@@ -6,8 +6,8 @@ Memory Flip adalah game pertama dari rangkaian tiga mini-game Entrasol. Halaman 
 
 - **Intro_Screen** (`#introScreen`): teks "GAME 01", ikon game, judul, sub judul, box petunjuk berisi alert waktu 30 detik, tombol Start.
 - **Countdown_Screen** (`#countdownScreen`): overlay penuh di dalam `main.flip-page` yang menutupi Game_Screen (papan tertutup, Timer 30 belum berjalan) selama 3 detik setelah Start ditekan, menampilkan "Bersiap..." dan angka besar 3, 2, 1. Tidak memakai heading dan tidak pernah disimpan sebagai sesi.
-- **Game_Screen** (`#gameScreen`): judul terlihat "Memory Flip", timer, skor berjalan, progress bar, papan kartu 4×4.
-- **Result_Screen** (`#resultScreen`): judul "Memory Flip", skor besar dengan keterangan "point" dan "dari 40", tombol "Lanjutkan".
+- **Game_Screen** (`#gameScreen`): ikon game (kecil) di paling atas, judul terlihat "Memory Flip", timer, skor berjalan, progress bar, papan kartu 4×4.
+- **Result_Screen** (`#resultScreen`): ikon game, judul "Memory Flip", skor besar dengan keterangan "point" dan "dari 40", tombol "Lanjutkan".
 
 Pemain mencari 8 pasang gambar identik dalam 30 detik. Tiap pasangan bernilai 5 point (maks 40). Saat game berakhir (8 pasang ditemukan atau waktu habis), skor ditulis ke LocalStorage lewat `js/storage.js` tepat satu kali, lalu Result_Screen ditampilkan di halaman yang sama. Tidak ada ringkasan 2 detik dan tidak ada navigasi otomatis: pindah ke `game-2/index.html` hanya terjadi saat pemain menekan "Lanjutkan".
 
@@ -19,7 +19,7 @@ Revisi ini menambahkan tiga kemampuan:
 2. **Persistensi sesi**: Game_Session_State disimpan di key `entrasol_game1_state`. Refresh atau tombol back tidak mengulang permainan. Permainan berjalan dilanjutkan dengan sisa waktu nyata (berbasis Deadline absolut), dan permainan selesai langsung menampilkan Result_Screen. Karena perpindahan tampilan tidak memakai `history.pushState`, tombol back browser dari game-1 selalu kembali ke Home.
 3. **Countdown_Screen** 3 detik (3, 2, 1) sebelum permainan. Timer 30 detik dan Deadline baru dihitung setelah countdown selesai. Selama countdown tidak ada Game_Session_State yang disimpan, sehingga refresh atau back saat countdown kembali ke Intro_Screen sebagai sesi baru.
 
-Tampilan memakai container mobile maks 430px dengan latar gradasi putih ke biru muda dan wave di bawah, sedangkan latar `body` biru tua transparan hanya berlaku di halaman game-1 (kelas `flip-body`). Teks utama berwarna Biru_Tua `#141A8C`. Home hanya berubah perilaku tombol "Mulai Permainan" (memuat `js/storage.js`, tanpa akses localStorage langsung); tampilannya tidak berubah.
+Tampilan memakai container mobile maks 430px dengan latar gradasi putih ke biru muda tanpa background wave, sedangkan latar `body` biru tua transparan hanya berlaku di halaman game-1 (kelas `flip-body`). Teks utama berwarna Biru_Tua `#141A8C`. Home hanya berubah perilaku tombol "Mulai Permainan" (memuat `js/storage.js`, tanpa akses localStorage langsung); tampilannya tidak berubah.
 
 ### Keputusan Desain Utama
 
@@ -49,7 +49,7 @@ Tampilan memakai container mobile maks 430px dengan latar gradasi putih ke biru 
 
 ### Catatan Riset
 
-Tidak ada kebutuhan riset eksternal. Desain memakai API browser standar (`localStorage`, `Date.now`, `setInterval`/`setTimeout`, `Audio`, CSS `aspect-ratio`, `transform-style: preserve-3d`, atribut `hidden`) dan aset yang sudah ada di workspace (`game-1/assets/back-card.jpg`, `item-1.jpg` sampai `item-8.jpg`, `game-1/assets/audio/{flip,match,wrong,countdown}.mp3`, `assets/background-wave.svg`, font Noto Sans lokal).
+Tidak ada kebutuhan riset eksternal. Desain memakai API browser standar (`localStorage`, `Date.now`, `setInterval`/`setTimeout`, `Audio`, CSS `aspect-ratio`, `transform-style: preserve-3d`, atribut `hidden`) dan aset yang sudah ada di workspace (`game-1/assets/back-card.jpg`, `item-1.jpg` sampai `item-8.jpg`, `game-1/assets/audio/{flip,match,wrong,countdown}.mp3`, `assets/icon-game-1.svg`, font Noto Sans lokal).
 
 ## Architecture
 
@@ -309,7 +309,7 @@ Pembuatan `new Audio` juga dibungkus agar bila konstruktor `Audio` tidak tersedi
 
 ```html
 <body class="flip-body">                       <!-- latar rgba(20,26,140,0.15), hanya game-1 -->
-<main class="flip-page">                       <!-- container 430px, gradasi putih -> biru muda + wave -->
+<main class="flip-page">                       <!-- container 430px, gradasi putih -> biru muda, tanpa wave -->
   <section id="introScreen" class="flip-intro">
     <p class="flip-eyebrow">GAME 01</p>
     <img class="flip-icon" src="../assets/icon-game-1.svg" alt="Ikon game Memory Flip">
@@ -330,6 +330,7 @@ Pembuatan `new Audio` juga dibungkus agar bila konstruktor `Audio` tidak tersedi
   </section>
 
   <section id="gameScreen" class="flip-game" hidden>
+    <img class="flip-icon flip-icon--game" src="../assets/icon-game-1.svg" alt="Ikon game Memory Flip">
     <h2 class="flip-game-title">Memory Flip</h2>
     <div class="flip-hud">
       <span id="timerText" class="flip-timer" aria-live="off">30</span>
@@ -342,6 +343,7 @@ Pembuatan `new Audio` juga dibungkus agar bila konstruktor `Audio` tidak tersedi
   </section>
 
   <section id="resultScreen" class="flip-result" hidden>
+    <img class="flip-icon flip-icon--result" src="../assets/icon-game-1.svg" alt="Ikon game Memory Flip">
     <h2 class="flip-result__title">Memory Flip</h2>
     <p class="flip-result__score">
       <span id="resultScore" class="flip-result__number">0</span>
@@ -355,7 +357,7 @@ Pembuatan `new Audio` juga dibungkus agar bila konstruktor `Audio` tidak tersedi
 
 `section#countdownScreen` berada di dalam `main.flip-page` (bukan di luar container) agar overlay hanya menutupi container 430px. Section ini tidak memuat heading; angka berada dalam `div` ber-`role="status"` dan `aria-live="assertive"` sehingga pembaca layar membacakan 3, 2, 1 (Req 8.10).
 
-Perubahan dari versi sebelumnya: `h2` visually-hidden "Papan Permainan" diganti `h2.flip-game-title` yang terlihat; `#summary` dihapus; `section#resultScreen.flip-result[hidden]` ditambahkan. Heading: tepat satu `h1` (Intro_Screen); `h2` untuk "Cara Bermain", judul Game_Screen, dan judul Result_Screen. Karena hanya satu tampilan yang terlihat, urutan heading tidak melompati level (Req 8.10). Result_Screen hanya berisi tiga elemen: judul, skor, tombol (Req 11.2).
+Perubahan dari versi sebelumnya: `h2` visually-hidden "Papan Permainan" diganti `h2.flip-game-title` yang terlihat; `#summary` dihapus; `section#resultScreen.flip-result[hidden]` ditambahkan. Heading: tepat satu `h1` (Intro_Screen); `h2` untuk "Cara Bermain", judul Game_Screen, dan judul Result_Screen. Karena hanya satu tampilan yang terlihat, urutan heading tidak melompati level (Req 8.10). Game_Icon (`img.flip-icon`) kini juga tampil di Game_Screen (`flip-icon--game`) dan Result_Screen (`flip-icon--result`), selalu sebagai elemen paling atas di atas judul `h2`; ikon bersifat dekoratif-informatif (punya `alt`) dan bukan heading sehingga urutan heading tidak berubah. Result_Screen hanya berisi empat elemen: ikon, judul, skor, tombol (Req 11.2).
 
 Struktur satu kartu (tombol agar bisa difokus dan mencapai target sentuh):
 
@@ -373,11 +375,14 @@ Struktur satu kartu (tombol agar bisa difokus dan mencapai target sentuh):
 Memakai variabel yang sudah ada (`--entrasol-blue-dark: #141A8C`, `--entrasol-green`, `--entrasol-white`, `--body-bg`, `--app-max-width`). Hanya menambah atau menyesuaikan kelas berprefix `flip-`; kelas Home tidak diubah.
 
 - `body.flip-body` — `background-color: rgba(20, 26, 140, 0.15)`; hanya dipakai di game-1 (Req 2.6).
-- `.flip-page` — `linear-gradient(180deg, #FFFFFF 0%, rgba(167,216,240,0.85) 100%)`, `max-width: var(--app-max-width)`, `margin: 0 auto`, `min-height: 100svh`; `::after` menampilkan `assets/background-wave.svg` di bawah (Req 2.5, 2.9).
+- `.flip-page` — `linear-gradient(180deg, #FFFFFF 0%, rgba(167,216,240,0.85) 100%)`, `max-width: var(--app-max-width)`, `margin: 0 auto`, `min-height: 100svh`, `padding: 1.5rem 1rem` (`2rem 1.5rem` pada `@media (min-width: 576px)`). Tidak ada pseudo-elemen `::after` dan tidak ada `assets/background-wave.svg` pada halaman game-1, sehingga padding bawah tidak lagi menyisakan ruang wave (Req 2.5, 2.9).
 - `.flip-eyebrow`, `.flip-title` (`2rem`), `.flip-subtitle`, `.flip-icon`, `.flip-instruction`, `.flip-instruction__title`, `.flip-time-alert` — tidak berubah dari desain sebelumnya (Biru_Tua, border 2px, radius 1rem, alert `rgba(20,26,140,0.12)` dengan radius 0.5rem).
-- `.flip-game-title` — baru. `font-size: 1.5rem; font-weight: 700; color: var(--entrasol-blue-dark); text-align: center; margin: 0 0 0.75rem`. Ditempatkan paling atas `#gameScreen` (Req 4.1, 4.2).
+- `.flip-icon--game` — Game_Icon pada Game_Screen, paling atas di atas judul. Layout dasar: `width: 96px; margin: 0 0 0.5rem`. Pada `@media (min-height: 550px)`: `.flip-game` mendefinisikan `--flip-icon-h: clamp(36px, calc(7 * var(--dvh)), 72px)`, dan `.flip-icon--game { height: var(--flip-icon-h); width: auto; margin: 0 0 calc(0.6 * var(--dvh)) }` (Req 4.2, 4.13, 4.14).
+- `.flip-icon--result` — Game_Icon pada Result_Screen, paling atas di atas judul. Layout dasar: `width: 140px; margin: 0`. Pada `@media (min-height: 550px)`: `height: clamp(56px, calc(13 * var(--dvh)), 130px); margin: 0` (Req 11.2).
+- `--flip-board-w` — pada `@media (min-height: 550px)` menjadi `min(100%, 424px, calc(100 * var(--dvh) - 168px - var(--flip-icon-h)))`, yaitu dikurangi tinggi ikon agar ikon + judul + HUD + progress + papan 4×4 tetap muat tanpa scroll vertikal (Req 4.13).
+- `.flip-game-title` — baru. `font-size: 1.5rem; font-weight: 700; color: var(--entrasol-blue-dark); text-align: center; margin: 0 0 0.75rem`. Ditempatkan di bawah `.flip-icon--game` pada `#gameScreen` (Req 4.1, 4.2).
 - `.flip-game` — padding dan jarak disesuaikan untuk judul tambahan: `padding: 1rem 0.75rem 1.5rem`, jarak antar elemen vertikal `0.75rem`, `min-width: 0`. Pada lebar 320px lebar konten 296px menampung 4 kartu + 3 gap 8px (kartu ≈ 68px) tanpa overflow horizontal (Req 4.3, 4.6). Tinggi total pada layar pendek boleh discroll vertikal.
-- `.flip-countdown` — baru. Overlay: `position: absolute; inset: 0; z-index: 3` (di atas `.flip-game` yang ber-`z-index: 1` dan wave `::after`); `display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; background: rgba(255, 255, 255, 0.85); color: var(--entrasol-blue-dark)`. `.flip-page` sudah `position: relative; overflow: hidden`, sehingga overlay terbatas pada container (Req 2.11).
+- `.flip-countdown` — baru. Overlay: `position: absolute; inset: 0; z-index: 3` (di atas `.flip-game` yang ber-`z-index: 1`); `display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; background: rgba(255, 255, 255, 0.85); color: var(--entrasol-blue-dark)`. `.flip-page` sudah `position: relative; overflow: hidden`, sehingga overlay terbatas pada container (Req 2.11).
 - `.flip-countdown[hidden] { display: none; }` — wajib karena `display: flex` mengalahkan atribut `hidden` bawaan.
 - `.flip-countdown__label` — "Bersiap...": `margin: 0; font-size: 1.125rem; font-weight: 700; color: var(--entrasol-blue-dark)` (Req 2.13).
 - `.flip-countdown__number` — `font-size: 8rem; font-weight: 700; line-height: 1; color: var(--entrasol-blue-dark)`; animasi pulse ringan opsional lewat CSS saja (`@keyframes flip-countdown-pulse`, skala 1 → 1.12 → 1 selama 1 detik, `animation: flip-countdown-pulse 1s ease-out infinite`) dan dimatikan pada `@media (prefers-reduced-motion: reduce)` (Req 2.12). Di dalam `@media (min-height: 550px)`, ukuran dapat mengecil: `font-size: clamp(5rem, calc(20 * var(--dvh)), 8rem)` agar countdown tetap muat tanpa scroll.
@@ -566,7 +571,6 @@ Properti berlaku untuk fungsi murni di `game-1/game.js` (`buildDeck`, `shuffle`,
 | Jam sistem berubah mundur sehingga sisa waktu > 30 | `remainingSeconds` dijepit maksimum 30 (Property 11) |
 | Tab disembunyikan lalu `setInterval` tertahan | Sisa waktu dihitung dari Deadline, sehingga tick berikutnya langsung menampilkan nilai benar; bila Deadline terlewat, `finishGame('timeout')` dipanggil |
 | Gambar kartu gagal dimuat | Atribut `alt` tampil; ukuran kartu tetap karena ditentukan CSS grid (Req 4.10) |
-| `background-wave.svg` gagal dimuat | Gradasi latar tetap tampil, konten tidak terpotong (Req 2.9) |
 
 ## Testing Strategy
 
@@ -606,7 +610,8 @@ Agar fungsi murni dapat diuji di Node tanpa mengubah perilaku browser, `game.js`
 Dengan fake timers, `Date.now` palsu, mock `Audio`, dan DOM sederhana (mis. jsdom sebagai dev dependency pinned):
 
 - Intro_Screen: urutan elemen "GAME 01" → ikon → `h1` → sub judul → Instruction_Box (`h2` "Cara Bermain", dua paragraf, alert waktu sebagai anak terakhir) → Start; `body` memiliki kelas `flip-body`; satu `h1` (Req 1, 2.6, 8.10).
-- Game_Screen: `h2.flip-game-title` bertuliskan "Memory Flip" adalah anak pertama `#gameScreen` dan tidak memiliki kelas `visually-hidden`; urutan judul → HUD → progress → papan (Req 4.1, 4.2).
+- Game_Screen: `img.flip-icon.flip-icon--game` (src `../assets/icon-game-1.svg`, alt "Ikon game Memory Flip") adalah anak pertama `#gameScreen`, diikuti `h2.flip-game-title` bertuliskan "Memory Flip" yang tidak memiliki kelas `visually-hidden`; urutan ikon → judul → HUD → progress → papan (Req 4.1, 4.2).
+- Result_Screen: anak `#resultScreen` berurutan `img.flip-icon.flip-icon--result`, `h2.flip-result__title`, skor, `#continueBtn`; tidak ada elemen lain (Req 11.2).
 - Tiga tampilan: pada tiap mode tepat satu dari `#introScreen`, `#gameScreen`, `#resultScreen` tidak ber-`hidden`; tidak ada panggilan `history.pushState`; tidak ada elemen `#summary` (Req 11.1, 11.2).
 - Countdown_Screen: setelah Start, `#countdownScreen` tampil (tanpa `hidden`) dengan angka 3 lalu 2 lalu 1 setiap 1 detik, tombol Start nonaktif, `saveGame1State` belum dipanggil, Timer belum berjalan (tetap 30), klik Card tidak membuka kartu; setelah 3000 ms overlay tersembunyi dan Game_Screen tampil (Req 12.1, 12.2, 12.5–12.8, 3.1).
 - Start ganda: klik Start berulang saat countdown diabaikan; `playSound('countdown')` dan `startGame` tepat satu kali (Req 3.6, 12.5).
@@ -630,7 +635,8 @@ Dengan fake timers, `Date.now` palsu, mock `Audio`, dan DOM sederhana (mis. jsdo
 
 - Scan statis `game-1/index.html`, `game-1/game.js`, `css/style.css`, `index.html`: tidak ada `http://`, `https://`, atau `//` untuk aset; `localStorage` hanya muncul di `js/storage.js`; `SUMMARY_DELAY_MS`, `#summary`, `COUNTDOWN_AT`, `shouldPlayCountdown`, dan `countdownPlayed` tidak ada; `#countdownScreen` ada di dalam `main.flip-page`, ber-`hidden`, tanpa heading, dengan `#countdownNumber` ber-`role="status"` dan `aria-live="assertive"`; `PRE_COUNTDOWN_SECONDS = 3`; urutan skrip dan path relatif benar (Req 8.4–8.8, 10.14).
 - `index.html` Home mengarah ke `game-1/index.html` (Req 8.11).
-- Pemeriksaan visual manual pada lebar 320, 768, dan 1280 px: tanpa scroll horizontal pada Intro, Game_Screen (judul + HUD + papan), dan Result_Screen; kartu persegi 44 sampai 100 px; angka skor hasil (~4.5rem) tidak terpotong; `[hidden]` pada `.flip-result` benar-benar menyembunyikan (Req 2, 4, 8.1–8.3, 11.10).
+- Pemeriksaan visual manual pada lebar 320, 768, dan 1280 px: tanpa scroll horizontal pada Intro, Game_Screen (ikon + judul + HUD + papan), dan Result_Screen; tidak ada background wave di keempat tampilan; Game_Icon tampil di Intro_Screen, Game_Screen, dan Result_Screen; kartu persegi 44 sampai 100 px; angka skor hasil (~4.5rem) tidak terpotong; `[hidden]` pada `.flip-result` benar-benar menyembunyikan (Req 2, 4, 8.1–8.3, 11.10).
+- Pemeriksaan visual Game_Screen dan Result_Screen pada tinggi sekitar 550–560 px dan lebar 320 px: Game_Icon, judul, HUD, progress bar, dan papan 4×4 muat tanpa scroll vertikal, papan tidak keluar layar, dan hasil `getComputedStyle(.flip-page, '::after').content` bernilai `none` (tanpa wave) (Req 2.9, 4.13).
 - Pemeriksaan visual Countdown_Screen pada tinggi sekitar 550–560 px dan lebar 320 px: overlay menutupi seluruh container, angka biru tua besar tidak terpotong, tanpa scroll vertikal (Req 2.11–2.13).
 - Pemeriksaan manual perilaku browser: refresh saat countdown kembali ke Intro_Screen; refresh saat bermain melanjutkan sisa waktu; tombol back dari game-1 dan dari Result_Screen kembali ke Home; "Mulai Permainan" setelahnya melanjutkan atau menampilkan Result_Screen; suara terdengar setelah interaksi pertama pemain (Req 9, 10.10–10.12, 11.9).
 - Kontras teks Biru_Tua di atas gradasi dan latar alert tetap terbaca (Req 2.1).

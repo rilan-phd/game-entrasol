@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memory Shuffle &amp; Recall - Game Entrasol</title>
+  <link rel="stylesheet" href="../vendor/bootstrap/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="shuffle-body">
+  <main class="shuffle-page">
+
+    <section id="introScreen" class="shuffle-intro">
+      <p class="shuffle-eyebrow">GAME 03</p>
+      <img class="shuffle-icon" src="../assets/icon-game-3.svg" alt="Ikon game Memory Shuffle &amp; Recall">
+      <h1 class="shuffle-title">Memory Shuffle &amp; Recall</h1>
+      <p class="shuffle-subtitle">Ingat posisi kartu dan susun kembali urutannya!</p>
+      <div class="shuffle-instruction">
+        <p>Amati dan ingat urutan 3 kartu yang ditampilkan selama 5 detik.</p>
+        <p>Setelah itu, kartu akan diacak secara otomatis. Susun kembali ketiga kartu sesuai urutan semula dalam waktu 5 detik!</p>
+        <div class="shuffle-time-alert gap-2" role="note">
+          <div class="d-flex justify-content-between">
+            <span>Waktu mengingat</span>
+            <span>5 detik</span>
+          </div>
+          <div class="d-flex justify-content-between">
+            <span>Waktu menjawab</span>
+            <span>5 detik</span>
+          </div>
+        </div>
+      </div>
+      <button type="button" id="startBtn" class="btn btn-entrasol">Mulai</button>
+    </section>
+
+    <section id="countdownScreen" class="shuffle-countdown" hidden>
+      <p class="shuffle-countdown__label">Bersiap...</p>
+      <div id="countdownNumber" class="shuffle-countdown__number" role="status" aria-live="assertive">3</div>
+    </section>
+
+    <section id="gameScreen" class="shuffle-game" hidden>
+      <img class="shuffle-screen-icon" src="../assets/icon-game-3.svg" alt="Ikon game Memory Shuffle &amp; Recall">
+      <h2 class="shuffle-game-title">Memory Shuffle &amp; Recall</h2>
+      <span id="phaseBadge" class="shuffle-badge shuffle-badge--memorize">Hafalkan!</span>
+      <span id="timerText" class="shuffle-timer" aria-live="off">5</span>
+      <div class="progress shuffle-progress" role="progressbar" aria-label="Sisa waktu" aria-valuemin="0" aria-valuemax="5" aria-valuenow="5">
+        <div id="timerBar" class="progress-bar"></div>
+      </div>
+      <div id="slots" class="shuffle-slots" hidden></div>
+      <p id="prompt" class="shuffle-prompt">Perhatikan gambar berikut dan urutannya</p>
+      <div id="cards" class="shuffle-cards"></div>
+    </section>
+
+    <section id="resultScreen" class="shuffle-result" hidden>
+      <img class="shuffle-screen-icon" src="../assets/icon-game-3.svg" alt="Ikon game Memory Shuffle &amp; Recall">
+      <h2 class="shuffle-result__title">Memory Shuffle &amp; Recall</h2>
+      <div id="resultSlots" class="shuffle-result__slots"></div>
+      <p class="shuffle-result__score">
+        <span id="resultScore" class="shuffle-result__number">0</span>
+        <span class="shuffle-result__unit">point</span>
+        <span class="shuffle-result__max">dari 30</span>
+      </p>
+      <button type="button" id="continueBtn" class="btn btn-entrasol">Lihat Hasil</button>
+    </section>
+
+  </main>
+
+  <script src="../vendor/bootstrap/bootstrap.bundle.min.js"></script>
+  <script src="../js/storage.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

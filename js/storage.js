@@ -8,6 +8,7 @@
   const SCORE_KEY = 'entrasol_game_score';
   const GAME1_STATE_KEY = 'entrasol_game1_state';
   const GAME2_STATE_KEY = 'entrasol_game2_state';
+  const GAME3_STATE_KEY = 'entrasol_game3_state';
   const DEFAULT_SCORE = Object.freeze({
     memoryFlip: 0,
     memoryRecall: 0,
@@ -227,11 +228,88 @@
     }
   }
 
-  // Inisialisasi skor untuk sesi baru dan hapus state game-1 dan game-2.
+  // --- Game_Session_State game-3 ---
+
+  function isUniqueStringArray(arr, len) {
+    if (!Array.isArray(arr) || arr.length !== len) return false;
+    for (let i = 0; i < arr.length; i++) {
+      if (!isNonEmptyString(arr[i])) return false;
+    }
+    return new Set(arr).size === arr.length;
+  }
+
+  // Validasi ketat, murni (tanpa localStorage).
+  function isValidGame3State(obj) {
+    if (obj === null || typeof obj !== 'object' || Array.isArray(obj)) return false;
+    if (obj.phase !== 'playing' && obj.phase !== 'finished') return false;
+
+    const orig = obj.originalOrder;
+    if (!isUniqueStringArray(orig, 3)) return false;
+
+    const opts = obj.optionOrder;
+    if (!isUniqueStringArray(opts, 3)) return false;
+    for (let i = 0; i < 3; i++) {
+      if (orig.indexOf(opts[i]) === -1) return false;
+    }
+    if (opts.every(function (id, i) { return id === orig[i]; })) return false;
+
+    if (!isFiniteNumber(obj.memorizeEnd) || !isFiniteNumber(obj.answerEnd)) return false;
+    if (!(obj.answerEnd > obj.memorizeEnd)) return false;
+
+    const picks = obj.picks;
+    if (!Array.isArray(picks) || picks.length > 3) return false;
+    for (let i = 0; i < picks.length; i++) {
+      if (!isNonEmptyString(picks[i]) || orig.indexOf(picks[i]) === -1) return false;
+    }
+    if (new Set(picks).size !== picks.length) return false;
+
+    if (obj.phase === 'finished') {
+      let correct = 0;
+      for (let i = 0; i < picks.length; i++) {
+        if (picks[i] === orig[i]) correct++;
+      }
+      if (!isInt(obj.score) || obj.score !== 10 * correct) return false;
+    }
+    return true;
+  }
+
+  // Simpan state; tidak melempar.
+  function saveGame3State(stateObj) {
+    try {
+      root.localStorage.setItem(GAME3_STATE_KEY, JSON.stringify(stateObj));
+      return { ok: true };
+    } catch (e) {
+      return { ok: false };
+    }
+  }
+
+  // Baca state; objek valid atau null.
+  function loadGame3State() {
+    try {
+      const raw = root.localStorage.getItem(GAME3_STATE_KEY);
+      if (raw === null || raw === undefined) return null;
+      const parsed = JSON.parse(raw);
+      return isValidGame3State(parsed) ? parsed : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Hapus state; tidak melempar.
+  function clearGame3State() {
+    try {
+      root.localStorage.removeItem(GAME3_STATE_KEY);
+    } catch (e) {
+      /* diabaikan */
+    }
+  }
+
+  // Inisialisasi skor untuk sesi baru dan hapus state game-1, game-2, dan game-3.
   function resetScore() {
     const score = defaultCopy();
     clearGame1State();
     clearGame2State();
+    clearGame3State();
     try {
       root.localStorage.setItem(SCORE_KEY, JSON.stringify(score));
       return { ok: true, score: score };
@@ -257,6 +335,11 @@
     saveGame2State: saveGame2State,
     loadGame2State: loadGame2State,
     clearGame2State: clearGame2State,
+    GAME3_STATE_KEY: GAME3_STATE_KEY,
+    isValidGame3State: isValidGame3State,
+    saveGame3State: saveGame3State,
+    loadGame3State: loadGame3State,
+    clearGame3State: clearGame3State,
     isValidScore: isValidScore,
     computeTotal: computeTotal,
     getScore: getScore,
@@ -279,6 +362,10 @@
   root.saveGame2State = saveGame2State;
   root.loadGame2State = loadGame2State;
   root.clearGame2State = clearGame2State;
+  root.isValidGame3State = isValidGame3State;
+  root.saveGame3State = saveGame3State;
+  root.loadGame3State = loadGame3State;
+  root.clearGame3State = clearGame3State;
 
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = api;

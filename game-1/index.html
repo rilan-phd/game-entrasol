@@ -19,7 +19,9 @@
         <h2 class="flip-instruction__title">Cara Bermain</h2>
         <p>Pada layar akan terdapat 16 kartu tertutup. Temukan 8 pasangan gambar yang identik sebelum waktu habis.</p>
         <p>Setiap detik berharga. Buka kartu, ingat posisinya, dan temukan pasangannya!</p>
-        <div class="alert flip-time-alert" role="note">Waktu bermain: 30 detik</div>
+        <div class="alert flip-time-alert d-flex justify-content-between" role="note">
+          <span>Waktu bermain</span>
+          <span>30 detik</span></div>
       </div>
       <button type="button" id="startBtn" class="btn btn-entrasol">Mulai</button>
     </section>
@@ -30,6 +32,7 @@
     </section>
 
     <section id="gameScreen" class="flip-game" hidden>
+      <img class="flip-icon flip-icon--game" src="../assets/icon-game-1.svg" alt="Ikon game Memory Flip">
       <h2 class="flip-game-title">Memory Flip</h2>
       <div class="flip-hud">
         <span id="timerText" class="flip-timer" aria-live="off">30</span>
@@ -42,6 +45,7 @@
     </section>
 
     <section id="resultScreen" class="flip-result" hidden>
+      <img class="flip-icon flip-icon--result" src="../assets/icon-game-1.svg" alt="Ikon game Memory Flip">
       <h2 class="flip-result__title">Memory Flip</h2>
       <p class="flip-result__score">
         <span id="resultScore" class="flip-result__number">0</span>

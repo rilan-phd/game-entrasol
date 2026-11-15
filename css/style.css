@@ -1,4 +1,4 @@
-﻿/* Entrasol Game - style.css */
+/* Entrasol Game - style.css */
 
 @font-face {
   font-family: 'Noto Sans';
@@ -177,22 +177,12 @@ body.flip-body { background-color: rgba(20, 26, 140, 0.15); }
   min-height: 100svh;
   display: flex;
   flex-direction: column;
-  padding: 1.5rem 1rem 6rem;
+  padding: 1.5rem 1rem;
   background: linear-gradient(180deg, #FFFFFF 0%, rgba(167, 216, 240, 0.85) 100%);
   box-shadow: 0 0 40px rgba(20, 26, 140, 0.08);
 }
 
-.flip-page::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 0;
-  pointer-events: none;
-  aspect-ratio: 390 / 120;
-  background: url('../assets/background-wave.svg') no-repeat bottom center / 100% 100%;
-}
+
 
 .flip-intro,
 .flip-game {
@@ -304,6 +294,14 @@ body.flip-body { background-color: rgba(20, 26, 140, 0.15); }
   border-radius: 1rem;
 }
 
+.flip-icon--game {
+  width: 96px;
+  margin: 0 0 0.5rem;
+}
+.flip-icon--result {
+  width: 140px;
+  margin: 0;
+}
 .flip-instruction__title {
   margin: 0 0 0.75rem;
   text-align: center;
@@ -480,7 +478,7 @@ body.flip-body { background-color: rgba(20, 26, 140, 0.15); }
 }
 
 @media (min-width: 576px) {
-  .flip-page { padding: 2rem 1.5rem 7rem; }
+  .flip-page { padding: 2rem 1.5rem; }
   .flip-title { font-size: 2.25rem; }
 }
 
@@ -500,21 +498,9 @@ body.recall-body { background-color: rgba(139, 195, 74, 0.2); }
   min-height: 100svh;
   display: flex;
   flex-direction: column;
-  padding: 1.5rem 1rem 6rem;
+  padding: 1.5rem 1rem;
   background: linear-gradient(180deg, #FFFFFF 0%, rgba(139, 195, 74, 0.45) 100%);
   box-shadow: 0 0 40px rgba(20, 26, 140, 0.08);
-}
-
-.recall-page::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 0;
-  pointer-events: none;
-  aspect-ratio: 390 / 120;
-  background: url('../assets/background-wave.svg') no-repeat bottom center / 100% 100%;
 }
 
 .recall-intro,
@@ -639,6 +625,16 @@ body.recall-body { background-color: rgba(139, 195, 74, 0.2); }
   --recall-opt: min(55%, 190px);
   gap: 0.5rem;
   padding: 1rem 0.75rem 1.5rem;
+}
+
+/* Ikon game di bagian paling atas layar permainan dan hasil */
+.recall-top-icon {
+  display: block;
+  width: auto;
+  height: 96px;
+  max-width: 40%;
+  margin: 0 auto;
+  object-fit: contain;
 }
 
 .recall-game-title {
@@ -780,6 +776,23 @@ body.recall-body { background-color: rgba(139, 195, 74, 0.2); }
   height: auto;
 }
 
+.recall-result__choice {
+  display: block;
+  width: 180px;
+  max-width: 50%;
+  aspect-ratio: 1 / 1;
+  border: 3px solid var(--entrasol-green);
+  border-radius: 12px;
+  background: #FFFFFF;
+  box-shadow: 0 3px 8px rgba(20, 26, 140, 0.18);
+  overflow: hidden;
+}
+.recall-result__choice--empty {
+  border-style: dashed;
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: none;
+}
+
 .recall-result__score {
   display: flex;
   flex-direction: column;
@@ -801,8 +814,388 @@ body.recall-body { background-color: rgba(139, 195, 74, 0.2); }
 }
 
 @media (min-width: 576px) {
-  .recall-page { padding: 2rem 1.5rem 7rem; }
+  .recall-page { padding: 2rem 1.5rem; }
   .recall-title { font-size: 2.25rem; }
+}
+
+/* ==========================================================================
+   Memory Shuffle & Recall (game-3) - semua kelas berprefix .shuffle- (tema cyan lembut)
+   ========================================================================== */
+
+body.shuffle-body { background-color: rgba(0, 188, 212, 0.15); }
+
+.shuffle-page {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  max-width: var(--app-max-width);
+  margin: 0 auto;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 1rem 6rem;
+  background: linear-gradient(180deg, #FFFFFF 0%, rgba(0, 188, 212, 0.35) 100%);
+  box-shadow: 0 0 40px rgba(20, 26, 140, 0.08);
+}
+
+.shuffle-screen-icon {
+  display: block;
+  width: auto;
+  max-width: 40%;
+  height: 96px;
+  margin: 0 auto;
+  object-fit: contain;
+}
+
+.shuffle-intro,
+.shuffle-game,
+.shuffle-result {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  min-width: 0;
+  color: var(--entrasol-blue-dark);
+}
+
+.shuffle-intro[hidden],
+.shuffle-game[hidden],
+.shuffle-result[hidden],
+.shuffle-countdown[hidden],
+.shuffle-slots[hidden] { display: none; }
+
+/* Tombol utama */
+.shuffle-page .btn-entrasol {
+  min-height: 48px;
+  min-width: 44px;
+}
+
+/* Intro */
+.shuffle-eyebrow {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--entrasol-blue-dark);
+}
+
+.shuffle-icon {
+  display: block;
+  width: 160px;
+  max-width: 60%;
+  height: auto;
+  margin: 0.25rem 0 1rem;
+  border-radius: 1rem;
+}
+
+.shuffle-title {
+  margin: 0 0 0.5rem;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--entrasol-blue-dark);
+}
+
+.shuffle-subtitle {
+  margin: 0 0 1.25rem;
+  font-size: 1rem;
+  color: var(--entrasol-blue-dark);
+  opacity: 0.85;
+}
+
+.shuffle-instruction {
+  width: 100%;
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  text-align: left;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--entrasol-blue-dark);
+  background-color: var(--entrasol-white);
+  border: 2px solid var(--entrasol-blue-light);
+  border-radius: 1rem;
+  box-shadow: 0 4px 14px rgba(20, 26, 140, 0.08);
+}
+.shuffle-instruction p { margin: 0 0 0.75rem; }
+.shuffle-instruction p:last-child { margin-bottom: 0; }
+
+.shuffle-time-alert {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
+  margin: 1rem 0 0;
+  padding: 0.75rem 1rem;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--entrasol-blue-dark);
+  background-color: rgba(170, 232, 240, 0.4);
+  border: 1px solid rgba(0, 188, 212, 0.6);
+  border-radius: 0.5rem;
+}
+
+/* Countdown 3-2-1: overlay di depan Game_Screen */
+.shuffle-countdown {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.85);
+  text-align: center;
+}
+.shuffle-countdown__label {
+  margin: 0 0 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--entrasol-blue-dark);
+}
+.shuffle-countdown__number {
+  font-size: 8rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--entrasol-blue-dark);
+  animation: shuffle-countdown-pulse 1s ease-in-out infinite;
+}
+@keyframes shuffle-countdown-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+/* Game */
+.shuffle-game {
+  --shuffle-card: min(calc((100% - 8px) / 3), 220px);
+  gap: 0.5rem;
+  padding: 1rem 0.25rem 1.5rem;
+}
+
+.shuffle-game-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--entrasol-blue-dark);
+}
+
+.shuffle-badge {
+  display: inline-block;
+  padding: 0.25rem 1rem;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 50rem;
+}
+.shuffle-badge--memorize {
+  color: var(--entrasol-blue-dark);
+  background-color: var(--entrasol-blue-light);
+}
+.shuffle-badge--answer {
+  color: var(--entrasol-white);
+  background-color: var(--entrasol-blue-dark);
+}
+
+.shuffle-timer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3rem;
+  min-height: 44px;
+  padding: 0 0.9rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--entrasol-blue-dark);
+  background-color: var(--entrasol-white);
+  border: 2px solid var(--entrasol-blue-dark);
+  border-radius: 50rem;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.shuffle-timer--warning {
+  color: #D32F2F;
+  border-color: #D32F2F;
+}
+
+.shuffle-progress {
+  width: min(100%, 280px);
+  height: 10px;
+  background-color: rgba(0, 188, 212, 0.25);
+  border-radius: 50rem;
+}
+.shuffle-progress .progress-bar {
+  background-color: var(--entrasol-blue-dark);
+  transition: width 1s linear, background-color 0.2s ease;
+}
+
+.shuffle-prompt {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--entrasol-blue-dark);
+}
+/* Jarak Fase_Menyusun: Slot -> teks arahan 16px, teks arahan -> kartu 8px */
+.shuffle-slots + .shuffle-prompt { margin-top: 16px; }
+.shuffle-prompt + .shuffle-cards { margin-top: 0; }
+
+/* Baris kartu */
+.shuffle-slots,
+.shuffle-cards,
+.shuffle-result__slots {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.shuffle-frame,
+.shuffle-option,
+.shuffle-slot {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  width: var(--shuffle-card);
+  min-width: 44px;
+  min-height: 44px;
+  aspect-ratio: 1 / 1;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: var(--entrasol-white);
+  border: 2px solid var(--entrasol-blue-light);
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(20, 26, 140, 0.18);
+}
+.shuffle-memo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: var(--shuffle-card);
+  min-width: 44px;
+}
+.shuffle-memo .shuffle-frame { width: 100%; }
+.shuffle-memo__num {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  color: var(--entrasol-blue-dark);
+}
+.shuffle-frame--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: var(--entrasol-blue-dark);
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+.shuffle-slot {
+  border-color: var(--entrasol-green);
+  background-color: rgba(255, 255, 255, 0.6);
+  box-shadow: none;
+}
+.shuffle-slot__num {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--entrasol-blue-dark);
+}
+.shuffle-slot--filled { background-color: var(--entrasol-white); box-shadow: 0 3px 8px rgba(20, 26, 140, 0.18); }
+.shuffle-slot--filled .shuffle-slot__num { display: none; }
+
+.shuffle-option {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.shuffle-option:focus-visible {
+  outline: 3px solid var(--entrasol-blue-dark);
+  outline-offset: 2px;
+}
+.shuffle-option:disabled { opacity: 1; }
+.shuffle-option--used { visibility: hidden; }
+.shuffle-option--flying {
+  z-index: 5;
+  transition: transform 0.4s ease;
+}
+
+.shuffle-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Layar hasil */
+.shuffle-result {
+  justify-content: center;
+  gap: 1rem;
+  min-height: 60vh;
+  min-height: 60svh;
+  padding: 2rem 0.25rem;
+}
+
+.shuffle-result__title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.shuffle-result {
+  --shuffle-card: min(calc((100% - 8px) / 3), 220px);
+}
+
+.shuffle-result-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: var(--shuffle-card);
+  min-width: 44px;
+}
+.shuffle-result-slot .shuffle-frame { width: 100%; }
+.shuffle-result-slot__icon {
+  display: block;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.shuffle-result__score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+}
+
+.shuffle-result__number {
+  font-size: 4.5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--entrasol-blue-dark);
+}
+
+.shuffle-result__unit,
+.shuffle-result__max {
+  font-size: 1.125rem;
+  color: var(--entrasol-blue-dark);
+}
+
+@media (min-width: 576px) {
+  .shuffle-page { padding: 2rem 1.5rem 7rem; }
+  .shuffle-title { font-size: 2.25rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shuffle-countdown__number { animation: none; }
+  .shuffle-option--flying { transition: none; }
+  .shuffle-progress .progress-bar { transition: none; }
 }
 
 /* ==========================================================================
@@ -840,7 +1233,8 @@ body.recall-body { background-color: rgba(139, 195, 74, 0.2); }
 
   /* Container setinggi layar. overflow-y: auto hanya jaring pengaman untuk layar sangat sempit. */
   .home-hero,
-  .flip-page {
+  .flip-page,
+  .shuffle-page {
     height: calc(100 * var(--dvh));
     min-height: 0;
     overflow-x: hidden;
@@ -884,8 +1278,9 @@ body.recall-body { background-color: rgba(139, 195, 74, 0.2); }
   .hero-footer__label { margin-bottom: calc(0.6 * var(--dvh)); font-size: 0.75rem; }
   .footer-logo {
     width: auto;
-    max-width: 75%;
-    height: clamp(30px, calc(6.5 * var(--dvh)), 68px);
+    max-width: 30%;
+    /* height: clamp(30px, calc(6.5 * var(--dvh)), 68px); */
+    height: auto;
   }
 
   /* ---- Game 1 (Memory Flip): tiga layar berbagi tinggi yang sama ---- */
@@ -938,9 +1333,15 @@ body.recall-body { background-color: rgba(139, 195, 74, 0.2); }
 
   /* Permainan: lebar papan dibatasi tinggi layar supaya papan 4x4 + HUD selalu muat */
   .flip-game {
-    --flip-board-w: min(100%, 424px, calc(100 * var(--dvh) - 160px));
+    --flip-icon-h: clamp(36px, calc(7 * var(--dvh)), 72px);
+    --flip-board-w: min(100%, 424px, calc(100 * var(--dvh) - 168px - var(--flip-icon-h)));
     padding: 0 0.75rem;
   }
+  .flip-icon--game {
+    height: var(--flip-icon-h);
+    margin: 0 0 calc(0.6 * var(--dvh));
+  }
+  .flip-icon--result { height: clamp(56px, calc(13 * var(--dvh)), 130px); margin: 0; }
   .flip-game-title {
     font-size: clamp(1.2rem, calc(3.4 * var(--dvh)), 1.5rem);
     margin-bottom: calc(1 * var(--dvh));
@@ -1010,12 +1411,12 @@ body.recall-body { background-color: rgba(139, 195, 74, 0.2); }
 
   /* Permainan: ukuran gambar dibatasi tinggi layar agar bingkai/piramida 1+2 selalu muat */
   .recall-game {
-    --recall-img: min(calc(50% - 8px), 280px, calc((100 * var(--dvh) - 215px) / 2));
-    --recall-opt: min(55%, 190px, calc((100 * var(--dvh) - 235px) / 3));
+    --recall-img: min(calc(50% - 8px), 280px, calc((100 * var(--dvh) - 247px) / 2));
+    --recall-opt: min(55%, 190px, calc((100 * var(--dvh) - 267px) / 3));
     gap: calc(0.8 * var(--dvh));
     padding: 0 0.75rem;
   }
-  .recall-game-title { font-size: clamp(1.2rem, calc(3.4 * var(--dvh)), 1.5rem); }
+  .recall-top-icon { height: clamp(24px, calc(10 * var(--dvh)), 96px); }
   .recall-badge {
     padding: clamp(0.15rem, calc(0.6 * var(--dvh)), 0.25rem) clamp(0.75rem, calc(2 * var(--dvh)), 1rem);
     font-size: clamp(0.8125rem, calc(2.2 * var(--dvh)), 1rem);
@@ -1033,9 +1434,93 @@ body.recall-body { background-color: rgba(139, 195, 74, 0.2); }
   .recall-result__icon {
     width: auto;
     max-width: 40%;
-    height: clamp(56px, calc(12 * var(--dvh)), 96px);
+    height: clamp(40px, calc(8 * var(--dvh)), 96px);
   }
+  .recall-result__choice { width: clamp(72px, calc(24 * var(--dvh)), 180px); }
   .recall-result__number { font-size: clamp(3rem, calc(10 * var(--dvh)), 4.5rem); }
   .recall-result__unit,
   .recall-result__max { font-size: clamp(0.9375rem, calc(2.4 * var(--dvh)), 1.125rem); }
+
+  /* ---- Game 3 (Memory Shuffle & Recall): tiga layar berbagi tinggi yang sama ---- */
+  .shuffle-page { padding: calc(2 * var(--dvh)) 1rem; }
+  .shuffle-intro,
+  .shuffle-game,
+  .shuffle-result {
+    flex: 1 1 auto;
+    min-height: 0;
+    justify-content: center;
+    justify-content: safe center;
+  }
+
+  /* Countdown */
+  .shuffle-countdown__label { font-size: clamp(0.9375rem, calc(2.4 * var(--dvh)), 1.125rem); }
+  .shuffle-countdown__number { font-size: clamp(5rem, calc(20 * var(--dvh)), 8rem); }
+
+  /* Intro */
+  .shuffle-eyebrow {
+    margin-bottom: calc(0.4 * var(--dvh));
+    font-size: clamp(0.8125rem, calc(2 * var(--dvh)), 1rem);
+  }
+  .shuffle-icon {
+    width: auto;
+    max-width: 60%;
+    height: clamp(48px, calc(11 * var(--dvh)), 120px);
+    margin: 0 0 calc(1.2 * var(--dvh));
+    object-fit: contain;
+  }
+  .shuffle-title {
+    font-size: clamp(1.375rem, calc(4.2 * var(--dvh)), 2rem);
+    margin-bottom: calc(0.8 * var(--dvh));
+  }
+  .shuffle-subtitle {
+    font-size: clamp(0.8125rem, calc(2.1 * var(--dvh)), 1rem);
+    margin-bottom: calc(1.5 * var(--dvh));
+  }
+  .shuffle-instruction {
+    margin-bottom: calc(1.8 * var(--dvh));
+    padding: clamp(0.6rem, calc(1.8 * var(--dvh)), 1rem);
+    font-size: clamp(0.8125rem, calc(2 * var(--dvh)), 1rem);
+    line-height: 1.4;
+  }
+  .shuffle-instruction p { margin-bottom: 0.5rem; }
+  .shuffle-time-alert {
+    margin-top: calc(1.2 * var(--dvh));
+    padding: clamp(0.35rem, calc(1.2 * var(--dvh)), 0.75rem) 0.75rem;
+    font-size: clamp(0.8125rem, calc(2 * var(--dvh)), 1rem);
+  }
+
+  /* Permainan dan hasil: lebar kartu dibatasi tinggi layar agar baris slot + kartu selalu muat */
+  .shuffle-game,
+  .shuffle-result {
+    --shuffle-card: min(calc((100% - 8px) / 3), 220px, calc((100 * var(--dvh) - 290px) / 2));
+  }
+  .shuffle-game {
+    gap: calc(0.8 * var(--dvh));
+    padding: 0 0.75rem;
+  }
+  .shuffle-screen-icon { height: clamp(32px, calc(12 * var(--dvh)), 96px); }
+  .shuffle-game-title { font-size: clamp(1.2rem, calc(3.4 * var(--dvh)), 1.5rem); }
+  .shuffle-badge {
+    padding: clamp(0.15rem, calc(0.6 * var(--dvh)), 0.25rem) clamp(0.75rem, calc(2 * var(--dvh)), 1rem);
+    font-size: clamp(0.8125rem, calc(2.2 * var(--dvh)), 1rem);
+  }
+  .shuffle-timer {
+    min-height: clamp(36px, calc(6 * var(--dvh)), 44px);
+    font-size: clamp(1.125rem, calc(3.2 * var(--dvh)), 1.5rem);
+  }
+  .shuffle-progress { height: clamp(6px, calc(1.2 * var(--dvh)), 10px); }
+  .shuffle-prompt { font-size: clamp(0.8125rem, calc(2.1 * var(--dvh)), 1rem); }
+  .shuffle-slots + .shuffle-prompt { margin-top: clamp(8px, calc(2 * var(--dvh)), 16px); }
+  .shuffle-memo__num { font-size: clamp(1rem, calc(3 * var(--dvh)), 1.25rem); }
+
+  /* Hasil */
+  .shuffle-result { gap: calc(2 * var(--dvh)); padding: 0 1rem; }
+  .shuffle-result__title { font-size: clamp(1.2rem, calc(3.4 * var(--dvh)), 1.5rem); }
+  .shuffle-result-slot__icon {
+    width: clamp(20px, calc(4.5 * var(--dvh)), 28px);
+    height: clamp(20px, calc(4.5 * var(--dvh)), 28px);
+  }
+  .shuffle-result__number { font-size: clamp(3rem, calc(10 * var(--dvh)), 4.5rem); }
+  .shuffle-result__unit,
+  .shuffle-result__max { font-size: clamp(0.9375rem, calc(2.4 * var(--dvh)), 1.125rem); }
 }

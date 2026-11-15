@@ -2,11 +2,11 @@
 
 ## Introduction
 
-Fitur ini adalah halaman game pertama, Memory Flip, yang berada di folder `game-1/`. Halaman ini terdiri dari tiga tampilan utama dalam satu file `game-1/index.html`: Intro_Screen (teks "GAME 01", ikon game, judul, sub judul, box petunjuk berisi alert waktu, tombol Start), Game_Screen (judul "Memory Flip", timer 30 detik, skor, progress bar, dan papan kartu 4×4), dan Result_Screen (judul, skor yang diperoleh, dan tombol "Lanjutkan"). Di antara Intro_Screen dan Game_Screen terdapat Countdown_Screen, yaitu overlay penuh yang menampilkan hitung mundur 3, 2, 1 selama 3 detik. Alur tampilan: Intro_Screen → Countdown_Screen → Game_Screen → Result_Screen. Pemain mencari 8 pasang gambar identik. Setiap pasangan bernilai 5 point (maksimal 40 point). Setelah permainan berakhir, skor disimpan ke LocalStorage dan Result_Screen ditampilkan sebagai checkpoint bahwa game-1 selesai. Perpindahan ke game berikutnya hanya terjadi saat pemain menekan tombol "Lanjutkan".
+Fitur ini adalah halaman game pertama, Memory Flip, yang berada di folder `game-1/`. Halaman ini terdiri dari tiga tampilan utama dalam satu file `game-1/index.html`: Intro_Screen (teks "GAME 01", ikon game, judul, sub judul, box petunjuk berisi alert waktu, tombol Start), Game_Screen (ikon game, judul "Memory Flip", timer 30 detik, skor, progress bar, dan papan kartu 4×4), dan Result_Screen (ikon game, judul, skor yang diperoleh, dan tombol "Lanjutkan"). Di antara Intro_Screen dan Game_Screen terdapat Countdown_Screen, yaitu overlay penuh yang menampilkan hitung mundur 3, 2, 1 selama 3 detik. Alur tampilan: Intro_Screen → Countdown_Screen → Game_Screen → Result_Screen. Pemain mencari 8 pasang gambar identik. Setiap pasangan bernilai 5 point (maksimal 40 point). Setelah permainan berakhir, skor disimpan ke LocalStorage dan Result_Screen ditampilkan sebagai checkpoint bahwa game-1 selesai. Perpindahan ke game berikutnya hanya terjadi saat pemain menekan tombol "Lanjutkan".
 
 Permainan memutar efek suara (Audio_Cue) untuk membuka kartu, kartu cocok, kartu tidak cocok, dan hitung mundur awal pada Countdown_Screen. State sesi game-1 disimpan di LocalStorage sehingga refresh halaman dan tombol back browser tidak mengulang permainan: permainan yang sedang berjalan dilanjutkan dengan sisa waktu nyata, dan permainan yang sudah selesai langsung menampilkan Result_Screen.
 
-Tampilan memakai container mobile maksimal 430px dengan latar gradasi vertikal putih ke biru muda dan wave di bagian bawah, latar body biru tua transparan khusus halaman game-1, font Noto Sans offline, serta warna biru tua `#141A8C` sebagai warna teks utama, warna tombol utama, dan border box petunjuk. Tampilan Home tidak berubah; Home hanya menyesuaikan perilaku tombol "Mulai Permainan" dan mengarah ke `game-1/index.html`.
+Tampilan memakai container mobile maksimal 430px dengan latar gradasi vertikal putih ke biru muda tanpa background wave, latar body biru tua transparan khusus halaman game-1, font Noto Sans offline, serta warna biru tua `#141A8C` sebagai warna teks utama, warna tombol utama, dan border box petunjuk. Tampilan Home tidak berubah; Home hanya menyesuaikan perilaku tombol "Mulai Permainan" dan mengarah ke `game-1/index.html`.
 
 Catatan konsistensi: folder aktual game bernama `game-1` (bukan `game1` seperti di aturan struktur).
 
@@ -15,7 +15,7 @@ Catatan konsistensi: folder aktual game bernama `game-1` (bukan `game1` seperti 
 - **Memory_Flip_Page**: halaman `game-1/index.html` beserta logika `game-1/game.js`.
 - **Home**: halaman `index.html` di root, yang memiliki tombol "Mulai Permainan" dan memuat `js/storage.js`.
 - **Intro_Screen**: tampilan pengenalan dan petunjuk yang ditampilkan sebelum permainan dimulai.
-- **Game_Icon**: gambar ikon game pada Intro_Screen, yaitu `assets/icon-game-1.svg` (format SVG).
+- **Game_Icon**: gambar ikon game yang ditampilkan pada Intro_Screen, Game_Screen, dan Result_Screen, yaitu `assets/icon-game-1.svg` (format SVG).
 - **Instruction_Box**: box petunjuk pada Intro_Screen yang berisi judul "Cara Bermain", dua paragraf petunjuk, dan Time_Alert.
 - **Time_Alert**: alert di dalam Instruction_Box yang menampilkan teks "Waktu bermain: 30 detik".
 - **Game_Screen**: tampilan gameplay yang berisi judul "Memory Flip", Timer, skor, progress bar, dan Board.
@@ -65,11 +65,11 @@ Catatan konsistensi: folder aktual game bernama `game-1` (bukan `game1` seperti 
 2. THE Memory_Flip_Page SHALL menampilkan Instruction_Box dengan border berwarna Biru_Tua selebar 1px sampai 3px, latar putih, dan sudut membulat dengan radius minimal 8px.
 3. THE Time_Alert SHALL berlebar 100% dari lebar Instruction_Box, berteks Biru_Tua, berlatar Biru_Tua transparan (sekitar `rgba(20,26,140,0.12)`), memiliki border tipis, dan memiliki sudut sedikit membulat dengan radius sekitar 0.5rem (bukan bentuk pill).
 4. THE tombol Start SHALL berlatar Biru_Tua, bertulisan putih, berbentuk pill (radius sudut minimal setengah dari tinggi tombol), memiliki tinggi minimal 48px, dan lebar minimal 44px.
-5. THE Memory_Flip_Page SHALL menggunakan container terpusat secara horizontal dengan lebar maksimum 430px, latar container berupa gradasi vertikal dari putih `#FFFFFF` di bagian atas ke biru muda `#A7D8F0` dengan opasitas 85% di bagian bawah, dan `assets/background-wave.svg` ditampilkan di bagian bawah container.
+5. THE Memory_Flip_Page SHALL menggunakan container terpusat secara horizontal dengan lebar maksimum 430px, latar container berupa gradasi vertikal dari putih `#FFFFFF` di bagian atas ke biru muda `#A7D8F0` dengan opasitas 85% di bagian bawah, dengan padding bawah container sebesar 1.5rem pada lebar viewport di bawah 576px dan 2rem pada lebar viewport 576px ke atas.
 6. THE Memory_Flip_Page SHALL menerapkan latar body biru tua transparan `rgba(20,26,140,0.15)` melalui kelas khusus pada elemen `body` halaman game-1, sehingga latar body halaman Home tidak berubah.
 7. THE Memory_Flip_Page SHALL menggunakan font Noto Sans dengan ukuran teks isi minimal 16px.
 8. THE Memory_Flip_Page SHALL mendefinisikan gaya khusus Memory_Flip_Page di `css/style.css`, yaitu berkas yang sama dengan yang digunakan Home, tanpa mengubah tampilan Home yang sudah ada.
-9. IF `assets/background-wave.svg` gagal dimuat, THEN THE Memory_Flip_Page SHALL tetap menampilkan latar gradasi container dan seluruh konten tanpa elemen gelombang, tanpa teks atau konten yang terpotong.
+9. THE Memory_Flip_Page SHALL menampilkan latar container hanya berupa gradasi putih ke biru muda tanpa background wave (`assets/background-wave.svg`) pada Intro_Screen, Countdown_Screen, Game_Screen, dan Result_Screen.
 10. WHILE lebar viewport kurang dari 430px, THE Memory_Flip_Page SHALL menampilkan container selebar 100% viewport tanpa munculnya scroll horizontal.
 11. THE Countdown_Screen SHALL ditampilkan sebagai overlay yang menutupi seluruh area container halaman game-1 di depan Game_Screen dengan latar putih semi-opaque (sekitar `rgba(255,255,255,0.85)`) yang selaras dengan tema, sehingga Game_Screen di belakangnya (papan tertutup) terlihat samar namun tidak dapat disentuh.
 12. THE Countdown_Screen SHALL menampilkan angka hitung mundur dengan warna Biru_Tua, huruf tebal (bold), dan ukuran sangat besar sekitar 8rem, terpusat secara horizontal dan vertikal pada overlay.
@@ -94,8 +94,8 @@ Catatan konsistensi: folder aktual game bernama `game-1` (bukan `game1` seperti 
 
 #### Acceptance Criteria
 
-1. THE Game_Screen SHALL menampilkan nama game "Memory Flip" sebagai judul yang terlihat berupa elemen `h2` di bagian paling atas Game_Screen, di atas Timer, skor, progress bar, dan Board, menggantikan `h2` tersembunyi "Papan Permainan".
-2. THE Game_Screen SHALL menampilkan elemen secara berurutan dari atas ke bawah: judul "Memory Flip", Timer dan skor berjalan, progress bar, lalu Board.
+1. THE Game_Screen SHALL menampilkan nama game "Memory Flip" sebagai judul yang terlihat berupa elemen `h2` langsung di bawah Game_Icon dan di atas Timer, skor, progress bar, dan Board, menggantikan `h2` tersembunyi "Papan Permainan".
+2. THE Game_Screen SHALL menampilkan elemen secara berurutan dari atas ke bawah: Game_Icon, judul "Memory Flip", Timer dan skor berjalan, progress bar, lalu Board.
 3. THE Game_Screen SHALL menerapkan padding dan jarak antar elemen sehingga judul, Timer, skor, progress bar, dan Board tampil rapi tanpa tumpang tindih, tanpa teks terpotong, dan tanpa scroll horizontal pada lebar viewport 320px sampai 1920px.
 4. THE Board SHALL menampilkan 16 Card dalam grid 4 kolom × 4 baris dengan jarak antar Card konstan (gap) antara 4px dan 12px pada semua ukuran layar.
 5. THE Card SHALL berbentuk persegi (rasio lebar:tinggi 1:1) dengan sudut membulat berjari-jari antara 8px dan 16px dan bayangan halus.
@@ -106,6 +106,8 @@ Catatan konsistensi: folder aktual game bernama `game-1` (bukan `game1` seperti 
 10. IF gambar Card gagal dimuat, THEN THE Card SHALL tetap tampil dengan ukuran dan bentuk yang sama serta menampilkan teks `alt` sebagai pengganti gambar.
 11. THE Game_Screen SHALL menampilkan Timer dalam angka detik dan progress bar di atas Board, serta skor berjalan (0 sampai 40 point) di dekat Timer.
 12. WHEN Timer berkurang atau skor berubah, THE Game_Screen SHALL memperbarui angka detik, progress bar, dan skor berjalan dalam waktu maksimal 1 detik.
+13. WHILE Game_Screen ditampilkan pada tinggi viewport 550px ke atas, THE Game_Screen SHALL menampilkan Game_Icon, judul, Timer, skor, progress bar, dan seluruh Board dalam area layar tanpa scroll vertikal, dengan tinggi Game_Icon dibatasi antara 36px dan 72px dan lebar Board dikurangi sebesar tinggi Game_Icon tersebut.
+14. THE Game_Icon pada Game_Screen SHALL berukuran lebih kecil daripada Game_Icon pada Intro_Screen dan Result_Screen, dengan lebar 96px pada layout dasar.
 
 ### Requirement 5: Mekanik Membuka dan Mencocokkan Kartu
 
@@ -216,7 +218,7 @@ Catatan konsistensi: folder aktual game bernama `game-1` (bukan `game1` seperti 
 #### Acceptance Criteria
 
 1. WHEN permainan berakhir (seluruh 8 Pair ditemukan atau waktu 30 detik habis), THE Memory_Flip_Page SHALL menyembunyikan Game_Screen dan menampilkan Result_Screen pada halaman `game-1/index.html` yang sama tanpa menambah entri riwayat browser.
-2. THE Result_Screen SHALL hanya berisi tiga elemen: judul "Memory Flip", Memory_Flip_Score, dan tombol "Lanjutkan".
+2. THE Result_Screen SHALL hanya berisi empat elemen secara berurutan dari atas ke bawah: Game_Icon, judul "Memory Flip", Memory_Flip_Score, dan tombol "Lanjutkan".
 3. THE Result_Screen SHALL menampilkan Memory_Flip_Score dalam angka berukuran huruf besar, dilengkapi keterangan "point" dan "dari 40".
 4. THE tombol "Lanjutkan" SHALL berlatar Biru_Tua, bertulisan putih, berbentuk pill, dan memiliki tinggi minimal 48px serta lebar minimal 44px.
 5. THE Result_Screen SHALL menampilkan seluruh teks dengan warna Biru_Tua dan latar mengikuti gaya halaman game-1.

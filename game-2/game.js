@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Memory Recall (game-2) - logika gameplay.
  *
  * Struktur berkas:
@@ -141,6 +141,7 @@ function serializeState(gameState, phase) {
     const result = gameState.result || 'timeout';
     saved.result = result;
     saved.score = calcScore(result);
+    saved.chosenId = result === 'timeout' ? null : (gameState.chosenId || null);
   }
   return saved;
 }
@@ -180,6 +181,7 @@ const state = {
   phase: 'intro',        // 'intro' | 'countdown' | 'memorize' | 'answer' | 'finished'
   round: null,           // { targetId, optionIds }
   result: null,          // 'correct' | 'wrong' | 'timeout' setelah selesai
+  chosenId: null,        // id gambar pilihan pemain (null bila waktu habis)
   memorizeEnd: 0,        // timestamp ms absolut
   answerEnd: 0,
   secondsLeft: MEMORIZE_SECONDS,
@@ -223,13 +225,15 @@ if (typeof module !== 'undefined' && module.exports) {
 /* ------------------------------------------------------------------ */
 
 /* ---- 5a. Audio: hanya countdown.mp3, tidak pernah melempar ---- */
-const sounds = { countdown: null };
+const sounds = { countdown: null, match: null, wrong: null };
 try {
   if (typeof Audio !== 'undefined') {
-    sounds.countdown = new Audio('assets/audio/countdown.mp3');
+    ['countdown', 'match', 'wrong'].forEach((name) => {
+      sounds[name] = new Audio('assets/audio/' + name + '.mp3');
+    });
   }
 } catch (e) {
-  sounds.countdown = null;
+  // Audio tidak tersedia: semua efek suara diabaikan.
 }
 
 function playSound(name) {
@@ -262,7 +266,7 @@ function cacheDom() {
   [
     'introScreen', 'countdownScreen', 'gameScreen', 'resultScreen',
     'startBtn', 'continueBtn', 'countdownNumber', 'phaseBadge',
-    'timerText', 'timerBar', 'prompt', 'stage', 'resultIcon', 'resultScore'
+    'timerText', 'timerBar', 'prompt', 'stage', 'resultIcon', 'resultChoice', 'resultScore'
   ].forEach((id) => { dom[id] = document.getElementById(id); });
 }
 
@@ -337,13 +341,19 @@ function renderAnswer() {
   dom.stage.appendChild(pyramid);
 }
 
-function renderTimer() {
+/** instant=true: bar langsung ke lebar baru tanpa animasi (dipakai saat fase baru dimulai). */
+function renderTimer(instant) {
   const secs = state.secondsLeft;
   const max = maxSecondsForPhase();
   dom.timerText.textContent = String(secs);
   dom.timerText.className = 'recall-timer' +
     (phaseTimerLevel(secs) === 'warning' ? ' recall-timer--warning' : '');
+  if (instant) dom.timerBar.style.transition = 'none';
   dom.timerBar.style.width = Math.max(0, Math.min(100, (secs / max) * 100)) + '%';
+  if (instant) {
+    void dom.timerBar.offsetWidth; // paksa reflow agar lebar diterapkan tanpa transisi
+    dom.timerBar.style.transition = '';
+  }
   const bar = dom.timerBar.parentElement;
   if (bar) bar.setAttribute('aria-valuenow', String(secs));
 }
@@ -356,10 +366,26 @@ function showOnly(name) {
   dom.countdownScreen.hidden = true;
 }
 
-function showResult(status, score) {
+function renderResultChoice(chosenId) {
+  const box = dom.resultChoice;
+  if (!box) return;
+  box.innerHTML = '';
+  const info = chosenId ? findImage(chosenId) : null;
+  if (info) {
+    box.className = 'recall-result__choice';
+    box.setAttribute('aria-label', 'Gambar pilihan Anda: ' + info.alt);
+    box.appendChild(createImg(info));
+  } else {
+    box.className = 'recall-result__choice recall-result__choice--empty';
+    box.setAttribute('aria-label', 'Tidak ada gambar yang dipilih');
+  }
+}
+
+function showResult(status, score, chosenId) {
   const icon = resultIconFor(status);
   dom.resultIcon.src = icon.src;
   dom.resultIcon.alt = icon.alt;
+  renderResultChoice(chosenId);
   dom.resultScore.textContent = String(score);
   dom.introScreen.hidden = true;
   dom.gameScreen.hidden = true;
@@ -372,14 +398,14 @@ function enterMemorize() {
   state.phase = 'memorize';
   state.secondsLeft = remainingSeconds(state.memorizeEnd, Date.now(), MEMORIZE_SECONDS);
   renderMemorize();
-  renderTimer();
+  renderTimer(true);
 }
 
 function enterAnswer() {
   state.phase = 'answer';
   state.secondsLeft = remainingSeconds(state.answerEnd, Date.now(), ANSWER_SECONDS);
   renderAnswer();
-  renderTimer();
+  renderTimer(true);
 }
 
 /* ---- 5f. Stub: diisi pada tugas 4.2 / 4.3 ---- */
@@ -393,7 +419,7 @@ function beginCountdown() {
   dom.prompt.textContent = 'Perhatikan gambar berikut';
   state.secondsLeft = MEMORIZE_SECONDS;
   renderEmptyStage();
-  renderTimer();
+  renderTimer(true);
   dom.introScreen.hidden = true;
   dom.resultScreen.hidden = true;
   dom.gameScreen.hidden = false;
@@ -472,14 +498,15 @@ function tick() {
 
 function onOptionClick(id) {
   if (!canChoose(state)) return;
-  finishGame(gradeAnswer(state.round.targetId, id));
+  finishGame(gradeAnswer(state.round.targetId, id), id);
 }
 
-function finishGame(status) {
+function finishGame(status, chosenId) {
   if (state.finished) return;
   state.finished = true;
   state.phase = 'finished';
   state.result = status;
+  state.chosenId = chosenId || null;
   if (state.timerId !== null) {
     clearInterval(state.timerId);
     state.timerId = null;
@@ -496,7 +523,9 @@ function finishGame(status) {
   } catch (e) {
     // Diabaikan.
   }
-  showResult(status, score);
+  showResult(status, score, state.chosenId);
+  // Efek suara hasil: benar -> match; salah atau waktu habis -> wrong.
+  playSound(status === 'correct' ? 'match' : 'wrong');
 }
 
 /* ---- 5g. Init ---- */
@@ -536,6 +565,14 @@ function init() {
     state.finished = true;
     state.phase = 'finished';
     state.result = restored.result;
+    const savedFinal = loadGame2State();
+    if (restored.result === 'correct' && savedFinal) {
+      state.chosenId = savedFinal.targetId;
+    } else if (restored.result === 'wrong' && savedFinal && savedFinal.optionIds.indexOf(savedFinal.chosenId) !== -1) {
+      state.chosenId = savedFinal.chosenId;
+    } else {
+      state.chosenId = null;
+    }
     if (restored.needsFinalize) {
       const saved = loadGame2State();
       try {
@@ -554,7 +591,7 @@ function init() {
         // Diabaikan.
       }
     }
-    showResult(restored.result, restored.score);
+    showResult(restored.result, restored.score, state.chosenId);
     return;
   }
 

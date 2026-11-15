@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -18,9 +18,15 @@
       <div class="recall-instruction">
         <p>Satu gambar akan ditampilkan selama 5 detik. Perhatikan setiap detailnya dan ingat baik-baik!</p>
         <p>Setelah gambar menghilang, temukan gambar yang sama di antara 3 pilihan yang tersedia!</p>
-        <div class="recall-time-alert" role="note">
-          <span>Waktu mengingat gambar: 5 detik</span>
-          <span>Waktu memilih gambar: 5 detik</span>
+        <div class="recall-time-alert gap-2" role="note">
+          <div class="d-flex justify-content-between">
+            <span>Waktu mengamati</span>
+            <span>5 detik</span>
+          </div>
+          <div class="d-flex justify-content-between">
+            <span>Waktu menjawab</span> 
+            <span>5 detik</span>
+          </div>
         </div>
       </div>
       <button type="button" id="startBtn" class="btn btn-entrasol">Mulai</button>
@@ -32,6 +38,7 @@
     </section>
 
     <section id="gameScreen" class="recall-game" hidden>
+      <img class="recall-top-icon" src="../assets/icon-game-2.svg" alt="Ikon game Memory Recall">
       <h2 class="recall-game-title">Memory Recall</h2>
       <span id="phaseBadge" class="recall-badge recall-badge--memorize">Hafalkan!</span>
       <span id="timerText" class="recall-timer" aria-live="off">5</span>
@@ -43,8 +50,10 @@
     </section>
 
     <section id="resultScreen" class="recall-result" hidden>
+      <img class="recall-top-icon" src="../assets/icon-game-2.svg" alt="Ikon game Memory Recall">
       <h2 class="recall-result__title">Memory Recall</h2>
       <img id="resultIcon" class="recall-result__icon" src="assets/checked.png" alt="Jawaban benar">
+      <div id="resultChoice" class="recall-result__choice recall-result__choice--empty" role="img" aria-label="Tidak ada gambar yang dipilih"></div>
       <p class="recall-result__score">
         <span id="resultScore" class="recall-result__number">0</span>
         <span class="recall-result__unit">point</span>

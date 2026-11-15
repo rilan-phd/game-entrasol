@@ -238,7 +238,21 @@ Implementasi game pertama Memory Flip di `game-1/` memakai HTML, CSS (Bootstrap 
     - Pastikan `#countdownScreen` berada di dalam `main.flip-page`, ber-`hidden`, tanpa heading, `#countdownNumber` ber-`role="status"` dan `aria-live="assertive"`; `PRE_COUNTDOWN_SECONDS = 3`; `COUNTDOWN_AT`, `shouldPlayCountdown`, `countdownPlayed` tidak ada di `game.js`; `.flip-countdown[hidden]` ada di CSS; tetap tanpa URL eksternal
     - _Requirements: 8.5, 8.10, 9.6, 12.1_
 
-- [~] 14. Final checkpoint - Pastikan semua tes lulus
+- [x] 14. Hapus background wave dan tampilkan Game_Icon di Game_Screen dan Result_Screen (revisi)
+  - [x] 14.1 Ubah `css/style.css`
+    - Hapus `::after` wave (`assets/background-wave.svg`) dari `.flip-page`; ubah padding menjadi `1.5rem 1rem` (`2rem 1.5rem` pada `@media (min-width: 576px)`); latar tetap gradasi putih ke biru muda `#A7D8F0` 85%; Home, game-2, dan game-3 tidak berubah
+    - Tambah `.flip-icon--game` (lebar 96px, margin bawah 0.5rem) dan `.flip-icon--result` (lebar 140px)
+    - Pada `@media (min-height: 550px)`: definisikan `--flip-icon-h: clamp(36px, calc(7 * var(--dvh)), 72px)` di `.flip-game`, beri `.flip-icon--game` tinggi `var(--flip-icon-h)`, beri `.flip-icon--result` tinggi `clamp(56px, calc(13 * var(--dvh)), 130px)`, dan ubah `--flip-board-w` menjadi `min(100%, 424px, calc(100 * var(--dvh) - 168px - var(--flip-icon-h)))`
+    - Catatan revisi: menggantikan butir wave pada task 3.2 dan pembatasan lebar papan pada task 8.2
+    - _Requirements: 2.5, 2.8, 2.9, 4.13, 4.14_
+
+  - [x] 14.2 Ubah `game-1/index.html`
+    - Tambah `img.flip-icon.flip-icon--game` (`../assets/icon-game-1.svg`, alt "Ikon game Memory Flip") sebagai anak pertama `#gameScreen`, di atas `h2.flip-game-title`
+    - Tambah `img.flip-icon.flip-icon--result` (sumber dan alt sama) sebagai anak pertama `#resultScreen`, di atas `h2.flip-result__title`
+    - Catatan revisi: Result_Screen kini berisi empat elemen (ikon, judul, skor, tombol Lanjutkan) dan menggantikan urutan elemen pada task 8.1
+    - _Requirements: 4.1, 4.2, 4.14, 11.2_
+
+- [~] 15. Final checkpoint - Pastikan semua tes lulus
   - Pastikan semua tes yang ada lulus, tanyakan kepada pengguna bila ada pertanyaan.
 
 ## Notes
@@ -246,6 +260,7 @@ Implementasi game pertama Memory Flip di `game-1/` memakai HTML, CSS (Bootstrap 
 - Sub-task bertanda `*` bersifat opsional dan dapat dilewati untuk MVP yang lebih cepat
 - Setiap task merujuk requirements spesifik untuk keterlacakan
 - Property test memvalidasi 14 properti kebenaran dari design (Property 14 kini tentang urutan angka countdown awal); unit test memvalidasi contoh dan edge case
+- Task 14 adalah revisi yang sudah diterapkan: background wave dihapus dari game-1 dan Game_Icon tampil juga di Game_Screen dan Result_Screen
 - Task 13 adalah revisi Countdown_Screen; task 7.3 digantikan oleh 13.2, dan butir countdown 3 detik terakhir pada 9.4 digantikan oleh 13.5
 - Berkas uji dan fast-check/jsdom (versi dipin) hanya untuk pengembang; halaman produksi tetap tanpa build step dan dapat dibuka langsung di browser
 
