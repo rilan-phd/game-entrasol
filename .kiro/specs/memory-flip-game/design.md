@@ -49,7 +49,7 @@ Tampilan memakai container mobile maks 430px dengan latar gradasi putih ke biru 
 
 ### Catatan Riset
 
-Tidak ada kebutuhan riset eksternal. Desain memakai API browser standar (`localStorage`, `Date.now`, `setInterval`/`setTimeout`, `Audio`, CSS `aspect-ratio`, `transform-style: preserve-3d`, atribut `hidden`) dan aset yang sudah ada di workspace (`game-1/assets/back-card.jpg`, `item-1.jpg` sampai `item-8.jpg`, `game-1/assets/audio/{flip,match,wrong,countdown}.mp3`, `assets/icon-game-1.svg`, font Noto Sans lokal).
+Tidak ada kebutuhan riset eksternal. Desain memakai API browser standar (`localStorage`, `Date.now`, `setInterval`/`setTimeout`, `Audio`, CSS `aspect-ratio`, `transform-style: preserve-3d`, atribut `hidden`) dan aset yang sudah ada di workspace (`game-1/assets/back-card.jpg`, `item-1.jpg` sampai `item-8.jpg`, `game-1/assets/audio/{flip,match,wrong,countdown}.mp3`, `assets/icon-game-1.svg`, font Noto Sans lokal). Ikon jam Timer memakai aset global `assets/clock.svg` yang sudah tersedia (dirujuk dari game-1 sebagai `../assets/clock.svg`). Ikon bersifat dekoratif (`alt=""`, `aria-hidden="true"`) karena angka detik sudah menyampaikan informasinya.
 
 ## Architecture
 
@@ -303,7 +303,8 @@ Pembuatan `new Audio` juga dibungkus agar bila konstruktor `Audio` tidak tersedi
   - `mismatch`: `playSound('wrong')`, `phase = 'locked'`, `setTimeout(800)` untuk menutup kedua kartu dan kembali `playing` (bila belum `finished`).
 - `finishGame(reason)` — dijaga flag: bila `state.finished` sudah `true`, langsung return. Selain itu: `finished = true`, `phase = 'finished'`, `clearInterval(timerId)`, `clearTimeout(mismatchTimeoutId)`, tutup kartu `open` yang tidak cocok, `score = calcScore(pairsFound)`, `saveGameScore('memoryFlip', score)` tepat sekali (dibungkus `try/catch`), `saveGame1State(serializeState(state, 'finished'))` (hasil `ok:false` diabaikan), lalu `showResult(score)`. Tidak ada `setTimeout` navigasi (Req 11.7).
 - `showResult(score)` — mengisi `#resultScore`, menyembunyikan `#introScreen` dan `#gameScreen`, menampilkan `#resultScreen`. Tidak memanggil `history.pushState`.
-- `renderTimer()`, `renderScore()`, `renderCard(idx)`, `renderBoard()` — pembaruan DOM.
+- `renderTimer()` — menulis angka sisa waktu ke `#timerText` (hanya angka, `textContent`), memperbarui progress bar, dan men-toggle kelas `flip-timer--warning` pada `#timerBox` (wadah, dengan fallback ke `#timerText` bila wadah tidak ada) berdasarkan `timerLevel`. Karena yang ditulis hanya `#timerText`, Clock_Icon tidak terhapus saat angka diperbarui (Req 4.11a, 4.11c).
+- `renderScore()`, `renderCard(idx)`, `renderBoard()` — pembaruan DOM.
 
 ### 5. Markup `game-1/index.html`
 
@@ -333,7 +334,10 @@ Pembuatan `new Audio` juga dibungkus agar bila konstruktor `Audio` tidak tersedi
     <img class="flip-icon flip-icon--game" src="../assets/icon-game-1.svg" alt="Ikon game Memory Flip">
     <h2 class="flip-game-title">Memory Flip</h2>
     <div class="flip-hud">
-      <span id="timerText" class="flip-timer" aria-live="off">30</span>
+      <span id="timerBox" class="flip-timer">
+        <img class="flip-timer__icon" src="../assets/clock.svg" alt="" aria-hidden="true">
+        <span id="timerText" aria-live="off">30</span>
+      </span>
       <span class="flip-score">Skor: <span id="scoreText">0</span></span>
     </div>
     <div class="progress flip-progress" role="progressbar" aria-label="Sisa waktu" aria-valuemin="0" aria-valuemax="30" aria-valuenow="30">
@@ -387,7 +391,8 @@ Memakai variabel yang sudah ada (`--entrasol-blue-dark: #141A8C`, `--entrasol-gr
 - `.flip-countdown__label` — "Bersiap...": `margin: 0; font-size: 1.125rem; font-weight: 700; color: var(--entrasol-blue-dark)` (Req 2.13).
 - `.flip-countdown__number` — `font-size: 8rem; font-weight: 700; line-height: 1; color: var(--entrasol-blue-dark)`; animasi pulse ringan opsional lewat CSS saja (`@keyframes flip-countdown-pulse`, skala 1 → 1.12 → 1 selama 1 detik, `animation: flip-countdown-pulse 1s ease-out infinite`) dan dimatikan pada `@media (prefers-reduced-motion: reduce)` (Req 2.12). Di dalam `@media (min-height: 550px)`, ukuran dapat mengecil: `font-size: clamp(5rem, calc(20 * var(--dvh)), 8rem)` agar countdown tetap muat tanpa scroll.
 - `.flip-progress` — track `rgba(20,26,140,0.12)`; isi Biru_Tua.
-- `.flip-timer--warning` — warna peringatan (mis. `#D32F2F`); angka tetap tampil sehingga tidak hanya mengandalkan warna.
+- `.flip-timer` — `gap: 0.4rem` antara Clock_Icon dan angka (Req 4.11a). `.flip-timer__icon` — `flex: 0 0 auto; width: 1.1em; height: 1.1em; display: block`, sehingga ikon mengikuti ukuran font timer dan tidak menyusut.
+- `.flip-timer--warning` — warna peringatan (mis. `#D32F2F`) dipasang pada wadah `#timerBox`; angka tetap tampil dan ikon tidak hilang, sehingga tidak hanya mengandalkan warna (Req 4.11c).
 - `.flip-board`, `.flip-card`, `.flip-card__inner`, `.flip-card__face`, `.flip-card--matched` — tidak berubah (grid 4 kolom, gap 8px, `aspect-ratio: 1 / 1`, maks 100px, flip 0.3s, penanda `--entrasol-green`).
 - `.flip-result` — baru. Kolom terpusat: `display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 1rem; padding: 2rem 1rem; min-height: 60svh; color: var(--entrasol-blue-dark)`.
 - `.flip-result__title` — `font-size: 1.5rem; font-weight: 700`.
@@ -637,6 +642,7 @@ Dengan fake timers, `Date.now` palsu, mock `Audio`, dan DOM sederhana (mis. jsdo
 - `index.html` Home mengarah ke `game-1/index.html` (Req 8.11).
 - Pemeriksaan visual manual pada lebar 320, 768, dan 1280 px: tanpa scroll horizontal pada Intro, Game_Screen (ikon + judul + HUD + papan), dan Result_Screen; tidak ada background wave di keempat tampilan; Game_Icon tampil di Intro_Screen, Game_Screen, dan Result_Screen; kartu persegi 44 sampai 100 px; angka skor hasil (~4.5rem) tidak terpotong; `[hidden]` pada `.flip-result` benar-benar menyembunyikan (Req 2, 4, 8.1–8.3, 11.10).
 - Pemeriksaan visual Game_Screen dan Result_Screen pada tinggi sekitar 550–560 px dan lebar 320 px: Game_Icon, judul, HUD, progress bar, dan papan 4×4 muat tanpa scroll vertikal, papan tidak keluar layar, dan hasil `getComputedStyle(.flip-page, '::after').content` bernilai `none` (tanpa wave) (Req 2.9, 4.13).
+- Pemeriksaan visual Timer pada Game_Screen (lebar 320 dan 430 px, tinggi sekitar 550–560 px): Clock_Icon tampil di kiri angka detik pada satu baris, tidak menyusut, tinggi `.flip-timer` tetap muat tanpa scroll vertikal; saat sisa waktu 10 detik atau kurang, kelas `flip-timer--warning` pada `#timerBox` mengubah warna teks dan border sementara ikon dan angka tetap tampil; `img.flip-timer__icon` ber-`alt=""` dan `aria-hidden="true"` (Req 4.11a–4.11c).
 - Pemeriksaan visual Countdown_Screen pada tinggi sekitar 550–560 px dan lebar 320 px: overlay menutupi seluruh container, angka biru tua besar tidak terpotong, tanpa scroll vertikal (Req 2.11–2.13).
 - Pemeriksaan manual perilaku browser: refresh saat countdown kembali ke Intro_Screen; refresh saat bermain melanjutkan sisa waktu; tombol back dari game-1 dan dari Result_Screen kembali ke Home; "Mulai Permainan" setelahnya melanjutkan atau menampilkan Result_Screen; suara terdengar setelah interaksi pertama pemain (Req 9, 10.10–10.12, 11.9).
 - Kontras teks Biru_Tua di atas gradasi dan latar alert tetap terbaca (Req 2.1).

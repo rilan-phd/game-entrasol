@@ -266,7 +266,7 @@ function cacheDom() {
   [
     'introScreen', 'countdownScreen', 'gameScreen', 'resultScreen',
     'startBtn', 'continueBtn', 'countdownNumber', 'phaseBadge',
-    'timerText', 'timerBar', 'prompt', 'stage', 'resultIcon', 'resultChoice', 'resultScore'
+    'timerBox', 'timerText', 'timerBar', 'prompt', 'stage', 'resultIcon', 'resultChoice', 'resultScore'
   ].forEach((id) => { dom[id] = document.getElementById(id); });
 }
 
@@ -346,7 +346,7 @@ function renderTimer(instant) {
   const secs = state.secondsLeft;
   const max = maxSecondsForPhase();
   dom.timerText.textContent = String(secs);
-  dom.timerText.className = 'recall-timer' +
+  (dom.timerBox || dom.timerText).className = 'recall-timer' +
     (phaseTimerLevel(secs) === 'warning' ? ' recall-timer--warning' : '');
   if (instant) dom.timerBar.style.transition = 'none';
   dom.timerBar.style.width = Math.max(0, Math.min(100, (secs / max) * 100)) + '%';

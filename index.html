@@ -58,6 +58,15 @@
       var btn = document.getElementById('startBtn');
       btn.addEventListener('click', function () {
         var state = null;
+        var done = false;
+        try { done = typeof isSessionDone === 'function' && isSessionDone(); } catch (e) { done = false; }
+        if (done) {
+          // Sesi sebelumnya sudah sampai halaman Result: mulai sesi baru yang bersih.
+          try { resetScore(); } catch (e) {}
+          try { clearSessionDone(); } catch (e) {}
+          window.location.href = 'game-1/index.html';
+          return;
+        }
         try {
           if (typeof loadGame1State === 'function') state = loadGame1State();
         } catch (e) { state = null; }

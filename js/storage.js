@@ -322,6 +322,71 @@
     return getScore().total;
   }
 
+  // --- Sesi & snapshot halaman Result ---
+
+  const SESSION_DONE_KEY = 'entrasol_session_done';
+  const RESULT_SNAPSHOT_KEY = 'entrasol_result_snapshot';
+
+  // Sesi dianggap selesai bila state game-3 berstatus 'finished'.
+  function isSessionFinished() {
+    const s = loadGame3State();
+    return s !== null && s.phase === 'finished';
+  }
+
+  function markSessionDone() {
+    try {
+      root.localStorage.setItem(SESSION_DONE_KEY, '1');
+      return { ok: true };
+    } catch (e) {
+      return { ok: false };
+    }
+  }
+
+  function isSessionDone() {
+    try {
+      return root.localStorage.getItem(SESSION_DONE_KEY) === '1';
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function clearSessionDone() {
+    try {
+      root.localStorage.removeItem(SESSION_DONE_KEY);
+    } catch (e) {
+      /* diabaikan */
+    }
+  }
+
+  // Snapshot per tab (sessionStorage) agar refresh tetap menampilkan hasil yang sama.
+  function saveResultSnapshot(score) {
+    try {
+      root.sessionStorage.setItem(RESULT_SNAPSHOT_KEY, JSON.stringify(score));
+      return { ok: true };
+    } catch (e) {
+      return { ok: false };
+    }
+  }
+
+  function getResultSnapshot() {
+    try {
+      const raw = root.sessionStorage.getItem(RESULT_SNAPSHOT_KEY);
+      if (raw === null || raw === undefined) return null;
+      const parsed = JSON.parse(raw);
+      return isValidScore(parsed) ? parsed : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function clearResultSnapshot() {
+    try {
+      root.sessionStorage.removeItem(RESULT_SNAPSHOT_KEY);
+    } catch (e) {
+      /* diabaikan */
+    }
+  }
+
   const api = {
     SCORE_KEY: SCORE_KEY,
     GAME1_STATE_KEY: GAME1_STATE_KEY,
@@ -345,7 +410,16 @@
     getScore: getScore,
     saveGameScore: saveGameScore,
     resetScore: resetScore,
-    getTotal: getTotal
+    getTotal: getTotal,
+    SESSION_DONE_KEY: SESSION_DONE_KEY,
+    RESULT_SNAPSHOT_KEY: RESULT_SNAPSHOT_KEY,
+    isSessionFinished: isSessionFinished,
+    markSessionDone: markSessionDone,
+    isSessionDone: isSessionDone,
+    clearSessionDone: clearSessionDone,
+    saveResultSnapshot: saveResultSnapshot,
+    getResultSnapshot: getResultSnapshot,
+    clearResultSnapshot: clearResultSnapshot
   };
 
   // Objek global untuk browser (dan fungsi langsung agar bisa dipanggil game.js).
@@ -354,6 +428,13 @@
   root.getScore = getScore;
   root.resetScore = resetScore;
   root.getTotal = getTotal;
+  root.isSessionFinished = isSessionFinished;
+  root.markSessionDone = markSessionDone;
+  root.isSessionDone = isSessionDone;
+  root.clearSessionDone = clearSessionDone;
+  root.saveResultSnapshot = saveResultSnapshot;
+  root.getResultSnapshot = getResultSnapshot;
+  root.clearResultSnapshot = clearResultSnapshot;
   root.isValidGame1State = isValidGame1State;
   root.saveGame1State = saveGame1State;
   root.loadGame1State = loadGame1State;

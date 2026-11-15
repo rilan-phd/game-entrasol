@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Memory Flip (game-1) - logika gameplay.
  *
  * Struktur berkas:
@@ -255,7 +255,7 @@ function renderTimer() {
   if (!dom.timerText) return;
   const s = state.secondsLeft;
   dom.timerText.textContent = String(s);
-  dom.timerText.classList.toggle('flip-timer--warning', timerLevel(s) === 'warning');
+  (dom.timerBox || dom.timerText).classList.toggle('flip-timer--warning', timerLevel(s) === 'warning');
   if (dom.timerBar) {
     dom.timerBar.style.width = (s / GAME_SECONDS) * 100 + '%';
     const progress = dom.timerBar.parentElement;
@@ -330,6 +330,7 @@ function init() {
   dom.startBtn = document.getElementById('startBtn');
   dom.continueBtn = document.getElementById('continueBtn');
   dom.timerText = document.getElementById('timerText');
+  dom.timerBox = document.getElementById('timerBox');
   dom.scoreText = document.getElementById('scoreText');
   dom.timerBar = document.getElementById('timerBar');
   dom.board = document.getElementById('board');

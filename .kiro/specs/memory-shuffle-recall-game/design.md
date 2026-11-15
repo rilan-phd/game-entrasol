@@ -6,8 +6,8 @@ Memory Shuffle & Recall adalah game ketiga dari rangkaian tiga mini-game Entraso
 
 - **Intro_Screen** (`#introScreen`): teks "GAME 03", ikon game, judul `h1` "Memory Shuffle & Recall", sub judul, Instruction_Box berisi dua paragraf petunjuk dan Time_Alert (dua keterangan waktu), tombol "Mulai".
 - **Countdown_Screen** (`#countdownScreen`): overlay penuh di dalam `main.shuffle-page` yang menutupi Game_Screen selama 3 detik setelah "Mulai" ditekan, menampilkan "Bersiap..." dan angka besar 3, 2, 1. Di belakang overlay hanya ada bingkai kosong. Round baru dipilih setelah countdown selesai. Tidak memakai heading dan tidak pernah disimpan sebagai sesi.
-- **Game_Screen** (`#gameScreen`): `h2` "Memory Shuffle & Recall", Phase_Badge (`#phaseBadge`), angka timer (`#timerText`), progress bar (`#timerBar`), baris Slot (`#slots`, hanya pada Fase_Menyusun), teks arahan (`#prompt`), dan baris kartu (`#cards`).
-- **Result_Screen** (`#resultScreen`): `h2` "Memory Shuffle & Recall", tiga Result_Slot (gambar + ikon benar/salah), skor besar (0 sampai 30) dengan keterangan "point" dan "dari 30", tombol "Lihat Hasil" (`#continueBtn`) menuju `../result.html`.
+- **Game_Screen** (`#gameScreen`): Screen_Icon (`img.shuffle-screen-icon`, `../assets/icon-game-3.svg`), `h2` "Memory Shuffle & Recall", Phase_Badge (`#phaseBadge`), timer (`#timerBox` berisi ikon `../assets/clock.svg` di kiri angka `#timerText`), progress bar (`#timerBar`), baris Slot (`#slots`, hanya pada Fase_Menyusun), teks arahan (`#prompt`), dan baris kartu (`#cards`).
+- **Result_Screen** (`#resultScreen`): Screen_Icon, `h2` "Memory Shuffle & Recall", tiga Result_Slot (gambar + ikon benar/salah), skor besar (0 sampai 30) dengan keterangan "point" dan "dari 30", tombol "Lihat Hasil" (`#continueBtn`) menuju `../result.html`.
 
 Pemain melihat tiga kartu dalam Original_Order selama 5 detik (Fase_Mengingat). Setelah itu halaman beralih otomatis ke Fase_Menyusun selama 5 detik: tiga Slot bernomor di atas, tiga Option_Card dalam Option_Order (selalu berbeda dari Original_Order) di bawah. Pemain mengklik kartu satu per satu, dan setiap kartu terbang ke Slot berikutnya tanpa bisa dibatalkan. Penilaian per Slot: 10 point untuk setiap Slot yang berisi kartu pada urutan yang benar (maksimal 30). Skor ditulis ke LocalStorage (`memorize`) lewat `js/storage.js` tepat satu kali, lalu Result_Screen ditampilkan di halaman yang sama. Tidak ada navigasi otomatis: pindah ke `result.html` hanya saat pemain menekan "Lihat Hasil".
 
@@ -15,7 +15,7 @@ Alur tampilan: **Intro_Screen → Countdown_Screen → Game_Screen (Fase_Menging
 
 State sesi disimpan di key `entrasol_game3_state` saat permainan dimulai (setelah countdown) dan diperbarui pada setiap klik kartu. Refresh atau tombol back tidak mengulang permainan: ronde berjalan dilanjutkan berdasarkan waktu absolut (`memorizeEnd`, `answerEnd`), dan permainan selesai langsung menampilkan Result_Screen. Refresh saat Countdown_Screen kembali ke Intro_Screen karena belum ada state tersimpan.
 
-Tema visual cyan lembut: body `rgba(0,188,212,0.15)` lewat kelas `shuffle-body`; container `main.shuffle-page` 430px dengan gradasi putih ke `rgba(0,188,212,0.35)` dan wave `assets/background-wave.svg` lewat `::after`. Tombol utama memakai kelas `btn btn-entrasol` (biru tua, teks putih) seperti game-1 dan game-2 yang sudah ada.
+Tema visual cyan lembut: body `rgba(0,188,212,0.15)` lewat kelas `shuffle-body`; container `main.shuffle-page` 430px dengan gradasi putih ke `rgba(0,188,212,0.35)`, tanpa wave `assets/background-wave.svg` (berbeda dari game-1 dan game-2). Tombol utama memakai kelas `btn btn-entrasol` (biru tua, teks putih) seperti game-1 dan game-2 yang sudah ada.
 
 ### Keputusan Desain Utama
 
@@ -43,7 +43,7 @@ Tema visual cyan lembut: body `rgba(0,188,212,0.15)` lewat kelas `shuffle-body`;
 
 ### Catatan Riset
 
-Tidak ada kebutuhan riset eksternal. Desain memakai API browser standar (`localStorage`, `Date.now`, `setInterval`, `setTimeout`, `Audio`, `matchMedia('(prefers-reduced-motion: reduce)')`, `getBoundingClientRect`, CSS `transform`/`transition`, `aspect-ratio`, `clamp()`, `min()`, atribut `hidden`) dan aset yang sudah ada: `game-3/assets/zaitun/zaitun-1..3.jpg`, `product/product-1..10.jpg`, `organ/organ-1..3.jpg`, `checked.png`, `wrong.png`, `audio/flip.mp3`, `audio/countdown.mp3`, `assets/icon-game-3.svg`, `assets/background-wave.svg`, dan font Noto Sans lokal. Pola arsitektur mengikuti game-2 (`memory-recall-game`): urutan berkas `game.js`, bentuk `serializeState`/`restoreState`, dan aturan fit-to-viewport. Teks `alt` kartu pada `CARD_IMAGES` bersifat sementara ("Gambar zaitun 1", dst.) dan dapat diperjelas setelah isi gambar final diketahui, tanpa mengubah logika.
+Tidak ada kebutuhan riset eksternal. Desain memakai API browser standar (`localStorage`, `Date.now`, `setInterval`, `setTimeout`, `Audio`, `matchMedia('(prefers-reduced-motion: reduce)')`, `getBoundingClientRect`, CSS `transform`/`transition`, `aspect-ratio`, `clamp()`, `min()`, atribut `hidden`) dan aset yang sudah ada: `game-3/assets/zaitun/zaitun-1..3.jpg`, `product/product-1..10.jpg`, `organ/organ-1..3.jpg`, `checked.png`, `wrong.png`, `audio/flip.mp3`, `audio/countdown.mp3`, `assets/icon-game-3.svg`, `assets/clock.svg`, dan font Noto Sans lokal. Pola arsitektur mengikuti game-2 (`memory-recall-game`): urutan berkas `game.js`, bentuk `serializeState`/`restoreState`, dan aturan fit-to-viewport. Teks `alt` kartu pada `CARD_IMAGES` bersifat sementara ("Gambar zaitun 1", dst.) dan dapat diperjelas setelah isi gambar final diketahui, tanpa mengubah logika.
 
 ## Architecture
 
@@ -284,14 +284,14 @@ function stopSound(name)  { /* pause(); currentTime = 0; tidak melempar */ }
 - `beginCountdown()` — dijaga `phase === 'intro'`. Menonaktifkan Mulai, `phase = 'countdown'`, menyembunyikan Intro_Screen, menampilkan Game_Screen dengan `renderEmptyStage()` (bingkai kosong tanpa gambar), menampilkan `#countdownScreen`, `playSound('countdown')` sekali, lalu interval yang menghitung `countdownNumber(Date.now() - t0)` dan memperbarui `#countdownNumber` hanya saat angka berubah. Saat hasilnya 0: bersihkan interval, sembunyikan overlay, panggil `startGame()`. Tidak memanggil `saveGame3State`.
 - `cancelCountdown()` — pada `pagehide`: bila `countdownId !== null`, `clearInterval`, `countdownId = null`, `stopSound('countdown')`.
 - `startGame()` — dijaga `phase === 'countdown'`: `round = buildRound(CARD_IMAGES, Math.random)`; `picks = []`; `memorizeEnd = Date.now() + 5000`; `answerEnd = memorizeEnd + 5000`; `saveGame3State(serializeState(state, 'playing'))`; `enterMemorize()`; `startTimer()`.
-- `enterMemorize()` — set phase, `renderMemorize()` (badge "Hafalkan!", prompt "Perhatikan gambar berikut dan urutannya", tiga kartu dalam `originalOrder`, `#slots` disembunyikan), reset timer.
-- `enterAnswer(restoredPicks)` — set phase, `renderAnswer()` (badge "Jawab sekarang!", tiga Slot kosong, prompt "Pilih gambar dengan urutan yang tepat", tiga `button.shuffle-option` dalam `optionOrder`). Untuk setiap id di `restoredPicks`, Slot diisi langsung dan Option_Card terkait diberi `disabled` dan kelas `shuffle-option--used` (tanpa animasi).
+- `enterMemorize()` — set phase, `renderMemorize()` (badge "Hafalkan!", prompt "Perhatikan gambar berikut dan urutannya", tiga kartu dalam `originalOrder` masing-masing dibungkus `div.shuffle-memo` dengan angka urutan 1, 2, 3 (`span.shuffle-memo__num`) di bawah kotak, `#slots` disembunyikan), lalu `renderTimer(true)`.
+- `enterAnswer(restoredPicks)` — set phase, `renderAnswer()` (badge "Jawab sekarang!", tiga Slot kosong, prompt "Pilih gambar dengan urutan yang tepat", tiga `button.shuffle-option` dalam `optionOrder`), lalu `renderTimer(true)` sehingga progress bar langsung 100% tanpa animasi pelebaran. Untuk setiap id di `restoredPicks`, Slot diisi langsung dan Option_Card terkait diberi `disabled` dan kelas `shuffle-option--used` (tanpa animasi).
 - `startTimer()` / `tick()` — interval 250 ms. `tick` menghitung sisa detik dari batas waktu fase aktif dengan `remainingSeconds` dan merender hanya saat nilai berubah. Bila `now >= memorizeEnd` pada phase `memorize` → `enterAnswer([])`. Bila `now >= answerEnd` → `finishGame()`.
 - `onOptionClick(id)` — abaikan bila `!canPick(state)`. Selain itu, secara sinkron: `state.picks = addPick(state.picks, round.optionOrder, id)` (abaikan bila tidak berubah), `slotIndex = picks.length - 1`, tombol `disabled`, `playSound('flip')`, `saveGame3State(serializeState(state, 'playing'))`, lalu `flyToSlot(button, slotIndex)`. Bila `picks.length === 3`: `state.locked = true` dan jadwalkan `finishGame()` setelah `FINISH_DELAY_MS` (atau `FINISH_DELAY_REDUCED_MS`).
 - `flyToSlot(button, slotIndex)` — membaca `getBoundingClientRect()` tombol dan Slot tujuan, menerapkan `transform: translate(dx, dy)` dengan `transition: transform 0.4s ease` dan z-index di atas Slot. Setelah `FLY_MS`, gambar disalin ke Slot (kelas `shuffle-slot--filled`) dan tombol diberi `shuffle-option--used` (`visibility: hidden`, transform direset tanpa transisi). Bila `prefers-reduced-motion: reduce`, Slot diisi langsung tanpa transform. Karena `slotIndex` ditetapkan saat klik, beberapa animasi dapat berjalan bersamaan tanpa saling menimpa.
 - `finishGame()` — dijaga `state.finished`. Selain itu: `finished = true`, `phase = 'finished'`, `clearInterval(timerId)`, bersihkan `pendingTimeouts`, `score = calcScore(originalOrder, picks)`, `saveGameScore('memorize', score)` tepat sekali (dibungkus `try/catch`), `saveGame3State(serializeState(state, 'finished'))` (hasil `ok:false` diabaikan), lalu `showResult(...)`. Tidak ada `setTimeout` navigasi.
 - `showResult(originalOrder, picks, score)` — mengisi tiga `.shuffle-result-slot` dari `buildResultSlots` (gambar atau kotak kosong bernomor, plus ikon dan `alt`) dan `#resultScore`, menyembunyikan Intro/Game/Countdown, menampilkan Result. Tanpa `history.pushState`.
-- `renderEmptyStage()`, `renderMemorize()`, `renderAnswer()`, `renderTimer()` — pembaruan DOM. `init()` dipanggil pada `DOMContentLoaded` hanya bila `document` tersedia.
+- `renderEmptyStage()`, `renderMemorize()`, `renderAnswer()`, `renderTimer(instant)` — pembaruan DOM. `renderTimer` mengubah angka `#timerText`, kelas peringatan pada `#timerBox`, dan lebar `#timerBar`; bila `instant` true, transisi `#timerBar` dimatikan sementara (`style.transition = 'none'`, set lebar, paksa reflow, kembalikan transisi) agar bar tidak beranimasi saat fase berganti. `init()` dipanggil pada `DOMContentLoaded` hanya bila `document` tersedia.
 
 ### 4. Markup `game-3/index.html`
 
@@ -320,9 +320,10 @@ function stopSound(name)  { /* pause(); currentTime = 0; tidak melempar */ }
   </section>
 
   <section id="gameScreen" class="shuffle-game" hidden>
+    <img class="shuffle-screen-icon" src="../assets/icon-game-3.svg" alt="Ikon game Memory Shuffle &amp; Recall">
     <h2 class="shuffle-game-title">Memory Shuffle &amp; Recall</h2>
     <span id="phaseBadge" class="shuffle-badge shuffle-badge--memorize">Hafalkan!</span>
-    <span id="timerText" class="shuffle-timer" aria-live="off">5</span>
+    <span id="timerBox" class="shuffle-timer"><img class="shuffle-timer__icon" src="../assets/clock.svg" alt="" aria-hidden="true"><span id="timerText" aria-live="off">5</span></span>
     <div class="progress shuffle-progress" role="progressbar" aria-label="Sisa waktu" aria-valuemin="0" aria-valuemax="5" aria-valuenow="5">
       <div id="timerBar" class="progress-bar"></div>
     </div>
@@ -332,6 +333,7 @@ function stopSound(name)  { /* pause(); currentTime = 0; tidak melempar */ }
   </section>
 
   <section id="resultScreen" class="shuffle-result" hidden>
+    <img class="shuffle-screen-icon" src="../assets/icon-game-3.svg" alt="Ikon game Memory Shuffle &amp; Recall">
     <h2 class="shuffle-result__title">Memory Shuffle &amp; Recall</h2>
     <div id="resultSlots" class="shuffle-result__slots"></div>
     <p class="shuffle-result__score">
@@ -355,9 +357,12 @@ function stopSound(name)  { /* pause(); currentTime = 0; tidak melempar */ }
 Isi area kartu dirender oleh JavaScript:
 
 ```html
-<!-- Fase_Mengingat: #slots hidden, #cards berisi tiga bingkai dalam originalOrder -->
-<div class="shuffle-frame"><img class="shuffle-img" src="assets/organ/organ-2.jpg" alt="Gambar organ 2"></div>
-<!-- ... dua bingkai lain -->
+<!-- Fase_Mengingat: #slots hidden, #cards berisi tiga bingkai dalam originalOrder, masing-masing dengan angka urutan di bawahnya -->
+<div class="shuffle-memo">
+  <div class="shuffle-frame"><img class="shuffle-img" src="assets/organ/organ-2.jpg" alt="Gambar organ 2"></div>
+  <span class="shuffle-memo__num">1</span>
+</div>
+<!-- ... dua bingkai lain dengan angka 2 dan 3 -->
 
 <!-- Fase_Menyusun: #slots -->
 <div class="shuffle-slot" data-slot="1"><span class="shuffle-slot__num">1</span></div>
@@ -385,17 +390,18 @@ Path `assets/...` relatif terhadap `game-3/`, sama seperti game-2.
 Memakai variabel yang sudah ada (`--entrasol-blue-dark`, `--entrasol-blue-light`, `--entrasol-green`, `--entrasol-white`, `--app-max-width`, `--dvh`). Hanya menambah kelas berprefix `shuffle-`; Home, `flip-`, dan `recall-` tidak diubah (Req 2.9).
 
 - `body.shuffle-body` — `background-color: rgba(0, 188, 212, 0.15)`.
-- `.shuffle-page` — `max-width: var(--app-max-width); margin: 0 auto; position: relative; overflow: hidden`; latar `linear-gradient(180deg, #FFFFFF 0%, rgba(0, 188, 212, 0.35) 100%)`; `::after` memuat `assets/background-wave.svg` di dasar dengan `aspect-ratio: 390 / 120`, `z-index: 0`, `pointer-events: none`; konten `z-index: 1`.
+- `.shuffle-page` — `max-width: var(--app-max-width); margin: 0 auto; position: relative; overflow: hidden`; latar `linear-gradient(180deg, #FFFFFF 0%, rgba(0, 188, 212, 0.35) 100%)`; tanpa `::after` dan tanpa `assets/background-wave.svg`.
 - `.shuffle-intro`, `.shuffle-eyebrow`, `.shuffle-icon`, `.shuffle-title`, `.shuffle-subtitle` — kolom terpusat, teks Biru_Tua.
 - `.shuffle-instruction` — latar putih, `border: 2px solid` (Biru_Muda), radius ≥ 8px, bayangan halus.
 - `.shuffle-time-alert` — lebar 100%, teks Biru_Tua, latar putih transparan terang, border tipis, radius `0.5rem` (bukan pill), dua baris (`display: flex; flex-direction: column`).
 - Tombol "Mulai" dan "Lihat Hasil" memakai `btn btn-entrasol` yang sudah ada, dengan `min-height: 48px` dan `min-width: 44px`.
 - `.shuffle-countdown` — overlay `position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.85)`; `__label` Biru_Tua tebal; `__number` `font-size: 8rem; font-weight: 700; line-height: 1` dengan animasi pulse yang dimatikan pada `@media (prefers-reduced-motion: reduce)` (Req 11.11).
-- `.shuffle-game` — kolom terpusat dengan `--shuffle-card: min(calc((100% - 8px) / 3), 220px)`; `.shuffle-badge--memorize` latar Biru_Muda + teks Biru_Tua; `.shuffle-badge--answer` latar Biru_Tua + teks putih (fase dibedakan lewat teks dan warna, Req 11.10); `.shuffle-timer` dan `.shuffle-timer--warning` (warna peringatan); `.shuffle-progress` (isi Biru_Tua); `.shuffle-prompt`.
+- `.shuffle-game` — kolom terpusat dengan `--shuffle-card: min(calc((100% - 8px) / 3), 220px)`; `.shuffle-badge--memorize` latar Biru_Muda + teks Biru_Tua; `.shuffle-badge--answer` latar Biru_Tua + teks putih (fase dibedakan lewat teks dan warna, Req 11.10); `.shuffle-screen-icon` (Screen_Icon di atas Game_Screen dan Result_Screen, tinggi 56px, `margin: 0 auto`, `object-fit: contain`); `.shuffle-timer` (pill `inline-flex`) dengan `.shuffle-timer__icon` (ikon jam `1em × 1em`, `margin-right: 0.4em`, sama seperti `recall-timer__icon`) dan `.shuffle-timer--warning` (warna peringatan pada angka dan border); `.shuffle-progress` (isi Biru_Tua); `.shuffle-prompt`.
 - Baris kartu: `.shuffle-slots`, `.shuffle-cards`, `.shuffle-result__slots` memakai `display: flex; justify-content: center; gap: 4px; width: 100%`.
 - `.shuffle-frame`, `.shuffle-option`, `.shuffle-slot`, dan `.shuffle-result-slot .shuffle-frame` persegi: `box-sizing: border-box; width: var(--shuffle-card); aspect-ratio: 1 / 1; min-width: 44px; min-height: 44px; border-radius: 12px; overflow: hidden`. Bingkai dan Option_Card berborder 2px Biru_Muda, Slot berborder 2px Hijau_Muda (`--entrasol-green`).
 - `.shuffle-slot__num` — angka 1, 2, 3 di tengah (`position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 700`), disembunyikan pada `.shuffle-slot--filled`.
 - `.shuffle-option` — `cursor: pointer; position: relative; padding: 0`; `:focus-visible` outline 3px Biru_Tua; `:disabled` mempertahankan opasitas (kartu yang sedang terbang tetap terlihat); `.shuffle-option--used { visibility: hidden; }`; `.shuffle-option--flying { z-index: 5; transition: transform 0.4s ease; }`; pada `prefers-reduced-motion: reduce` transisi dihapus.
+- `.shuffle-memo` — kolom (`display: flex; flex-direction: column; align-items: center; gap: 4px; width: var(--shuffle-card)`) berisi `.shuffle-frame` (lebar 100%) dan `.shuffle-memo__num` (angka urutan, `font-size: 1.25rem; font-weight: 700`, rata tengah, Biru_Tua). Hanya dipakai pada Fase_Mengingat.
 - `.shuffle-img { width: 100%; height: 100%; object-fit: cover; display: block }`.
 - Jarak Fase_Menyusun: `.shuffle-slots` ke `.shuffle-prompt` 16px (`margin-top` prompt), `.shuffle-prompt` ke `.shuffle-cards` 8px.
 - `.shuffle-result` — kolom terpusat; `__title`, `__slots`, `.shuffle-result-slot` (kolom: bingkai + ikon), `__icon` (ikon kecil sekitar 28px), `__number` (≈ 4.5rem), `__unit`, `__max` (≥ 16px), semua Biru_Tua; tombol berjarak 16px di bawah skor.
@@ -407,11 +413,11 @@ Memakai variabel yang sudah ada (`--entrasol-blue-dark`, `--entrasol-blue-light`
 - `html, body { height: 100%; overflow: hidden; }`.
 - `.shuffle-page { height: calc(100 * var(--dvh)); min-height: 0; overflow-x: hidden; overflow-y: auto; padding: calc(2 * var(--dvh)) 1rem; }` (`overflow-y: auto` hanya jaring pengaman).
 - `.shuffle-intro`, `.shuffle-game`, `.shuffle-result { flex: 1 1 auto; min-height: 0; justify-content: center; justify-content: safe center; }`.
-- `.shuffle-game, .shuffle-result { --shuffle-card: min(calc((100% - 8px) / 3), 220px, calc((100 * var(--dvh) - 215px) / 2)); }`.
-- Ukuran font, ikon, badge, timer, jarak, dan ikon hasil memakai `clamp(min, calc(N * var(--dvh)), max)` dengan `max` = ukuran desain penuh; angka countdown `clamp(5rem, calc(20 * var(--dvh)), 8rem)`.
+- `.shuffle-game, .shuffle-result { --shuffle-card: min(calc((100% - 8px) / 3), 220px, calc((100 * var(--dvh) - 290px) / 2)); }`.
+- Ukuran font, ikon, badge, timer, jarak, dan ikon hasil memakai `clamp(min, calc(N * var(--dvh)), max)` dengan `max` = ukuran desain penuh; Screen_Icon `clamp(32px, calc(6.5 * var(--dvh)), 56px)`; angka urutan `.shuffle-memo__num` `clamp(1rem, calc(3 * var(--dvh)), 1.25rem)`; angka countdown `clamp(5rem, calc(20 * var(--dvh)), 8rem)`.
 - Di luar media query (tinggi < 550px) container memakai `min-height: 100svh` dan halaman boleh scroll (Req 11.2).
 
-**Anggaran tinggi Fase_Menyusun** (viewport 375×553): total = 2 × `--shuffle-card` + overhead. Overhead sekitar 201px terdiri dari padding container atas-bawah (≈ 22px), judul `h2` (≈ 26px), Phase_Badge (≈ 28px), angka timer (≈ 36px), progress bar (10px), jarak Slot ke teks (16px), teks arahan (≈ 22px), jarak teks ke kartu (8px), dan celah antar elemen (≈ 33px); dipakai 215px untuk cadangan. Pada 553px batas tinggi adalah `(553 − 215) / 2 = 169px`, sedangkan batas lebar pada 375px adalah `(375 − 24 − 8) / 3 ≈ 114px`, sehingga dua baris kartu (≈ 228px) + overhead (≈ 201px) = ≈ 429px muat dengan sisa. Batas tinggi baru menentukan pada layar lebar dan pendek. Pada Fly_Animation, kartu bergerak hanya di dalam container sehingga tidak menambah scroll vertikal maupun horizontal (Req 11.1, 11.5).
+**Anggaran tinggi Fase_Menyusun** (viewport 375×553): total = 2 × `--shuffle-card` + overhead. Overhead terdiri dari padding container atas-bawah (≈ 22px), Screen_Icon (≈ 36px pada 553px), judul `h2` (≈ 26px), Phase_Badge (≈ 28px), angka timer (≈ 36px), progress bar (10px), jarak Slot ke teks (16px), teks arahan (≈ 22px), jarak teks ke kartu (8px), dan celah antar elemen (≈ 41px), total ≈ 245px; pada Fase_Mengingat angka urutan (≈ 21px) menggantikan baris Slot. Dipakai 290px untuk cadangan. Pada 553px batas tinggi adalah `(553 − 290) / 2 ≈ 131px`, sedangkan batas lebar pada 375px adalah `(375 − 24 − 8) / 3 ≈ 114px`, sehingga dua baris kartu (≈ 228px) + overhead (≈ 245px) = ≈ 473px muat dengan sisa. Batas tinggi baru menentukan pada layar lebar dan pendek. Pada Fly_Animation, kartu bergerak hanya di dalam container sehingga tidak menambah scroll vertikal maupun horizontal (Req 11.1, 11.5).
 
 ## Data Models
 
@@ -593,7 +599,8 @@ Properti berlaku untuk fungsi murni di `game-3/game.js` dan helper `js/storage.j
 | Interval tertahan (tab disembunyikan) | Sisa waktu dihitung dari waktu absolut; tick berikutnya langsung benar, atau `finishGame()` bila `answerEnd` terlewat |
 | Jam sistem berubah sehingga sisa > 5 | `remainingSeconds` dijepit maksimum 5 (Property 5) |
 | Gambar kartu gagal dimuat | Bingkai tetap berukuran sama (ditentukan CSS) dan teks `alt` tampil (Req 4.8) |
-| `background-wave.svg` gagal dimuat | Gradasi latar dan konten tetap tampil (Req 2.10) |
+| `icon-game-3.svg` gagal dimuat pada Game_Screen/Result_Screen | Gradasi latar dan konten lain tetap tampil (Req 2.10) |
+| `clock.svg` gagal dimuat | Ikon dekoratif (`alt=""`, `aria-hidden`); angka timer tetap tampil |
 
 ## Testing Strategy
 

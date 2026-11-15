@@ -252,7 +252,15 @@ Implementasi game pertama Memory Flip di `game-1/` memakai HTML, CSS (Bootstrap 
     - Catatan revisi: Result_Screen kini berisi empat elemen (ikon, judul, skor, tombol Lanjutkan) dan menggantikan urutan elemen pada task 8.1
     - _Requirements: 4.1, 4.2, 4.14, 11.2_
 
-- [~] 15. Final checkpoint - Pastikan semua tes lulus
+- [x] 15. Tambah Clock_Icon pada Timer di Game_Screen (revisi)
+  - [x] 15.1 Ubah markup, gaya, dan `renderTimer` untuk Clock_Icon
+    - `game-1/index.html`: ubah HUD menjadi `span#timerBox.flip-timer` berisi `img.flip-timer__icon` (`src="../assets/clock.svg"`, `alt=""`, `aria-hidden="true"`) lalu `span#timerText[aria-live="off"]` berisi angka
+    - `css/style.css`: `.flip-timer` diberi `gap: 0.4rem`; `.flip-timer__icon` berukuran `1.1em` × `1.1em` dengan `flex: 0 0 auto`
+    - `game-1/game.js`: ambil `dom.timerBox`; `renderTimer` tetap menulis angka ke `#timerText`, sedangkan kelas `flip-timer--warning` dipasang pada `#timerBox` sehingga ikon tidak terhapus saat angka diperbarui
+    - Catatan revisi: menggantikan markup `#timerText.flip-timer` pada task 8.1 dan penerapan kelas peringatan pada task 9
+    - _Requirements: 4.11, 4.11a, 4.11b, 4.11c, 6.3_
+
+- [~] 16. Final checkpoint - Pastikan semua tes lulus
   - Pastikan semua tes yang ada lulus, tanyakan kepada pengguna bila ada pertanyaan.
 
 ## Notes
@@ -260,6 +268,7 @@ Implementasi game pertama Memory Flip di `game-1/` memakai HTML, CSS (Bootstrap 
 - Sub-task bertanda `*` bersifat opsional dan dapat dilewati untuk MVP yang lebih cepat
 - Setiap task merujuk requirements spesifik untuk keterlacakan
 - Property test memvalidasi 14 properti kebenaran dari design (Property 14 kini tentang urutan angka countdown awal); unit test memvalidasi contoh dan edge case
+- Task 15 adalah revisi yang sudah diterapkan: Timer di Game_Screen kini memiliki Clock_Icon dekoratif di kiri angka detik
 - Task 14 adalah revisi yang sudah diterapkan: background wave dihapus dari game-1 dan Game_Icon tampil juga di Game_Screen dan Result_Screen
 - Task 13 adalah revisi Countdown_Screen; task 7.3 digantikan oleh 13.2, dan butir countdown 3 detik terakhir pada 9.4 digantikan oleh 13.5
 - Berkas uji dan fast-check/jsdom (versi dipin) hanya untuk pengembang; halaman produksi tetap tanpa build step dan dapat dibuka langsung di browser

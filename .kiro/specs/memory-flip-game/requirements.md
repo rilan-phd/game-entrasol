@@ -28,6 +28,7 @@ Catatan konsistensi: folder aktual game bernama `game-1` (bukan `game1` seperti 
 - **PRE_COUNTDOWN**: durasi hitung mundur awal pada Countdown_Screen, yaitu 3 detik (konstanta `PRE_COUNTDOWN_SECONDS = 3`), masing-masing angka 3, 2, dan 1 tampil 1 detik.
 - **countdownNumber**: fungsi murni `countdownNumber(elapsedMs)` yang memetakan waktu berlalu sejak Countdown_Screen mulai ke angka tampil: kurang dari 1000 ms menghasilkan 3, kurang dari 2000 ms menghasilkan 2, kurang dari 3000 ms menghasilkan 1, dan 3000 ms atau lebih menghasilkan 0 (selesai); nilai negatif atau non-finite menghasilkan 3.
 - **Timer**: hitung mundur 30 detik yang mulai berjalan saat permainan dimulai, yaitu setelah Countdown_Screen selesai (bukan saat tombol Start ditekan).
+- **Clock_Icon**: gambar ikon jam dekoratif `assets/clock.svg` (dari halaman game-1 dirujuk sebagai `../assets/clock.svg`) yang ditampilkan di sebelah kiri angka detik Timer pada Game_Screen; atribut `alt` kosong dan `aria-hidden="true"` karena angka detik sudah menyampaikan informasinya.
 - **Score_Store**: helper LocalStorage di `js/storage.js` dengan key `entrasol_game_score`.
 - **Memory_Flip_Score**: nilai field `memoryFlip` pada Score_Store, yaitu 5 × jumlah Pair yang ditemukan (0 sampai 40).
 - **Game_Session_State**: state sesi game-1 yang disimpan melalui `js/storage.js` pada key LocalStorage `entrasol_game1_state` (terpisah dari key skor). Berisi: fase (`playing` atau `finished`), urutan dek hasil acak, status tiap Card (`closed` atau `matched`), jumlah Pair yang ditemukan, waktu berakhir absolut (deadline, timestamp dalam milidetik), dan skor akhir bila fase `finished`.
@@ -105,6 +106,9 @@ Catatan konsistensi: folder aktual game bernama `game-1` (bukan `game1` seperti 
 9. WHEN Card dibuka atau ditutup, THE Card SHALL menampilkan animasi flip dengan transisi CSS selama antara 200 dan 400 milidetik.
 10. IF gambar Card gagal dimuat, THEN THE Card SHALL tetap tampil dengan ukuran dan bentuk yang sama serta menampilkan teks `alt` sebagai pengganti gambar.
 11. THE Game_Screen SHALL menampilkan Timer dalam angka detik dan progress bar di atas Board, serta skor berjalan (0 sampai 40 point) di dekat Timer.
+11a. THE Game_Screen SHALL menampilkan Clock_Icon di sebelah kiri angka detik Timer pada baris yang sama, dengan jarak 0,4rem antara Clock_Icon dan angka serta ukuran Clock_Icon 1,1em × 1,1em.
+11b. THE Clock_Icon SHALL memiliki atribut `alt` kosong dan `aria-hidden="true"` sehingga pembaca layar hanya membacakan angka detik.
+11c. WHILE sisa waktu Timer kurang dari atau sama dengan 10 detik dan lebih dari 0 detik, THE Game_Screen SHALL tetap menampilkan Clock_Icon dan angka detik bersama-sama, dengan angka detik sebagai penanda peringatan selain warna.
 12. WHEN Timer berkurang atau skor berubah, THE Game_Screen SHALL memperbarui angka detik, progress bar, dan skor berjalan dalam waktu maksimal 1 detik.
 13. WHILE Game_Screen ditampilkan pada tinggi viewport 550px ke atas, THE Game_Screen SHALL menampilkan Game_Icon, judul, Timer, skor, progress bar, dan seluruh Board dalam area layar tanpa scroll vertikal, dengan tinggi Game_Icon dibatasi antara 36px dan 72px dan lebar Board dikurangi sebesar tinggi Game_Icon tersebut.
 14. THE Game_Icon pada Game_Screen SHALL berukuran lebih kecil daripada Game_Icon pada Intro_Screen dan Result_Screen, dengan lebar 96px pada layout dasar.

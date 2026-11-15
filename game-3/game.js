@@ -315,7 +315,7 @@ function cacheDom() {
   [
     'introScreen', 'countdownScreen', 'gameScreen', 'resultScreen',
     'startBtn', 'continueBtn', 'countdownNumber', 'phaseBadge',
-    'timerText', 'timerBar', 'prompt', 'slots', 'cards',
+    'timerBox', 'timerText', 'timerBar', 'prompt', 'slots', 'cards',
     'resultSlots', 'resultScore'
   ].forEach((id) => { dom[id] = document.getElementById(id); });
 }
@@ -433,7 +433,7 @@ function renderTimer(instant) {
   const secs = state.secondsLeft;
   const max = maxSecondsForPhase();
   dom.timerText.textContent = String(secs);
-  dom.timerText.className = 'shuffle-timer' +
+  (dom.timerBox || dom.timerText).className = 'shuffle-timer' +
     (phaseTimerLevel(secs) === 'warning' ? ' shuffle-timer--warning' : '');
   if (instant) dom.timerBar.style.transition = 'none';
   dom.timerBar.style.width = Math.max(0, Math.min(100, (secs / max) * 100)) + '%';
@@ -708,7 +708,7 @@ function restoredIdsValid(originalOrder, optionOrder) {
 
 function init() {
   cacheDom();
-  dom.continueBtn.addEventListener('click', () => navigateTo(NEXT_PAGE));
+  dom.continueBtn.addEventListener('click', () => replaceTo(NEXT_PAGE));
 
   const restored = restoreState(loadGame3State(), Date.now());
 

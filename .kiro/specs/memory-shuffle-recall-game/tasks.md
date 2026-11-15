@@ -154,6 +154,30 @@ Implementasi game ketiga Memory Shuffle & Recall di `game-3/` memakai HTML, CSS 
 - [x] 7. Final checkpoint - Pastikan semua tes lulus
   - Ensure all tests pass, ask the user if questions arise.
 
+- [x] 8. Revisi tampilan Game_Screen dan Result_Screen game-3
+  - [x] 8.1 Tampilkan angka urutan 1, 2, 3 di bawah tiap kotak pada Fase_Mengingat
+    - `renderMemorize()` di `game-3/game.js`: bungkus tiap `.shuffle-frame` dalam `div.shuffle-memo` bersama `span.shuffle-memo__num` berisi 1, 2, 3 sesuai posisi kotak
+    - `css/style.css`: `.shuffle-memo` (kolom, lebar `var(--shuffle-card)`) dan `.shuffle-memo__num` (tebal, rata tengah, Biru_Tua, mengecil lewat `clamp(1rem, calc(3 * var(--dvh)), 1.25rem)`)
+    - Angka tidak tampil di Fase_Menyusun dan Result_Screen
+    - _Requirements: 5.8_
+
+  - [x] 8.2 Progress bar langsung penuh saat fase berganti
+    - `renderTimer(instant)`: bila `instant` true, matikan transisi `#timerBar` sementara, set lebar, paksa reflow, lalu kembalikan transisi
+    - `enterMemorize()` dan `enterAnswer()` memanggil `renderTimer(true)`; tick per detik tetap memakai transisi normal
+    - _Requirements: 6.14_
+
+  - [x] 8.3 Hapus wave dan tambahkan Screen_Icon
+    - Hapus `.shuffle-page::after` (`assets/background-wave.svg`) dari `css/style.css`
+    - `game-3/index.html`: `img.shuffle-screen-icon` (`../assets/icon-game-3.svg`, `alt` deskriptif) di atas `h2` pada `#gameScreen` dan `#resultScreen`
+    - `.shuffle-screen-icon` tinggi 56px, mengecil `clamp(32px, calc(6.5 * var(--dvh)), 56px)`; anggaran tinggi `--shuffle-card` menjadi `calc((100 * var(--dvh) - 290px) / 2)` agar tetap muat tanpa scroll vertikal
+    - _Requirements: 2.3, 2.10, 5.9, 6.15, 8.2, 11.1_
+
+  - [x] 8.4 Tambahkan ikon jam di kiri angka timer
+    - `game-3/index.html`: `span#timerBox.shuffle-timer` berisi `img.shuffle-timer__icon` (`../assets/clock.svg`, `alt=""`, `aria-hidden="true"`) dan `span#timerText`
+    - `game-3/game.js`: cache `timerBox`; kelas `shuffle-timer`/`shuffle-timer--warning` dipasang pada `#timerBox` (fallback `#timerText`)
+    - `css/style.css`: `.shuffle-timer__icon` (1em x 1em, `margin-right: 0.4em`, `object-fit: contain`), sama seperti `recall-timer__icon`
+    - _Requirements: 5.4, 6.5_
+
 ## Notes
 
 - Sub-task bertanda `*` bersifat opsional dan dapat dilewati untuk MVP yang lebih cepat
@@ -171,15 +195,8 @@ Implementasi game ketiga Memory Shuffle & Recall di `game-3/` memakai HTML, CSS 
     { "id": 1, "tasks": ["1.2", "1.3", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "2.8", "3.3", "4.1"] },
     { "id": 2, "tasks": ["4.2"] },
     { "id": 3, "tasks": ["4.3"] },
-    { "id": 4, "tasks": ["4.4", "4.5", "6.1"] }
+    { "id": 4, "tasks": ["4.4", "4.5", "6.1"] },
+    { "id": 5, "tasks": ["8.1", "8.2", "8.3", "8.4"] }
   ]
 }
 ```
-
-- [ ] 8. Tambah angka urutan di bawah kotak Fase_Mengingat
-  - [ ] 8.1 Tampilkan angka 1, 2, 3 di bawah tiap kotak pada Fase_Mengingat
-    - enderMemorize() di game-3/game.js: bungkus tiap .shuffle-frame dalam div.shuffle-memo bersama span.shuffle-memo__num berisi 1, 2, 3 sesuai posisi kotak
-    - css/style.css: gaya .shuffle-memo dan .shuffle-memo__num (tebal, rata tengah, Biru_Tua); ukuran angka dan anggaran tinggi --shuffle-card di @media (min-height: 550px) disesuaikan agar tetap muat tanpa scroll vertikal
-    - Angka tidak tampil di Fase_Menyusun dan Result_Screen
-    - _Requirements: 5.8, 11.1, 11.2_
-

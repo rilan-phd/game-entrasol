@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hasil - Game Entrasol</title>
+  <link rel="stylesheet" href="vendor/bootstrap/bootstrap.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main class="result-page">
+    <div class="result-confetti" id="resultConfetti" aria-hidden="true"></div>
+
+    <div class="result-content">
+      <img id="resultIcon" class="result-icon" src="assets/cancel.png" alt="">
+      <h1 id="resultTitle" class="result-title"></h1>
+      <p id="resultSubtitle" class="result-subtitle" role="status"></p>
+
+      <ul class="result-list game-list list-unstyled">
+        <li class="game-item game-item--flip result-item">
+          <img class="game-item__icon" src="assets/icon-game-1.svg" alt="Ikon Memory Flip">
+          <span class="game-item__sep game-item__sep--flip" aria-hidden="true"></span>
+          <span class="result-item__name">Memory Flip</span>
+          <span class="result-item__score" id="scoreFlip">0</span>
+        </li>
+        <li class="game-item game-item--recall result-item">
+          <img class="game-item__icon" src="assets/icon-game-2.svg" alt="Ikon Memory Recall">
+          <span class="game-item__sep game-item__sep--recall" aria-hidden="true"></span>
+          <span class="result-item__name">Memory Recall</span>
+          <span class="result-item__score" id="scoreRecall">0</span>
+        </li>
+        <li class="game-item game-item--memorize result-item">
+          <img class="game-item__icon" src="assets/icon-game-3.svg" alt="Ikon Memorize, Shuffle & Recall">
+          <span class="game-item__sep game-item__sep--memorize" aria-hidden="true"></span>
+          <span class="result-item__name">Memorize, Shuffle &amp; Recall</span>
+          <span class="result-item__score" id="scoreMemorize">0</span>
+        </li>
+      </ul>
+
+      <p class="result-total__label">Total point</p>
+      <p class="result-total__value" id="scoreTotal">0</p>
+
+      <div class="result-footer">
+        <p class="result-thanks">Terimakasih telah berpartisipasi</p>
+        <img src="assets/entrasol-text-blue.png" alt="Logo Entrasol" class="result-logo">
+      </div>
+    </div>
+  </main>
+
+  <script src="vendor/bootstrap/bootstrap.bundle.min.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
