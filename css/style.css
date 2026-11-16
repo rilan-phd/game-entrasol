@@ -169,6 +169,7 @@ body.flip-body { background-color: rgba(20, 26, 140, 0.15); }
 
 .flip-page {
   position: relative;
+  justify-content: flex-start;
   overflow: hidden;
   width: 100%;
   max-width: var(--app-max-width);
@@ -178,10 +179,14 @@ body.flip-body { background-color: rgba(20, 26, 140, 0.15); }
   display: flex;
   flex-direction: column;
   padding: 1.5rem 1rem;
-  background: linear-gradient(180deg, #FFFFFF 0%, rgba(167, 216, 240, 0.85) 100%);
+  background: linear-gradient(
+  180deg,
+  #FFFFFF 0%,
+  #F3F8FC 55%,
+  #E7F1FA 100%
+);
   box-shadow: 0 0 40px rgba(20, 26, 140, 0.08);
 }
-
 
 
 .flip-intro,
@@ -236,11 +241,14 @@ body.flip-body { background-color: rgba(20, 26, 140, 0.15); }
 /* Layar permainan: judul, HUD, progress bar, papan */
 .flip-game {
   min-width: 0;
-  padding: 1rem 0.75rem 1.5rem;
+  min-height: 0;
+  margin-top: 0;
+  padding: 0 0.75rem 1.5rem;
+  justify-content: flex-start;
 }
 
 .flip-game-title {
-  margin: 0 0 0.75rem;
+  margin: 0 0 1.5rem;
   font-size: 1.5rem;
   font-weight: 700;
   text-align: center;
@@ -278,7 +286,7 @@ body.flip-body { background-color: rgba(20, 26, 140, 0.15); }
   line-height: 1.5;
   color: var(--entrasol-blue-dark);
   background-color: var(--entrasol-white);
-  border: 2px solid var(--entrasol-blue-dark);
+  border: 1px solid var(--entrasol-blue-dark);
   border-radius: 1rem;
   box-shadow: 0 4px 14px rgba(20, 26, 140, 0.08);
 }
@@ -318,7 +326,7 @@ body.flip-body { background-color: rgba(20, 26, 140, 0.15); }
   font-size: 1rem;
   font-weight: 700;
   color: var(--entrasol-blue-dark);
-  background-color: rgba(20, 26, 140, 0.12);
+  background-color: #F1F5FC;
   border: 1px solid rgba(20, 26, 140, 0.25);
   border-radius: 0.5rem;
 }
@@ -364,7 +372,20 @@ body.flip-body { background-color: rgba(20, 26, 140, 0.15); }
   border-color: #D32F2F;
 }
 
-.flip-score { font-size: 1.15rem; }
+.flip-score {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: #141A8C;
+  background-color: #E4F3E9;
+  font-weight: 700;
+}
+
+.flip-score #scoreText {
+  display: inline-block;
+  color: #141A8C;
+}
 
 .flip-progress {
   width: min(100%, calc(4 * 100px + 3 * 8px));
@@ -437,7 +458,14 @@ body.flip-body { background-color: rgba(20, 26, 140, 0.15); }
 .flip-card__front { transform: rotateY(180deg); }
 
 .flip-card--matched {
-  box-shadow: 0 0 0 3px var(--entrasol-green), 0 3px 10px rgba(139, 195, 74, 0.55);
+  box-shadow: 0 0 0 2px var(--entrasol-blue-dark),
+              0 2px 10px rgba(20, 26, 140, 0.18);
+}
+
+/* Atur posisi judul dan jarak ke timer */
+.flip-game .flip-game-title {
+  margin-top: -0.5rem;
+  margin-bottom: 2rem;
 }
 
 /* Layar hasil */
@@ -490,6 +518,128 @@ body.flip-body { background-color: rgba(20, 26, 140, 0.15); }
   .flip-title { font-size: 2.25rem; }
 }
 
+
+/* =========================================
+   GAME 1 - HEADER BARU
+========================================= */
+
+.flip-game {
+  min-width: 0;
+  padding: 0 0.75rem 1.5rem;
+}
+
+/* Panel header keseluruhan */
+.flip-game-header {
+  width: min(100%, 424px);
+  margin-bottom: 1rem;
+  overflow: hidden;
+  background: #FFFFFF;
+  border-radius: 0 0 1.25rem 1.25rem;
+  box-shadow: 0 6px 18px rgba(20, 26, 140, 0.08);
+}
+
+/* Bagian atas: biru tua */
+.flip-game-header__top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.75rem 1rem;
+  background-color: #141A8C;
+}
+
+/* Ikon game */
+.flip-game-header .flip-icon--game {
+  width: 82px;
+  max-width: 100%;
+  height: 82px;
+  margin: 0;
+  object-fit: contain;
+  border-radius: 0.75rem;
+}
+
+/* Judul */
+.flip-game-header .flip-game-title {
+  margin: 0;
+  font-size: 1.5rem;
+  line-height: 1.3;
+  font-weight: 700;
+  color: #FFFFFF;
+  text-align: center;
+}
+
+/* Bagian bawah: timer dan poin */
+.flip-game-header__bottom {
+  padding: 0.75rem 0.9rem 0.85rem;
+  background-color: #FFFFFF;
+}
+
+.flip-game-header .flip-hud {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  margin: 0 0 0.65rem;
+}
+
+/* Timer */
+.flip-game-header .flip-timer {
+  flex: 1;
+  min-width: 0;
+  min-height: 48px;
+  padding: 0.35rem 0.5rem;
+  gap: 0.4rem;
+  font-size: 1.25rem;
+  color: #141A8C;
+  background-color: #FFFFFF;
+  border: 1.5px solid #DCE8F5;
+  border-radius: 0.85rem;
+}
+
+/* Ikon timer */
+.flip-game-header .flip-timer__icon {
+  width: 1.25em;
+  height: 1.25em;
+}
+
+/* Poin */
+.flip-game-header .flip-score {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0.35rem 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #141A8C;
+  background-color: #E5F5E9;
+  border-radius: 0.85rem;
+  white-space: nowrap;
+}
+
+/* Progress bar */
+.flip-game-header .flip-progress {
+  width: 100%;
+  height: 8px;
+  margin: 0;
+  background-color: #E7EDEF;
+  border-radius: 50rem;
+}
+
+.flip-game-header .flip-progress .progress-bar {
+  background-color: #141A8C;
+}
+
+
+/* Game 1: gameplay selalu mulai dari atas */
+
+.flip-game {
+  margin-top: 0;
+}
+
+
 /* ==========================================================================
    Memory Recall (game-2) - semua kelas berprefix .recall- (tema hijau muda)
    ========================================================================== */
@@ -498,6 +648,7 @@ body.recall-body { background-color: rgba(139, 195, 74, 0.2); }
 
 .recall-page {
   position: relative;
+  justify-content: flex-start;
   overflow: hidden;
   width: 100%;
   max-width: var(--app-max-width);
@@ -507,7 +658,7 @@ body.recall-body { background-color: rgba(139, 195, 74, 0.2); }
   display: flex;
   flex-direction: column;
   padding: 1.5rem 1rem;
-  background: linear-gradient(180deg, #FFFFFF 0%, rgba(139, 195, 74, 0.45) 100%);
+  background: linear-gradient(180deg,#F9FFF6 0%,#F6FCF1 50%,#F1FCEB 100%);
   box-shadow: 0 0 40px rgba(20, 26, 140, 0.08);
 }
 
@@ -571,12 +722,20 @@ body.recall-body { background-color: rgba(139, 195, 74, 0.2); }
   line-height: 1.5;
   color: var(--entrasol-blue-dark);
   background-color: var(--entrasol-white);
-  border: 2px solid var(--entrasol-green);
+  border: 1px solid var(--entrasol-green);
   border-radius: 1rem;
   box-shadow: 0 4px 14px rgba(20, 26, 140, 0.08);
 }
 .recall-instruction p { margin: 0 0 0.75rem; }
 .recall-instruction p:last-child { margin-bottom: 0; }
+
+.recall-instruction__title {
+  margin: 0 0 0.75rem;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--entrasol-blue-dark);
+}
 
 .recall-time-alert {
   display: flex;
@@ -631,8 +790,14 @@ body.recall-body { background-color: rgba(139, 195, 74, 0.2); }
 .recall-game {
   --recall-img: min(calc(50% - 8px), 280px);
   --recall-opt: min(55%, 190px);
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  align-self: stretch;
   gap: 0.5rem;
-  padding: 1rem 0.75rem 1.5rem;
+  padding: 0 0 1.5rem;
 }
 
 /* Ikon game di bagian paling atas layar permainan dan hasil */
@@ -741,7 +906,19 @@ body.recall-body { background-color: rgba(139, 195, 74, 0.2); }
 .recall-frame--empty { background-color: rgba(255, 255, 255, 0.6); }
 
 .recall-option {
-  width: var(--recall-opt, var(--recall-img));
+  display: block;
+  box-sizing: border-box;
+  width: min(34vw, 125px);
+  min-width: 44px;
+  min-height: 44px;
+  aspect-ratio: 1 / 1;
+  margin: 3px;
+  padding: 0;
+  overflow: hidden;
+  background-color: var(--entrasol-white);
+  border: 3px solid var(--entrasol-green);
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(20, 26, 140, 0.18);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
@@ -768,6 +945,106 @@ body.recall-body { background-color: rgba(139, 195, 74, 0.2); }
   justify-content: center;
   align-items: center;
   width: 100%;
+}
+
+
+/* =================================
+   MEMORY RECALL - GAME HEADER
+================================= */
+
+.recall-game-header {
+  width: 100%;
+  overflow: hidden;
+  background-color: #FFFFFF;
+  border-radius: 0 0 1.5rem 1.5rem;
+  box-shadow: 0 8px 24px rgba(20, 26, 140, 0.08);
+  margin-bottom: 1.5rem;
+}
+
+.recall-game-header__top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1rem 1.25rem;
+  background-color: #141A8C;
+}
+
+.recall-game-header .recall-top-icon {
+  display: block;
+  width: 76px;
+  height: 76px;
+  object-fit: contain;
+  margin: 0;
+}
+
+.recall-game-header .recall-game-title {
+  margin: 0;
+  color: #FFFFFF;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.recall-game-header__bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem 1.25rem;
+  background-color: #FFFFFF;
+}
+
+.recall-game-header .recall-timer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-width: 90px;
+  min-height: 44px;
+  padding: 0 1rem;
+  margin: 0;
+  color: #141A8C;
+  background-color: #FFFFFF;
+  border: 2px solid #141A8C;
+  border-radius: 50rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.recall-game-header .recall-timer__icon {
+  width: 1.1em;
+  height: 1.1em;
+  flex: 0 0 auto;
+}
+
+.recall-game-header .recall-progress {
+  width: 100%;
+  height: 10px;
+  margin: 0;
+  background-color: #E7F0E9;
+  border-radius: 50rem;
+  overflow: hidden;
+}
+
+.recall-game-header .recall-progress .progress-bar {
+  background-color: #31AA70;
+  border-radius: 50rem;
+}
+
+/* Prompt permainan */
+.recall-game > .recall-prompt {
+  margin: 0 0 1rem;
+  color: #141A8C;
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* Hilangkan badge fase lama jika masih digunakan */
+.recall-badge[hidden] {
+  display: none !important;
 }
 
 /* Layar hasil */
@@ -838,7 +1115,7 @@ body.recall-body { background-color: rgba(139, 195, 74, 0.2); }
    Memory Shuffle & Recall (game-3) - semua kelas berprefix .shuffle- (tema cyan lembut)
    ========================================================================== */
 
-body.shuffle-body { background-color: rgba(0, 188, 212, 0.15); }
+body.shuffle-body { background-color: #EAF8F8; }
 
 .shuffle-page {
   position: relative;
@@ -851,7 +1128,12 @@ body.shuffle-body { background-color: rgba(0, 188, 212, 0.15); }
   display: flex;
   flex-direction: column;
   padding: 1.5rem 1rem 6rem;
-  background: linear-gradient(180deg, #FFFFFF 0%, rgba(0, 188, 212, 0.35) 100%);
+  background: linear-gradient(
+  180deg,
+  #FAFFFF 0%,
+  #F2FBFB 50%,
+  #EAF7F8 100%
+  );
   box-shadow: 0 0 40px rgba(20, 26, 140, 0.08);
 }
 
@@ -913,6 +1195,8 @@ body.shuffle-body { background-color: rgba(0, 188, 212, 0.15); }
   font-size: 2rem;
   font-weight: 700;
   color: var(--entrasol-blue-dark);
+  line-height: 0.8;
+  margin-bottom: 0.25rem;
 }
 
 .shuffle-subtitle {
@@ -931,12 +1215,20 @@ body.shuffle-body { background-color: rgba(0, 188, 212, 0.15); }
   line-height: 1.5;
   color: var(--entrasol-blue-dark);
   background-color: var(--entrasol-white);
-  border: 2px solid var(--entrasol-blue-light);
+  border: 1px solid var(--entrasol-blue-light);
   border-radius: 1rem;
   box-shadow: 0 4px 14px rgba(20, 26, 140, 0.08);
 }
 .shuffle-instruction p { margin: 0 0 0.75rem; }
 .shuffle-instruction p:last-child { margin-bottom: 0; }
+
+.shuffle-instruction__title {
+  margin: 0 0 0.75rem;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--entrasol-blue-dark);
+}
 
 .shuffle-time-alert {
   display: flex;
@@ -949,8 +1241,8 @@ body.shuffle-body { background-color: rgba(0, 188, 212, 0.15); }
   font-size: 1rem;
   font-weight: 700;
   color: var(--entrasol-blue-dark);
-  background-color: rgba(170, 232, 240, 0.4);
-  border: 1px solid rgba(0, 188, 212, 0.6);
+  background-color: #EAF8F8;
+  border: 1px solid #A9DDE5;
   border-radius: 0.5rem;
 }
 
@@ -987,8 +1279,14 @@ body.shuffle-body { background-color: rgba(0, 188, 212, 0.15); }
 /* Game */
 .shuffle-game {
   --shuffle-card: min(calc((100% - 8px) / 3), 220px);
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  align-self: stretch;
   gap: 0.5rem;
-  padding: 1rem 0.25rem 1.5rem;
+  padding: 0 0.25rem 1.5rem;
 }
 
 .shuffle-game-title {
@@ -1156,6 +1454,125 @@ body.shuffle-body { background-color: rgba(0, 188, 212, 0.15); }
   object-fit: cover;
 }
 
+
+/* =========================================
+   GAME 3 - HEADER seperti Game 1 & Game 2
+   ========================================= */
+
+.shuffle-game-header {
+  display: flex;
+  flex-direction: column;
+  width: calc(100% + 2rem);
+  margin: 0 -1rem 1.25rem;
+  overflow: hidden;
+  background-color: #FFFFFF;
+  border-radius: 0 0 1.5rem 1.5rem;
+  box-shadow: 0 8px 24px rgba(20, 26, 140, 0.08);
+}
+
+/* Bagian biru: ikon dan judul */
+.shuffle-game-header__top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1rem 1.25rem;
+  background-color: #141A8C;
+}
+
+.shuffle-game-header .shuffle-screen-icon {
+  display: block;
+  width: 76px;
+  height: 76px;
+  max-width: none;
+  margin: 0;
+  object-fit: contain;
+}
+
+.shuffle-game-header .shuffle-game-title {
+  margin: 0;
+  color: #FFFFFF;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+}
+
+/* Badge disembunyikan, tetapi elemen tetap ada */
+.shuffle-game-header .shuffle-badge {
+  display: none !important;
+}
+
+/* Bagian putih: timer dan progress */
+.shuffle-game-header__bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem 1.25rem;
+  background-color: #FFFFFF;
+}
+
+.shuffle-game-header .shuffle-timer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-width: 90px;
+  min-height: 44px;
+  padding: 0 1rem;
+  margin: 0;
+  color: #141A8C;
+  background-color: #FFFFFF;
+  border: 2px solid #141A8C;
+  border-radius: 50rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.shuffle-game-header .shuffle-timer__icon {
+  width: 1.1em;
+  height: 1.1em;
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+/* Progress bar cyan */
+.shuffle-game-header .shuffle-progress {
+  display: block;
+  width: 100%;
+  height: 10px;
+  margin: 0;
+  overflow: hidden;
+  background-color: #DDF2F3;
+  border-radius: 50rem;
+}
+
+.shuffle-game-header .shuffle-progress .progress-bar {
+  display: block;
+  height: 100%;
+  background-color: #55C5D0;
+  border-radius: 50rem;
+  transition: width 1s linear;
+}
+
+/* Instruksi tetap di bawah header */
+.shuffle-game > .shuffle-prompt {
+  width: 100%;
+  margin: 0 0 0.75rem;
+  color: #141A8C;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: center;
+  /*white-space: nowrap;*/
+}
+
+/* Pastikan badge tersembunyi walau JS memperbarui isinya */
+.shuffle-badge[hidden] {
+  display: none !important;
+}
+
+
 /* Layar hasil */
 .shuffle-result {
   justify-content: center;
@@ -1310,12 +1727,17 @@ body.shuffle-body { background-color: rgba(0, 188, 212, 0.15); }
   /* ---- Game 1 (Memory Flip): tiga layar berbagi tinggi yang sama ---- */
   .flip-page { padding: calc(2 * var(--dvh)) 1rem; }
   .flip-intro,
-  .flip-game,
   .flip-result {
     flex: 1 1 auto;
     min-height: 0;
     justify-content: center;
     justify-content: safe center;
+  }
+
+  .flip-game {
+    flex: 0 0 auto;
+    min-height: 0;
+    justify-content: flex-start;
   }
 
   /* Countdown */
@@ -1388,12 +1810,17 @@ body.shuffle-body { background-color: rgba(0, 188, 212, 0.15); }
     padding: calc(2 * var(--dvh)) 1rem;
   }
   .recall-intro,
-  .recall-game,
   .recall-result {
     flex: 1 1 auto;
     min-height: 0;
     justify-content: center;
     justify-content: safe center;
+  }
+
+  .recall-game {
+    flex: 0 0 auto;
+    min-height: 0;
+    justify-content: flex-start;
   }
 
   /* Countdown */
@@ -1468,12 +1895,17 @@ body.shuffle-body { background-color: rgba(0, 188, 212, 0.15); }
   /* ---- Game 3 (Memory Shuffle & Recall): tiga layar berbagi tinggi yang sama ---- */
   .shuffle-page { padding: calc(2 * var(--dvh)) 1rem; }
   .shuffle-intro,
-  .shuffle-game,
   .shuffle-result {
     flex: 1 1 auto;
     min-height: 0;
     justify-content: center;
     justify-content: safe center;
+  }
+
+  .shuffle-game {
+    flex: 0 0 auto;
+    min-height: 0;
+    justify-content: flex-start;
   }
 
   /* Countdown */
@@ -1669,6 +2101,48 @@ body.shuffle-body { background-color: rgba(0, 188, 212, 0.15); }
   color: var(--entrasol-blue-dark);
 }
 
+/* Status pencapaian setiap game */
+/* Rapikan posisi status tepat di samping skor */
+.result-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.result-item__name {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.result-item__status {
+  display: inline-flex;
+  flex: 0 0 24px;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 28px;
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.result-item__score {
+  flex: 0 0 2.2rem;
+  width: 2.2rem;
+  min-width: 2.2rem;
+  margin: 0;
+  text-align: right;
+}
+
+.result-item__status--success {
+  color: #4CAF50;
+}
+
+.result-item__status--fail {
+  color: #E53935;
+}
+
 .result-footer { display: flex; flex-direction: column; align-items: center; }
 .result-thanks {
   margin: 0 0 0.5rem;
@@ -1742,4 +2216,20 @@ body.shuffle-body { background-color: rgba(0, 188, 212, 0.15); }
     margin-bottom: calc(0.8 * var(--dvh));
   }
   .result-logo { height: clamp(20px, calc(10 * var(--dvh)), 48px); }
+}
+
+/* Samakan lebar header Game 1, 2, dan 3 */
+.flip-game-header,
+.recall-game-header,
+.shuffle-game-header {
+  width: calc(100% + 2rem);
+  margin-left: -1rem;
+  margin-right: -1rem;
+}
+
+/* Rounded header lebih kecil */
+.flip-game-header,
+.recall-game-header,
+.shuffle-game-header {
+  border-radius: 0 0 1rem 1rem;
 }

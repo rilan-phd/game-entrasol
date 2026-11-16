@@ -14,7 +14,7 @@
       <p class="flip-eyebrow">GAME 01</p>
       <img class="flip-icon" src="../assets/icon-game-1.svg" alt="Ikon game Memory Flip">
       <h1 class="flip-title">Memory Flip</h1>
-      <p class="flip-subtitle">Tantangan ini akan menguji daya ingatmu.</p>
+      <p class="flip-subtitle">Tantangan ini akan menguji daya ingatmu</p>
       <div class="flip-instruction">
         <h2 class="flip-instruction__title">Cara Bermain</h2>
         <p>Pada layar akan terdapat 16 kartu tertutup. Temukan 8 pasangan gambar yang identik sebelum waktu habis.</p>
@@ -31,25 +31,65 @@
       <div id="countdownNumber" class="flip-countdown__number" role="status" aria-live="assertive">3</div>
     </section>
 
-    <section id="gameScreen" class="flip-game" hidden>
-      <img class="flip-icon flip-icon--game" src="../assets/icon-game-1.svg" alt="Ikon game Memory Flip">
+    
+<section id="gameScreen" class="flip-game" hidden>
+
+  <div class="flip-game-header">
+
+    <!-- Bagian atas: ikon dan judul -->
+    <div class="flip-game-header__top">
+      <img
+        class="flip-icon flip-icon--game"
+        src="../assets/icon-game-1.svg"
+        alt="Ikon game Memory Flip"
+      >
       <h2 class="flip-game-title">Memory Flip</h2>
+    </div>
+
+    <!-- Bagian bawah: waktu, poin, dan progress -->
+    <div class="flip-game-header__bottom">
+
       <div class="flip-hud">
-        <span id="timerBox" class="flip-timer"><img class="flip-timer__icon" src="../assets/clock.svg" alt="" aria-hidden="true"><span id="timerText" aria-live="off">30</span></span>
-        <span class="flip-score">Point: <span id="scoreText">0</span></span>
+        <span id="timerBox" class="flip-timer">
+          <img
+            class="flip-timer__icon"
+            src="../assets/clock.svg"
+            alt=""
+            aria-hidden="true"
+          >
+          <span id="timerText" aria-live="off">30</span>
+        </span>
+
+        <span class="flip-score">
+          Poin : <span id="scoreText"> 0</span>
+        </span>
       </div>
-      <div class="progress flip-progress" role="progressbar" aria-label="Sisa waktu" aria-valuemin="0" aria-valuemax="30" aria-valuenow="30">
+
+      <div
+        class="progress flip-progress"
+        role="progressbar"
+        aria-label="Sisa waktu"
+        aria-valuemin="0"
+        aria-valuemax="30"
+        aria-valuenow="30"
+      >
         <div id="timerBar" class="progress-bar"></div>
       </div>
-      <div id="board" class="flip-board"></div>
-    </section>
+
+    </div>
+  </div>
+
+  <div id="board" class="flip-board"></div>
+
+</section>
+
 
     <section id="resultScreen" class="flip-result" hidden>
       <img class="flip-icon flip-icon--result" src="../assets/icon-game-1.svg" alt="Ikon game Memory Flip">
       <h2 class="flip-result__title">Memory Flip</h2>
       <p class="flip-result__score">
         <span id="resultScore" class="flip-result__number">0</span>
-        <span class="flip-result__unit">point</span>
+        <span class="flip-result__unit">poin</span>
         <span class="flip-result__max">dari 40</span>
       </p>
       <button type="button" id="continueBtn" class="btn btn-entrasol">Lanjutkan</button>

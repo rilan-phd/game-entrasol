@@ -303,7 +303,7 @@ function createImg(info) {
 
 function renderMemorize() {
   setBadge('memorize');
-  dom.prompt.textContent = 'Perhatikan gambar berikut';
+  dom.prompt.textContent = 'Perhatikan gambar berikut!';
   dom.stage.innerHTML = '';
   const info = findImage(state.round.targetId);
   const frame = document.createElement('div');
@@ -314,7 +314,7 @@ function renderMemorize() {
 
 function renderAnswer() {
   setBadge('answer');
-  dom.prompt.textContent = 'Pilih gambar yang tepat';
+  dom.prompt.textContent = 'Pilih gambar yang tepat!';
   dom.stage.innerHTML = '';
 
   const pyramid = document.createElement('div');

@@ -306,17 +306,23 @@
 
   // Inisialisasi skor untuk sesi baru dan hapus state game-1, game-2, dan game-3.
   function resetScore() {
-    const score = defaultCopy();
-    clearGame1State();
-    clearGame2State();
-    clearGame3State();
-    try {
-      root.localStorage.setItem(SCORE_KEY, JSON.stringify(score));
-      return { ok: true, score: score };
-    } catch (e) {
-      return { ok: false, score: score };
-    }
+  const score = defaultCopy();
+
+  clearGame1State();
+  clearGame2State();
+  clearGame3State();
+
+  // Hapus hasil dan penanda sesi sebelumnya
+  clearResultSnapshot();
+  clearSessionDone();
+
+  try {
+    root.localStorage.setItem(SCORE_KEY, JSON.stringify(score));
+    return { ok: true, score: score };
+  } catch (e) {
+    return { ok: false, score: score };
   }
+}
 
   function getTotal() {
     return getScore().total;
