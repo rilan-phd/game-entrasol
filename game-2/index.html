@@ -14,8 +14,9 @@
       <p class="recall-eyebrow">GAME 02</p>
       <img class="recall-icon" src="../assets/icon-game-2.svg" alt="Ikon game Memory Recall">
       <h1 class="recall-title">Memory Recall</h1>
-      <p class="recall-subtitle">Amati baik-baik gambar yang muncul di layar.</p>
+      <p class="recall-subtitle">Amati baik-baik gambar yang muncul di layar</p>
       <div class="recall-instruction">
+        <h2 class="recall-instruction__title">Cara Bermain</h2>
         <p>Satu gambar akan ditampilkan selama 5 detik. Perhatikan setiap detailnya dan ingat baik-baik!</p>
         <p>Setelah gambar menghilang, temukan gambar yang sama di antara 3 pilihan yang tersedia!</p>
         <div class="recall-time-alert gap-2" role="note">
@@ -37,17 +38,47 @@
       <div id="countdownNumber" class="recall-countdown__number" role="status" aria-live="assertive">3</div>
     </section>
 
-    <section id="gameScreen" class="recall-game" hidden>
-      <img class="recall-top-icon" src="../assets/icon-game-2.svg" alt="Ikon game Memory Recall">
+    
+<section id="gameScreen" class="recall-game" hidden>
+  <div class="recall-game-header">
+    <div class="recall-game-header__top">
+      <img
+        class="recall-top-icon"
+        src="../assets/icon-game-2.svg"
+        alt="Ikon game Memory Recall"
+      >
       <h2 class="recall-game-title">Memory Recall</h2>
-      <span id="phaseBadge" class="recall-badge recall-badge--memorize">Hafalkan!</span>
-      <span id="timerBox" class="recall-timer"><img class="recall-timer__icon" src="../assets/clock.svg" alt="" aria-hidden="true"><span id="timerText" aria-live="off">5</span></span>
-      <div class="progress recall-progress" role="progressbar" aria-label="Sisa waktu" aria-valuemin="0" aria-valuemax="5" aria-valuenow="5">
+      <span id="phaseBadge" class="recall-badge" hidden></span>
+    </div>
+
+    <div class="recall-game-header__bottom">
+      <span id="timerBox" class="recall-timer">
+        <img
+          class="recall-timer__icon"
+          src="../assets/clock.svg"
+          alt=""
+          aria-hidden="true"
+        >
+        <span id="timerText" aria-live="off">5</span>
+      </span>
+
+      <div
+        class="progress recall-progress"
+        role="progressbar"
+        aria-label="Sisa waktu"
+        aria-valuemin="0"
+        aria-valuemax="5"
+        aria-valuenow="5"
+      >
         <div id="timerBar" class="progress-bar"></div>
       </div>
-      <p id="prompt" class="recall-prompt">Perhatikan gambar berikut</p>
-      <div id="stage" class="recall-stage"></div>
-    </section>
+    </div>
+  </div>
+
+  <p id="prompt" class="recall-prompt">Perhatikan gambar berikut!</p>
+  <div id="stage" class="recall-stage"></div>
+</section>
+
 
     <section id="resultScreen" class="recall-result" hidden>
       <img class="recall-top-icon" src="../assets/icon-game-2.svg" alt="Ikon game Memory Recall">
@@ -56,7 +87,7 @@
       <div id="resultChoice" class="recall-result__choice recall-result__choice--empty" role="img" aria-label="Tidak ada gambar yang dipilih"></div>
       <p class="recall-result__score">
         <span id="resultScore" class="recall-result__number">0</span>
-        <span class="recall-result__unit">point</span>
+        <span class="recall-result__unit">poin</span>
         <span class="recall-result__max">dari 30</span>
       </p>
       <button type="button" id="continueBtn" class="btn btn-entrasol">Lanjutkan</button>

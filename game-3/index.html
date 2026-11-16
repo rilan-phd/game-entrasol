@@ -13,11 +13,12 @@
     <section id="introScreen" class="shuffle-intro">
       <p class="shuffle-eyebrow">GAME 03</p>
       <img class="shuffle-icon" src="../assets/icon-game-3.svg" alt="Ikon game Memory Shuffle &amp; Recall">
-      <h1 class="shuffle-title">Memory Shuffle &amp; Recall</h1>
+      <h1 class="shuffle-title"><p>Memory</p> <p>Shuffle &amp; Recall</p></h1>
       <p class="shuffle-subtitle">Ingat posisi kartu dan susun kembali urutannya!</p>
       <div class="shuffle-instruction">
+        <h2 class="shuffle-instruction__title">Cara Bermain</h2>
         <p>Amati dan ingat urutan 3 kartu yang ditampilkan selama 5 detik.</p>
-        <p>Setelah itu, kartu akan diacak secara otomatis. Susun kembali ketiga kartu sesuai urutan semula dalam waktu 5 detik!</p>
+        <p>Setelah kartu diacak, susun kembali ketiga kartu sesuai urutan semula dalam waktu 5 detik!</p>
         <div class="shuffle-time-alert gap-2" role="note">
           <div class="d-flex justify-content-between">
             <span>Waktu mengingat</span>
@@ -37,18 +38,56 @@
       <div id="countdownNumber" class="shuffle-countdown__number" role="status" aria-live="assertive">3</div>
     </section>
 
-    <section id="gameScreen" class="shuffle-game" hidden>
-      <img class="shuffle-screen-icon" src="../assets/icon-game-3.svg" alt="Ikon game Memory Shuffle &amp; Recall">
+    
+<section id="gameScreen" class="shuffle-game" hidden>
+
+  <div class="shuffle-game-header">
+    <div class="shuffle-game-header__top">
+      <img
+        class="shuffle-screen-icon"
+        src="../assets/icon-game-3.svg"
+        alt="Ikon game Memory Shuffle &amp; Recall"
+      >
       <h2 class="shuffle-game-title">Memory Shuffle &amp; Recall</h2>
-      <span id="phaseBadge" class="shuffle-badge shuffle-badge--memorize">Hafalkan!</span>
-      <span id="timerBox" class="shuffle-timer"><img class="shuffle-timer__icon" src="../assets/clock.svg" alt="" aria-hidden="true"><span id="timerText" aria-live="off">5</span></span>
-      <div class="progress shuffle-progress" role="progressbar" aria-label="Sisa waktu" aria-valuemin="0" aria-valuemax="5" aria-valuenow="5">
+
+      <!-- Tetap ada karena masih digunakan game.js -->
+      <span id="phaseBadge" class="shuffle-badge" hidden></span>
+    </div>
+
+    <div class="shuffle-game-header__bottom">
+      <span id="timerBox" class="shuffle-timer">
+        <img
+          class="shuffle-timer__icon"
+          src="../assets/clock.svg"
+          alt=""
+          aria-hidden="true"
+        >
+        <span id="timerText" aria-live="off">5</span>
+      </span>
+
+      <div
+        class="progress shuffle-progress"
+        role="progressbar"
+        aria-label="Sisa waktu"
+        aria-valuemin="0"
+        aria-valuemax="5"
+        aria-valuenow="5"
+      >
         <div id="timerBar" class="progress-bar"></div>
       </div>
-      <div id="slots" class="shuffle-slots" hidden></div>
-      <p id="prompt" class="shuffle-prompt">Perhatikan gambar berikut dan urutannya</p>
-      <div id="cards" class="shuffle-cards"></div>
-    </section>
+    </div>
+  </div>
+
+  <div id="slots" class="shuffle-slots" hidden></div>
+
+  <p id="prompt" class="shuffle-prompt">
+    Perhatikan gambar berikut dan urutannya
+  </p>
+
+  <div id="cards" class="shuffle-cards"></div>
+
+</section>
+
 
     <section id="resultScreen" class="shuffle-result" hidden>
       <img class="shuffle-screen-icon" src="../assets/icon-game-3.svg" alt="Ikon game Memory Shuffle &amp; Recall">
@@ -56,7 +95,7 @@
       <div id="resultSlots" class="shuffle-result__slots"></div>
       <p class="shuffle-result__score">
         <span id="resultScore" class="shuffle-result__number">0</span>
-        <span class="shuffle-result__unit">point</span>
+        <span class="shuffle-result__unit">poin</span>
         <span class="shuffle-result__max">dari 30</span>
       </p>
       <button type="button" id="continueBtn" class="btn btn-entrasol">Lihat Hasil</button>

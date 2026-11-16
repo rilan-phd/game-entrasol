@@ -85,10 +85,30 @@ function renderResult(score) {
   sub.classList.toggle('result-subtitle--win', win);
   sub.classList.toggle('result-subtitle--lose', !win);
 
+  // Tampilkan skor masing-masing game
   document.getElementById('scoreFlip').textContent = score.memoryFlip;
   document.getElementById('scoreRecall').textContent = score.memoryRecall;
   document.getElementById('scoreMemorize').textContent = score.memorize;
   document.getElementById('scoreTotal').textContent = score.total;
+
+  // Tentukan status berdasarkan skor maksimal setiap game
+  function setGameStatus(elementId, currentScore, maxScore) {
+    var element = document.getElementById(elementId);
+    var isPerfect = currentScore === maxScore;
+
+    element.textContent = isPerfect ? '✓' : '✕';
+    element.classList.toggle('result-item__status--success', isPerfect);
+    element.classList.toggle('result-item__status--fail', !isPerfect);
+
+    element.setAttribute(
+      'aria-label',
+      isPerfect ? 'Poin penuh' : 'Belum mencapai poin penuh'
+    );
+  }
+
+  setGameStatus('statusFlip', score.memoryFlip, 40);
+  setGameStatus('statusRecall', score.memoryRecall, 30);
+  setGameStatus('statusMemorize', score.memorize, 30);
 
   if (confetti) {
     if (win && !prefersReducedMotion()) {
