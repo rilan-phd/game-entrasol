@@ -310,6 +310,7 @@
     clearGame1State();
     clearGame2State();
     clearGame3State();
+    clearResultSnapshot();
     try {
       root.localStorage.setItem(SCORE_KEY, JSON.stringify(score));
       return { ok: true, score: score };
