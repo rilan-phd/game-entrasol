@@ -357,7 +357,7 @@ function renderEmptyStage() {
 
 function renderMemorize() {
   setBadge('memorize');
-  dom.prompt.textContent = 'Perhatikan gambar berikut dan urutannya';
+  dom.prompt.textContent = 'Perhatikan urutan gambar berikut!';
   dom.slots.hidden = true;
   dom.slots.innerHTML = '';
   dom.cards.innerHTML = '';
@@ -708,7 +708,7 @@ function restoredIdsValid(originalOrder, optionOrder) {
 
 function init() {
   cacheDom();
-  dom.continueBtn.addEventListener('click', () => replaceTo(NEXT_PAGE));
+  dom.continueBtn.addEventListener('click', () => navigateTo(NEXT_PAGE));
 
   const restored = restoreState(loadGame3State(), Date.now());
 
