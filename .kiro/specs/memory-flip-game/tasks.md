@@ -185,7 +185,7 @@ Implementasi game pertama Memory Flip di `game-1/` memakai HTML, CSS (Bootstrap 
     - Hapus akses `localStorage` langsung dari `index.html`; tampilan Home tidak berubah
     - _Requirements: 10.11, 10.12, 10.13, 10.14, 8.8_
 
-- [~] 11. Checkpoint - Pastikan semuanya berjalan
+- [ ] 11. Checkpoint - Pastikan semuanya berjalan
   - Pastikan semua tes yang ada lulus, tanyakan kepada pengguna bila ada pertanyaan.
 
 - [ ] 12. Verifikasi statis akhir
@@ -260,7 +260,7 @@ Implementasi game pertama Memory Flip di `game-1/` memakai HTML, CSS (Bootstrap 
     - Catatan revisi: menggantikan markup `#timerText.flip-timer` pada task 8.1 dan penerapan kelas peringatan pada task 9
     - _Requirements: 4.11, 4.11a, 4.11b, 4.11c, 6.3_
 
-- [~] 16. Final checkpoint - Pastikan semua tes lulus
+- [ ] 16. Final checkpoint - Pastikan semua tes lulus
   - Pastikan semua tes yang ada lulus, tanyakan kepada pengguna bila ada pertanyaan.
 
 ## Notes
