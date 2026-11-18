@@ -243,7 +243,7 @@ body.flip-body { background-color: rgba(20, 26, 140, 0.15); }
   min-width: 0;
   min-height: 0;
   margin-top: 0;
-  padding: 0 0.75rem 1.5rem;
+  /*padding: 0 0.75rem 1.5rem;*/
   justify-content: flex-start;
 }
 
@@ -525,7 +525,7 @@ body.flip-body { background-color: rgba(20, 26, 140, 0.15); }
 
 .flip-game {
   min-width: 0;
-  padding: 0 0.75rem 1.5rem;
+  /*padding: 0 0.75rem 1.5rem;*/
 }
 
 /* Panel header keseluruhan */
@@ -862,8 +862,9 @@ body.recall-body { background-color: rgba(139, 195, 74, 0.2); }
 }
 
 .recall-progress {
-  width: min(100%, 280px);
-  height: 10px;
+  width: 100%;
+  height: 8px;
+  margin: 0;
   background-color: rgba(139, 195, 74, 0.25);
   border-radius: 50rem;
 }
@@ -878,6 +879,7 @@ body.recall-body { background-color: rgba(139, 195, 74, 0.2); }
   font-weight: 700;
   color: var(--entrasol-blue-dark);
 }
+
 
 /* Gambar */
 .recall-stage {
@@ -965,8 +967,8 @@ body.recall-body { background-color: rgba(139, 195, 74, 0.2); }
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  padding: 1rem 1rem 1.25rem;
+  gap: 0.35rem;
+  padding: 0.75rem 1rem;
   background-color: #141A8C;
 }
 
@@ -991,8 +993,8 @@ body.recall-body { background-color: rgba(139, 195, 74, 0.2); }
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
-  padding: 1rem 1.25rem 1.25rem;
+  gap: 0.65rem;
+  padding: 0.75rem 0.9rem 0.85rem;
   background-color: #FFFFFF;
 }
 
@@ -1286,7 +1288,7 @@ body.shuffle-body { background-color: #EAF8F8; }
   justify-content: flex-start;
   align-self: stretch;
   gap: 0.5rem;
-  padding: 0 0.25rem 1.5rem;
+  /*padding: 0 0.25rem 1.5rem;*/
 }
 
 .shuffle-game-title {
@@ -1475,8 +1477,8 @@ body.shuffle-body { background-color: #EAF8F8; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  padding: 1rem 1rem 1.25rem;
+  gap: 0.35rem;
+  padding: 0.75rem 1rem;
   background-color: #141A8C;
 }
 
@@ -1508,8 +1510,8 @@ body.shuffle-body { background-color: #EAF8F8; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
-  padding: 1rem 1.25rem 1.25rem;
+  gap: 0.65rem;
+  padding: 0.75rem 0.9rem 0.85rem;
   background-color: #FFFFFF;
 }
 
@@ -1781,7 +1783,7 @@ body.shuffle-body { background-color: #EAF8F8; }
   .flip-game {
     --flip-icon-h: clamp(36px, calc(7 * var(--dvh)), 72px);
     --flip-board-w: min(100%, 424px, calc(100 * var(--dvh) - 168px - var(--flip-icon-h)));
-    padding: 0 0.75rem;
+    /*padding: 0 0.75rem;*/
   }
   .flip-icon--game {
     height: var(--flip-icon-h);
@@ -1865,7 +1867,7 @@ body.shuffle-body { background-color: #EAF8F8; }
     --recall-img: min(calc(50% - 8px), 280px, calc((100 * var(--dvh) - 247px) / 2));
     --recall-opt: min(55%, 190px, calc((100 * var(--dvh) - 267px) / 3));
     gap: calc(0.8 * var(--dvh));
-    padding: 0 0.75rem;
+    /*padding: 0 0.75rem;*/
   }
   .recall-top-icon { height: clamp(24px, calc(10 * var(--dvh)), 96px); }
   .recall-badge {
@@ -1952,7 +1954,7 @@ body.shuffle-body { background-color: #EAF8F8; }
   }
   .shuffle-game {
     gap: calc(0.8 * var(--dvh));
-    padding: 0 0.75rem;
+    /*padding: 0 0.75rem;*/
   }
   .shuffle-screen-icon { height: clamp(32px, calc(12 * var(--dvh)), 96px); }
   .shuffle-game-title { font-size: clamp(1.2rem, calc(3.4 * var(--dvh)), 1.5rem); }
@@ -2033,7 +2035,7 @@ body.shuffle-body { background-color: #EAF8F8; }
 }
 
 .result-icon {
-  width: auto;
+  width: 70px;
   max-width: 60%;
   height: 120px;
   margin: 0 0 1rem;
@@ -2045,7 +2047,7 @@ body.shuffle-body { background-color: #EAF8F8; }
   margin: 0 0 0.35rem;
   font-size: 3rem;
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1.2;
   color: var(--entrasol-blue-dark);
 }
 
@@ -2222,7 +2224,7 @@ body.shuffle-body { background-color: #EAF8F8; }
 .flip-game-header,
 .recall-game-header,
 .shuffle-game-header {
-  width: calc(100% + 2rem);
+  width: 100%;
   margin-left: -1rem;
   margin-right: -1rem;
 }
@@ -2232,4 +2234,73 @@ body.shuffle-body { background-color: #EAF8F8; }
 .recall-game-header,
 .shuffle-game-header {
   border-radius: 0 0 1rem 1rem;
+}
+
+
+/* TIMER GAME 2 — SAMAKAN DENGAN GAME 1 */
+.recall-game #timerBox.recall-timer {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+
+  width: 50% !important;
+  max-width: 368px;
+  min-width: 0 !important;
+  height: 48px !important;
+  min-height: 48px !important;
+
+  padding: 0.35rem 0.5rem !important;
+  gap: 0.4rem;
+  margin: 0;
+
+  font-size: 1.25rem !important;
+  font-weight: 700;
+
+  color: #141A8C;
+  background: #FFFFFF;
+  border: 1.5px solid #DCE8F5 !important;
+  border-radius: 0.85rem !important;
+
+  box-sizing: border-box;
+}
+
+.recall-game #timerBox .recall-timer__icon {
+  width: 1.25em;
+  height: 1.25em;
+  margin: 0;
+  flex: 0 0 auto;
+}
+
+/* TIMER GAME 3 — SAMAKAN DENGAN GAME 1 */
+.shuffle-game #timerBox.shuffle-timer {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+
+  width: 50% !important;
+  max-width: 368px;
+  min-width: 0 !important;
+  height: 48px !important;
+  min-height: 48px !important;
+
+  padding: 0.35rem 0.5rem !important;
+  gap: 0.4rem;
+  margin: 0;
+
+  font-size: 1.25rem !important;
+  font-weight: 700;
+
+  color: #141A8C;
+  background: #FFFFFF;
+  border: 1.5px solid #DCE8F5 !important;
+  border-radius: 0.85rem !important;
+
+  box-sizing: border-box;
+}
+
+.shuffle-game #timerBox .shuffle-timer__icon {
+  width: 1.25em;
+  height: 1.25em;
+  margin: 0;
+  flex: 0 0 auto;
 }

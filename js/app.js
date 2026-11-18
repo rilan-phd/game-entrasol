@@ -9,6 +9,20 @@ function replaceTo(url) {
   window.location.replace(url);
 }
 
+// Cegah pemain kembali ke halaman game setelah sesi selesai.
+(function () {
+  const isGamePage = /\/game-[123]\//.test(window.location.pathname);
+  const isSessionDone =
+    sessionStorage.getItem('entrasol_tab_session_done') === '1';
+
+  if (isGamePage && isSessionDone) {
+    const path = window.location.pathname;
+    const basePath = path.replace(/game-[123]\/.*$/, '');
+
+    window.location.replace(basePath + 'result.html');
+  }
+})();
+
 /* ==========================================================================
    Halaman Result (result.html)
    ========================================================================== */
@@ -74,13 +88,13 @@ function renderResult(score) {
   if (win) {
     icon.src = 'assets/confetti-cone.png';
     icon.alt = 'Ikon perayaan kemenangan';
-    title.textContent = 'Selamat';
-    sub.textContent = 'Kamu mendapatkan hadiah';
+    title.textContent = 'Wow Hebat';
+    sub.textContent = 'Kamu berhasil!';
   } else {
     icon.src = 'assets/cancel.png';
     icon.alt = 'Ikon belum beruntung';
-    title.textContent = 'Maaf';
-    sub.textContent = 'Kamu belum beruntung';
+    title.textContent = 'Jangan Sedih';
+    sub.textContent = 'Yuk coba lagi!';
   }
   sub.classList.toggle('result-subtitle--win', win);
   sub.classList.toggle('result-subtitle--lose', !win);
@@ -119,34 +133,26 @@ function renderResult(score) {
   }
 }
 
-// Tahan tombol Back (best-effort): setiap popstate dikembalikan ke halaman ini.
-function lockBack() {
-  try {
-    history.replaceState({ result: true }, '', window.location.href);
-    history.pushState({ result: true }, '', window.location.href);
-  } catch (e) { /* diabaikan */ }
-}
-
+//ubah back button dari halaman result jadi nampilin poin game 3
 function initResultPage() {
   var result = loadResult();
+
   if (!result) {
     replaceTo('index.html');
     return;
   }
-  renderResult(result);
-  lockBack();
 
-  window.addEventListener('popstate', function () {
-    try { history.pushState({ result: true }, '', window.location.href); } catch (e) { /* diabaikan */ }
-  });
+  renderResult(result);
+
+  // Perbarui tampilan jika halaman dipulihkan dari browser cache.
   window.addEventListener('pageshow', function (e) {
     if (e.persisted) {
       var r = loadResult();
       if (r) renderResult(r);
-      lockBack();
     }
   });
 }
+
 
 if (typeof document !== 'undefined' && document.getElementById('resultTitle')) {
   initResultPage();

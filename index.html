@@ -52,30 +52,31 @@
   <script src="vendor/bootstrap/bootstrap.bundle.min.js"></script>
   <script src="js/storage.js"></script>
   <script>
-    // Sesi baru (tidak ada state game-1): reset skor. Bila state ada
-    // (playing/finished), lanjut tanpa reset agar game tidak bisa diulang.
-    (function () {
-      var btn = document.getElementById('startBtn');
-      btn.addEventListener('click', function () {
-        var state = null;
-        var done = false;
-        try { done = typeof isSessionDone === 'function' && isSessionDone(); } catch (e) { done = false; }
-        if (done) {
-          // Sesi sebelumnya sudah sampai halaman Result: mulai sesi baru yang bersih.
-          try { resetScore(); } catch (e) {}
-          try { clearSessionDone(); } catch (e) {}
-          window.location.href = 'game-1/index.html';
-          return;
-        }
-        try {
-          if (typeof loadGame1State === 'function') state = loadGame1State();
-        } catch (e) { state = null; }
-        if (state === null || state === undefined) {
-          try { resetScore(); } catch (e) {}
-        }
-        window.location.href = 'game-1/index.html';
-      });
-    })();
-  </script>
+  (function () {
+    var btn = document.getElementById('startBtn');
+
+    btn.addEventListener('click', function () {
+      var done = isSessionDone();
+      var doneInThisTab = isSessionDoneInCurrentTab();
+
+      // Sesi sudah selesai di tab yang sama: arahkan ke scan ulang.
+      if (done && doneInThisTab) {
+        window.location.href = 'scan-ulang.html';
+        return;
+      }
+
+      // Sesi sudah selesai, tetapi dibuka di tab baru:
+      // bersihkan seluruh skor dan progres untuk sesi baru.
+      if (done && !doneInThisTab) {
+        resetScore();
+        clearSessionDone();
+        clearResultSnapshot();
+      }
+
+      // Jika sesi belum selesai, lanjutkan progres yang tersimpan.
+      window.location.href = 'game-1/index.html';
+    });
+  })();
+</script>
 </body>
 </html>

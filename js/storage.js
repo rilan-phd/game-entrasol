@@ -330,39 +330,65 @@
 
   // --- Sesi & snapshot halaman Result ---
 
-  const SESSION_DONE_KEY = 'entrasol_session_done';
-  const RESULT_SNAPSHOT_KEY = 'entrasol_result_snapshot';
+  
+const SESSION_DONE_KEY = 'entrasol_session_done';
+const RESULT_SNAPSHOT_KEY = 'entrasol_result_snapshot';
+const SESSION_DONE_TAB_KEY = 'entrasol_session_done_tab';
 
-  // Sesi dianggap selesai bila state game-3 berstatus 'finished'.
-  function isSessionFinished() {
-    const s = loadGame3State();
-    return s !== null && s.phase === 'finished';
+// Sesi dianggap selesai bila state game-3 berstatus 'finished'.
+function isSessionFinished() {
+  const s = loadGame3State();
+  return s !== null && s.phase === 'finished';
+}
+
+// Penanda selesai hanya berlaku untuk tab saat ini.
+function markSessionDone() {
+  try {
+    root.localStorage.setItem(SESSION_DONE_KEY, '1');
+  } catch (e) {
+    return { ok: false };
   }
 
-  function markSessionDone() {
-    try {
-      root.localStorage.setItem(SESSION_DONE_KEY, '1');
-      return { ok: true };
-    } catch (e) {
-      return { ok: false };
-    }
+  try {
+    root.sessionStorage.setItem(SESSION_DONE_TAB_KEY, '1');
+  } catch (e) {
+    // Diabaikan jika sessionStorage tidak tersedia.
   }
 
-  function isSessionDone() {
-    try {
-      return root.localStorage.getItem(SESSION_DONE_KEY) === '1';
-    } catch (e) {
-      return false;
-    }
+  return { ok: true };
+}
+
+function isSessionDoneInCurrentTab() {
+  try {
+    return root.sessionStorage.getItem(SESSION_DONE_TAB_KEY) === '1';
+  } catch (e) {
+    return false;
+  }
+}
+
+function isSessionDone() {
+  try {
+    return root.localStorage.getItem(SESSION_DONE_KEY) === '1';
+  } catch (e) {
+    return false;
+  }
+}
+
+
+function clearSessionDone() {
+  try {
+    root.localStorage.removeItem(SESSION_DONE_KEY);
+  } catch (e) {
+    // Diabaikan.
   }
 
-  function clearSessionDone() {
-    try {
-      root.localStorage.removeItem(SESSION_DONE_KEY);
-    } catch (e) {
-      /* diabaikan */
-    }
+  try {
+    root.sessionStorage.removeItem(SESSION_DONE_TAB_KEY);
+  } catch (e) {
+    // Diabaikan.
   }
+}
+
 
   // Snapshot per tab (sessionStorage) agar refresh tetap menampilkan hasil yang sama.
   function saveResultSnapshot(score) {
@@ -422,6 +448,7 @@
     isSessionFinished: isSessionFinished,
     markSessionDone: markSessionDone,
     isSessionDone: isSessionDone,
+    isSessionDoneInCurrentTab: isSessionDoneInCurrentTab,
     clearSessionDone: clearSessionDone,
     saveResultSnapshot: saveResultSnapshot,
     getResultSnapshot: getResultSnapshot,
@@ -437,6 +464,7 @@
   root.isSessionFinished = isSessionFinished;
   root.markSessionDone = markSessionDone;
   root.isSessionDone = isSessionDone;
+  root.isSessionDoneInCurrentTab = isSessionDoneInCurrentTab;
   root.clearSessionDone = clearSessionDone;
   root.saveResultSnapshot = saveResultSnapshot;
   root.getResultSnapshot = getResultSnapshot;
