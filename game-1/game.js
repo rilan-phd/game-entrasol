@@ -22,6 +22,7 @@ const GAME_SECONDS = 30;
 const POINTS_PER_PAIR = 5;
 const MISMATCH_DELAY_MS = 800;
 const TICK_INTERVAL_MS = 250;
+const MATCH_FINISH_DELAY_MS = 1200;//delay time when last card is match
 const PRE_COUNTDOWN_SECONDS = 3;
 const WARNING_THRESHOLD = 10;
 const NEXT_PAGE = '../game-2/index.html';
@@ -501,7 +502,13 @@ function onCardClick(idx) {
     renderScore();
     playSound('match');
     persistPlaying();
-    if (state.pairsFound === TOTAL_PAIRS) finishGame('complete');
+    //add delay time when the last card matched
+    if (state.pairsFound === TOTAL_PAIRS) {
+      state.phase = 'locked';
+      setTimeout(() => {
+      finishGame('complete');
+    }, MATCH_FINISH_DELAY_MS);
+  }
   } else {
     playSound('wrong');
     state.phase = 'locked';
