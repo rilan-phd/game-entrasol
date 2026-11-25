@@ -243,6 +243,22 @@ function stopSound(name) {
   }
 }
 
+/* Preload semua gambar kartu sejak halaman dibuka, agar kartu langsung tampil saat dibuka. */
+const ASSET_URLS = (function () {
+  const urls = ['assets/back-card.jpg'];
+  for (let item = 1; item <= TOTAL_PAIRS; item++) urls.push('assets/item-' + item + '.jpg');
+  return urls;
+})();
+const assetsReady = (typeof document !== 'undefined' && typeof preloadImages === 'function')
+  ? preloadImages(ASSET_URLS)
+  : Promise.resolve();
+
+/** Jalankan fn setelah aset siap, paling lama ASSET_WAIT_MS. */
+function whenAssetsReady(fn) {
+  if (typeof waitWithTimeout !== 'function') { fn(); return; }
+  waitWithTimeout(assetsReady, typeof ASSET_WAIT_MS === 'number' ? ASSET_WAIT_MS : 1500).then(fn);
+}
+
 /** Simpan Game_Session_State fase 'playing'. Tidak pernah melempar. */
 function persistPlaying() {
   try {
@@ -431,8 +447,12 @@ function beginCountdown() {
     if (n === 0) {
       clearInterval(state.countdownId);
       state.countdownId = null;
-      if (dom.countdownScreen) dom.countdownScreen.hidden = true;
-      startGame();
+      // Countdown selesai: tunggu sisa aset (bila belum siap) lalu mulai.
+      whenAssetsReady(() => {
+        if (state.phase !== 'countdown') return;
+        if (dom.countdownScreen) dom.countdownScreen.hidden = true;
+        startGame();
+      });
       return;
     }
     if (n !== shown) {

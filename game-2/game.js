@@ -229,7 +229,9 @@ const sounds = { countdown: null, match: null, wrong: null };
 try {
   if (typeof Audio !== 'undefined') {
     ['countdown', 'match', 'wrong'].forEach((name) => {
-      sounds[name] = new Audio('assets/audio/' + name + '.mp3');
+      const audio = new Audio('assets/audio/' + name + '.mp3');
+      audio.preload = 'auto';
+      sounds[name] = audio;
     });
   }
 } catch (e) {
@@ -256,6 +258,26 @@ function stopSound(name) {
     snd.currentTime = 0;
   } catch (e) {
     // Diabaikan.
+  }
+}
+
+/* ---- Preload gambar kartu dan ikon hasil sejak halaman dibuka ---- */
+const ASSET_URLS = CARD_IMAGES.map((img) => img.src)
+  .concat(['assets/checked.png', 'assets/wrong.png', 'assets/times-up.png']);
+const assetsReady = (typeof document !== 'undefined' && typeof preloadImages === 'function')
+  ? preloadImages(ASSET_URLS)
+  : Promise.resolve();
+
+/** Jalankan fn setelah aset siap, paling lama ASSET_WAIT_MS. */
+function whenAssetsReady(fn) {
+  if (typeof waitWithTimeout !== 'function') { fn(); return; }
+  waitWithTimeout(assetsReady, typeof ASSET_WAIT_MS === 'number' ? ASSET_WAIT_MS : 1500).then(fn);
+}
+
+/** Tampilkan semua gambar di container secara bersamaan. */
+function revealTogether(container) {
+  if (typeof revealWhenImagesReady === 'function') {
+    revealWhenImagesReady(container, typeof ASSET_WAIT_MS === 'number' ? ASSET_WAIT_MS : 1500);
   }
 }
 
@@ -339,6 +361,8 @@ function renderAnswer() {
     pyramid.appendChild(row);
   });
   dom.stage.appendChild(pyramid);
+  // Tiga pilihan muncul bersamaan; target tidak pernah tampil lebih dulu.
+  revealTogether(pyramid);
 }
 
 /** instant=true: bar langsung ke lebar baru tanpa animasi (dipakai saat fase baru dimulai). */
@@ -435,8 +459,12 @@ function beginCountdown() {
     if (n === 0) {
       clearInterval(state.countdownId);
       state.countdownId = null;
-      dom.countdownScreen.hidden = true;
-      startGame();
+      // Countdown selesai: tunggu sisa aset (bila belum siap) lalu mulai.
+      whenAssetsReady(() => {
+        if (state.phase !== 'countdown') return;
+        dom.countdownScreen.hidden = true;
+        startGame();
+      });
       return;
     }
     if (n !== shown) {

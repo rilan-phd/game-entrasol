@@ -24,6 +24,88 @@ function replaceTo(url) {
 })();
 
 /* ==========================================================================
+   Preload aset gambar (dipakai game-1, game-2, game-3)
+   ========================================================================== */
+
+// Batas tunggu aset setelah countdown selesai, agar permainan tidak tertahan
+// bila jaringan lambat atau putus.
+var ASSET_WAIT_MS = 1500;
+
+// Referensi objek Image disimpan agar tidak dibuang dari memori (cache tetap hangat).
+var preloadedImages = {};
+
+// Muat dan decode satu gambar. Selalu resolve (true = berhasil), tidak pernah reject.
+function preloadImage(src) {
+  if (preloadedImages[src]) return preloadedImages[src].ready;
+  var entry = { img: null, ready: null };
+  preloadedImages[src] = entry;
+  entry.ready = new Promise(function (resolve) {
+    if (typeof Image === 'undefined') { resolve(false); return; }
+    var img = new Image();
+    entry.img = img;
+    var done = false;
+    function finish(ok) { if (!done) { done = true; resolve(ok); } }
+    img.onload = function () {
+      if (typeof img.decode === 'function') {
+        img.decode().then(function () { finish(true); }, function () { finish(true); });
+      } else {
+        finish(true);
+      }
+    };
+    img.onerror = function () { finish(false); };
+    img.decoding = 'async';
+    img.src = src;
+  });
+  return entry.ready;
+}
+
+// Muat banyak gambar sekaligus. Resolve setelah semuanya selesai (berhasil atau gagal).
+function preloadImages(srcs) {
+  return Promise.all((srcs || []).map(preloadImage));
+}
+
+// Tunggu promise paling lama ms milidetik. Resolve true bila selesai tepat waktu.
+function waitWithTimeout(promise, ms) {
+  return new Promise(function (resolve) {
+    var timer = setTimeout(function () { resolve(false); }, ms);
+    Promise.resolve(promise).then(
+      function () { clearTimeout(timer); resolve(true); },
+      function () { clearTimeout(timer); resolve(false); }
+    );
+  });
+}
+
+// Tunggu elemen <img> di dalam container siap ditampilkan (sudah dimuat dan di-decode).
+function waitForImgElements(container, ms) {
+  var imgs = container ? Array.prototype.slice.call(container.querySelectorAll('img')) : [];
+  var all = Promise.all(imgs.map(function (img) {
+    return new Promise(function (resolve) {
+      function decodeThen() {
+        if (typeof img.decode === 'function') {
+          img.decode().then(resolve, resolve);
+        } else {
+          resolve();
+        }
+      }
+      if (img.complete) { decodeThen(); return; }
+      img.addEventListener('load', decodeThen, { once: true });
+      img.addEventListener('error', resolve, { once: true });
+    });
+  }));
+  return waitWithTimeout(all, ms);
+}
+
+// Sembunyikan isi container sampai semua gambarnya siap, lalu tampilkan bersamaan.
+// Bila gambar sudah ada di cache, jeda ini praktis tidak terasa.
+function revealWhenImagesReady(container, ms) {
+  if (!container) return;
+  container.classList.add('asset-loading');
+  waitForImgElements(container, ms).then(function () {
+    container.classList.remove('asset-loading');
+  });
+}
+
+/* ==========================================================================
    Halaman Result (result.html)
    ========================================================================== */
 
@@ -160,5 +242,9 @@ if (typeof document !== 'undefined' && document.getElementById('resultTitle')) {
 
 // Ekspos untuk lingkungan Node (pengujian); diabaikan di browser.
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { navigateTo, replaceTo, normalizeResult };
+  module.exports = {
+    navigateTo, replaceTo, normalizeResult,
+    ASSET_WAIT_MS, preloadImage, preloadImages, waitWithTimeout,
+    waitForImgElements, revealWhenImagesReady
+  };
 }

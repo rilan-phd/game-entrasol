@@ -279,6 +279,8 @@ try {
   if (typeof Audio !== 'undefined') {
     sounds.countdown = new Audio('assets/audio/countdown.mp3');
     sounds.flip = new Audio('assets/audio/flip.mp3');
+    sounds.countdown.preload = 'auto';
+    sounds.flip.preload = 'auto';
   }
 } catch (e) {
   sounds.countdown = null;
@@ -305,6 +307,26 @@ function stopSound(name) {
     snd.currentTime = 0;
   } catch (e) {
     // Diabaikan.
+  }
+}
+
+/* ---- Preload gambar kartu dan ikon hasil sejak halaman dibuka ---- */
+const ASSET_URLS = CARD_IMAGES.map((img) => img.src)
+  .concat(['assets/checked.png', 'assets/wrong.png']);
+const assetsReady = (typeof document !== 'undefined' && typeof preloadImages === 'function')
+  ? preloadImages(ASSET_URLS)
+  : Promise.resolve();
+
+/** Jalankan fn setelah aset siap, paling lama ASSET_WAIT_MS. */
+function whenAssetsReady(fn) {
+  if (typeof waitWithTimeout !== 'function') { fn(); return; }
+  waitWithTimeout(assetsReady, typeof ASSET_WAIT_MS === 'number' ? ASSET_WAIT_MS : 1500).then(fn);
+}
+
+/** Tampilkan semua gambar di container secara bersamaan. */
+function revealTogether(container) {
+  if (typeof revealWhenImagesReady === 'function') {
+    revealWhenImagesReady(container, typeof ASSET_WAIT_MS === 'number' ? ASSET_WAIT_MS : 1500);
   }
 }
 
@@ -375,6 +397,8 @@ function renderMemorize() {
     memo.appendChild(num);
     dom.cards.appendChild(memo);
   });
+  // Tiga gambar hafalan muncul bersamaan.
+  revealTogether(dom.cards);
 }
 
 // Isi Slot (indeks 0..2) dengan gambar tanpa animasi.
@@ -520,8 +544,12 @@ function beginCountdown() {
     }
     clearInterval(state.countdownId);
     state.countdownId = null;
-    dom.countdownScreen.hidden = true;
-    startGame();
+    // Countdown selesai: tunggu sisa aset (bila belum siap) lalu mulai.
+    whenAssetsReady(() => {
+      if (state.phase !== 'countdown') return;
+      dom.countdownScreen.hidden = true;
+      startGame();
+    });
   }, TICK_INTERVAL_MS);
 }
 

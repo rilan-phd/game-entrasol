@@ -2304,3 +2304,5 @@ body.shuffle-body { background-color: #EAF8F8; }
   margin: 0;
   flex: 0 0 auto;
 }
+/* Isi disembunyikan sementara sampai semua gambarnya siap (lihat revealWhenImagesReady di js/app.js) */
+.asset-loading { visibility: hidden; }
